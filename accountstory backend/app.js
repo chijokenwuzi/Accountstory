@@ -1330,7 +1330,7 @@ if (loadCustomerDefaultsBtn) {
 if (backToLandingBtn) {
   backToLandingBtn.addEventListener("click", (event) => {
     event.preventDefault();
-    const fallback = serviceHealth && serviceHealth.landingUrl ? String(serviceHealth.landingUrl) : "/landing.html";
+    const fallback = serviceHealth && serviceHealth.landingUrl ? String(serviceHealth.landingUrl) : "/";
     window.location.href = fallback;
   });
 }

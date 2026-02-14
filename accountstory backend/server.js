@@ -240,6 +240,11 @@ function normalizeLandingUrl(value) {
   return text;
 }
 
+function isAbsoluteHttpUrl(value) {
+  const text = String(value || "").trim();
+  return /^https?:\/\//i.test(text);
+}
+
 function platformKey(value) {
   const key = normalizeText(value).toLowerCase();
   return PUBLISH_PLATFORMS.includes(key) ? key : "";
@@ -983,6 +988,12 @@ function safePathFromUrl(urlPath) {
 }
 
 async function serveStatic(res, pathname) {
+  if (pathname === "/" && isAbsoluteHttpUrl(LANDING_URL)) {
+    res.writeHead(302, { Location: LANDING_URL });
+    res.end();
+    return;
+  }
+
   const rootPage = String(LANDING_URL || "").startsWith("/") ? String(LANDING_URL) : "/landing.html";
   const routePath = pathname === "/" ? rootPage : pathname;
   const filePath = safePathFromUrl(routePath);
