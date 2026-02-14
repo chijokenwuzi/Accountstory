@@ -487,11 +487,16 @@ async function hydrateSession() {
 
 function shouldUseDemoMode() {
   const params = new URLSearchParams(window.location.search);
+  if (params.get("auth") === "1") {
+    sessionStorage.removeItem(DEMO_MODE_STORAGE_KEY);
+    return false;
+  }
   if (params.get("demo") === "1") {
     sessionStorage.setItem(DEMO_MODE_STORAGE_KEY, "1");
     return true;
   }
-  return sessionStorage.getItem(DEMO_MODE_STORAGE_KEY) === "1";
+  sessionStorage.setItem(DEMO_MODE_STORAGE_KEY, "1");
+  return true;
 }
 
 function enableDemoMode() {
@@ -1363,15 +1368,14 @@ async function navigateToStoryDetail(companyId, storyId) {
 
 async function loadCompanies() {
   const result = await apiFetch("/api/companies");
-  if (state.demoMode) {
-    const byId = new Map(result.companies.map((company) => [company.id, company]));
-    const demoCompanies = DEMO_COMPANY_IDS.map((id) => byId.get(id))
-      .filter(Boolean)
-      .map((company) => applyDemoProfile(company));
-    state.companies = demoCompanies;
-  } else {
-    state.companies = [...result.companies];
+  const byId = new Map(result.companies.map((company) => [company.id, company]));
+  let demoCompanies = DEMO_COMPANY_IDS.map((id) => byId.get(id))
+    .filter(Boolean)
+    .map((company) => applyDemoProfile(company));
+  if (!demoCompanies.length) {
+    demoCompanies = result.companies.slice(0, 3).map((company) => applyDemoProfile(company));
   }
+  state.companies = demoCompanies;
   state.filteredCompanies = [...state.companies];
   renderCompanyList();
   await routeToCurrentPath(true);
