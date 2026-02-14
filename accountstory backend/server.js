@@ -259,6 +259,11 @@ function maskCredential(value) {
   return `••••${safeTail}`;
 }
 
+function normalizeCreativeType(value) {
+  const raw = normalizeText(value).toLowerCase();
+  return raw === "video" ? "video" : "image";
+}
+
 function normalizeCustomer(entry, fallbackId) {
   const source = entry && typeof entry === "object" ? entry : {};
   return {
@@ -434,7 +439,9 @@ function buildFacebookInput(option, context) {
     headline: truncate(option.headline, 40),
     description: truncate(option.description, 100),
     cta: context.cta,
-    destinationUrl: context.landingUrl
+    destinationUrl: context.landingUrl,
+    creativeType: normalizeCreativeType(context.creativeType),
+    mediaUrl: normalizeText(context.creativeUrl)
   };
 }
 
@@ -484,7 +491,9 @@ function buildGenerationContext({
   landingUrl,
   audience,
   strategyNotes,
-  customInputs
+  customInputs,
+  creativeType,
+  creativeUrl
 }) {
   const normalizedArtifact = normalizeText(artifactText);
   const keywords = extractKeywords(`${artifactName} ${offer} ${normalizedArtifact}`, 6);
@@ -506,6 +515,8 @@ function buildGenerationContext({
     landingUrl: normalizeText(landingUrl) || "https://clientdomain.com/offer",
     audience: normalizeText(audience),
     strategyNotes: normalizeText(strategyNotes),
+    creativeType: normalizeCreativeType(creativeType),
+    creativeUrl: normalizeText(creativeUrl),
     customInputsRaw: parsedInputs.rawText,
     customInputsParsed: parsedInputs.parsed,
     keywordOne,
@@ -530,7 +541,9 @@ function generateRuleBasedAdInputOptions({
   landingUrl,
   audience,
   strategyNotes,
-  customInputs
+  customInputs,
+  creativeType,
+  creativeUrl
 }) {
   const context = buildGenerationContext({
     objective,
@@ -546,7 +559,9 @@ function generateRuleBasedAdInputOptions({
     landingUrl,
     audience,
     strategyNotes,
-    customInputs
+    customInputs,
+    creativeType,
+    creativeUrl
   });
 
   const angleBlueprints = [
@@ -665,7 +680,9 @@ function sanitizeFacebookPack(pack, context, label) {
     headline: truncate(source.headline || fallback.headline, 40),
     description: truncate(source.description || fallback.description, 100),
     cta: truncate(source.cta || context.cta, 30),
-    destinationUrl: normalizeText(source.destinationUrl || context.landingUrl || fallback.destinationUrl)
+    destinationUrl: normalizeText(source.destinationUrl || context.landingUrl || fallback.destinationUrl),
+    creativeType: normalizeCreativeType(source.creativeType || context.creativeType || fallback.creativeType),
+    mediaUrl: normalizeText(source.mediaUrl || context.creativeUrl || fallback.mediaUrl)
   };
 }
 
@@ -742,7 +759,9 @@ async function generateOpenAiAdInputOptions({
   landingUrl,
   audience,
   strategyNotes,
-  customInputs
+  customInputs,
+  creativeType,
+  creativeUrl
 }) {
   if (!OPENAI_API_KEY) {
     throw new Error(
@@ -764,7 +783,9 @@ async function generateOpenAiAdInputOptions({
     landingUrl,
     audience,
     strategyNotes,
-    customInputs
+    customInputs,
+    creativeType,
+    creativeUrl
   });
 
   const userPayload = {
@@ -781,6 +802,8 @@ async function generateOpenAiAdInputOptions({
     artifactName: context.artifactName,
     offer: context.offer,
     landingUrl: context.landingUrl,
+    creativeType: context.creativeType,
+    creativeUrl: context.creativeUrl,
     audience: context.audience || "",
     strategyNotes: context.strategyNotes || "",
     customInputs: context.customInputsParsed || context.customInputsRaw || "",
@@ -809,7 +832,7 @@ async function generateOpenAiAdInputOptions({
           {
             role: "user",
             content:
-              `Return strict JSON: {"options":[{"label":"...","rationale":"...","facebook":{"campaignName":"...","objective":"...","adSetAudience":"...","placements":"...","primaryText":"...","headline":"...","description":"...","cta":"...","destinationUrl":"..."},"google":{"campaignName":"...","campaignType":"Search","finalUrl":"...","path1":"...","path2":"...","headlines":["..."],"descriptions":["..."],"keywords":["..."],"audienceSignal":"..."}}]}. Include facebook object only if Facebook is in channels. Include google object only if Google is in channels. Respect platform constraints: Facebook headline <= 40 chars, Facebook description <= 100 chars, Google headlines <= 30 chars, Google descriptions <= 90 chars, path fields <= 15 chars. Input: ${JSON.stringify(userPayload)}`
+              `Return strict JSON: {"options":[{"label":"...","rationale":"...","facebook":{"campaignName":"...","objective":"...","adSetAudience":"...","placements":"...","primaryText":"...","headline":"...","description":"...","cta":"...","destinationUrl":"...","creativeType":"image","mediaUrl":"..."},"google":{"campaignName":"...","campaignType":"Search","finalUrl":"...","path1":"...","path2":"...","headlines":["..."],"descriptions":["..."],"keywords":["..."],"audienceSignal":"..."}}]}. Include facebook object only if Facebook is in channels. Include google object only if Google is in channels. Respect platform constraints: Facebook headline <= 40 chars, Facebook description <= 100 chars, Google headlines <= 30 chars, Google descriptions <= 90 chars, path fields <= 15 chars. Use creativeType as image or video. mediaUrl can be blank if no creative URL provided. Input: ${JSON.stringify(userPayload)}`
           }
         ]
       }),
@@ -911,6 +934,8 @@ function normalizeStore(raw) {
       landingUrl: normalizeText(entry.landingUrl),
       audience: normalizeText(entry.audience),
       strategyNotes: normalizeText(entry.strategyNotes),
+      creativeType: normalizeCreativeType(entry.creativeType),
+      creativeUrl: normalizeText(entry.creativeUrl),
       customInputs:
         typeof entry.customInputs === "string"
           ? entry.customInputs.trim()
@@ -1218,6 +1243,8 @@ async function handleApi(req, res, pathname) {
     const audience = normalizeText(body.audience);
     const strategyNotes = normalizeText(body.strategyNotes);
     const customInputs = String(body.customInputs || "").trim();
+    const creativeType = normalizeCreativeType(body.creativeType);
+    const creativeUrl = normalizeText(body.creativeUrl);
     const channels = Array.isArray(body.channels)
       ? body.channels.filter((entry) => entry === "Facebook" || entry === "Google")
       : [];
@@ -1279,7 +1306,9 @@ async function handleApi(req, res, pathname) {
         landingUrl: resolvedLandingUrl,
         audience: resolvedAudience,
         strategyNotes: resolvedStrategyNotes,
-        customInputs: resolvedCustomInputs
+        customInputs: resolvedCustomInputs,
+        creativeType,
+        creativeUrl
       });
     } catch (error) {
       return sendJson(res, 400, { error: String(error && error.message ? error.message : error) });
@@ -1297,6 +1326,8 @@ async function handleApi(req, res, pathname) {
       audience: resolvedAudience,
       strategyNotes: resolvedStrategyNotes,
       customInputs: resolvedCustomInputs,
+      creativeType,
+      creativeUrl,
       createdAt: new Date().toISOString(),
       options
     };
@@ -1497,6 +1528,8 @@ async function handleApi(req, res, pathname) {
     const audience = normalizeText(body.audience);
     const strategyNotes = normalizeText(body.strategyNotes);
     const customInputs = String(body.customInputs || "").trim();
+    const creativeType = normalizeCreativeType(body.creativeType);
+    const creativeUrl = normalizeText(body.creativeUrl);
     const channels = Array.isArray(body.channels)
       ? body.channels.filter((entry) => entry === "Facebook" || entry === "Google")
       : [];
@@ -1552,7 +1585,9 @@ async function handleApi(req, res, pathname) {
         landingUrl: resolvedLandingUrl,
         audience: resolvedAudience,
         strategyNotes: resolvedStrategyNotes,
-        customInputs: resolvedCustomInputs
+        customInputs: resolvedCustomInputs,
+        creativeType,
+        creativeUrl
       });
     } catch (error) {
       return sendJson(res, 400, { error: String(error && error.message ? error.message : error) });
@@ -1570,6 +1605,8 @@ async function handleApi(req, res, pathname) {
       audience: resolvedAudience,
       strategyNotes: resolvedStrategyNotes,
       customInputs: resolvedCustomInputs,
+      creativeType,
+      creativeUrl,
       createdAt: new Date().toISOString(),
       options
     };

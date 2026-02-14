@@ -22,16 +22,6 @@ const googleConnectStatus = document.getElementById("googleConnectStatus");
 const publishQueue = document.getElementById("publishQueue");
 const publishMessage = document.getElementById("publishMessage");
 
-const guardrailForm = document.getElementById("guardrailForm");
-const budgetCap = document.getElementById("budgetCap");
-const cpaCap = document.getElementById("cpaCap");
-const budgetCapValue = document.getElementById("budgetCapValue");
-const cpaCapValue = document.getElementById("cpaCapValue");
-const policyGate = document.getElementById("policyGate");
-const creativeGate = document.getElementById("creativeGate");
-const killSwitch = document.getElementById("killSwitch");
-const guardrailMessage = document.getElementById("guardrailMessage");
-
 const metricCustomers = document.getElementById("metricCustomers");
 const metricLive = document.getElementById("metricLive");
 const metricAutopilot = document.getElementById("metricAutopilot");
@@ -40,6 +30,8 @@ const metricRisk = document.getElementById("metricRisk");
 const adInputRuns = document.getElementById("adInputRuns");
 const boardColumns = document.getElementById("boardColumns");
 const simulateBtn = document.getElementById("simulateBtn");
+const runOptionCursor = Object.create(null);
+const optionPlatformCursor = Object.create(null);
 const PLATFORM_LABEL = {
   facebook: "Facebook",
   google: "Google"
@@ -363,16 +355,6 @@ function renderBoard() {
   });
 }
 
-function renderGuardrails() {
-  budgetCap.value = String(state.guardrails.budgetCap);
-  cpaCap.value = String(state.guardrails.cpaCap);
-  policyGate.checked = Boolean(state.guardrails.policyGate);
-  creativeGate.checked = Boolean(state.guardrails.creativeGate);
-  killSwitch.checked = Boolean(state.guardrails.killSwitch);
-  budgetCapValue.textContent = `${money(state.guardrails.budgetCap)} cap`;
-  cpaCapValue.textContent = `${money(state.guardrails.cpaCap)} cap`;
-}
-
 function formatTime(stamp) {
   try {
     return new Date(stamp).toLocaleString("en-US", {
@@ -393,6 +375,38 @@ function optionPlatforms(option) {
   return platforms;
 }
 
+function selectedOptionIndex(runId, optionCount) {
+  if (!runId || optionCount <= 0) return 0;
+  const raw = Number(runOptionCursor[runId] || 0);
+  const safe = Number.isInteger(raw) ? raw : 0;
+  const next = ((safe % optionCount) + optionCount) % optionCount;
+  runOptionCursor[runId] = next;
+  return next;
+}
+
+function shiftOptionIndex(runId, optionCount, direction) {
+  if (!runId || optionCount <= 0) return;
+  const delta = direction === "next" ? 1 : -1;
+  const current = selectedOptionIndex(runId, optionCount);
+  runOptionCursor[runId] = (current + delta + optionCount) % optionCount;
+}
+
+function selectedPlatformIndex(optionKey, platformCount) {
+  if (!optionKey || platformCount <= 0) return 0;
+  const raw = Number(optionPlatformCursor[optionKey] || 0);
+  const safe = Number.isInteger(raw) ? raw : 0;
+  const next = ((safe % platformCount) + platformCount) % platformCount;
+  optionPlatformCursor[optionKey] = next;
+  return next;
+}
+
+function shiftPlatformIndex(optionKey, platformCount, direction) {
+  if (!optionKey || platformCount <= 0) return;
+  const delta = direction === "next" ? 1 : -1;
+  const current = selectedPlatformIndex(optionKey, platformCount);
+  optionPlatformCursor[optionKey] = (current + delta + platformCount) % platformCount;
+}
+
 function createQueueButtons(runId, option) {
   const wrap = document.createElement("div");
   wrap.className = "publish-actions";
@@ -402,30 +416,20 @@ function createQueueButtons(runId, option) {
   const connected = connectedPlatforms();
   const connectedAvailable = available.filter((platform) => connected.includes(platform));
 
-  const publishConnected = document.createElement("button");
-  publishConnected.type = "button";
-  publishConnected.className = "btn btn-secondary btn-small";
-  publishConnected.textContent = connectedAvailable.length
-    ? `Queue Connected (${connectedAvailable.map(platformLabel).join(", ")})`
-    : "Queue Connected";
-  publishConnected.dataset.publishAction = "queue-option";
-  publishConnected.dataset.runId = runId;
-  publishConnected.dataset.optionId = optionId;
-  publishConnected.disabled = !connectedAvailable.length || !optionId;
-  wrap.appendChild(publishConnected);
-
-  available.forEach((platform) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "btn btn-secondary btn-small";
-    button.textContent = `Queue ${platformLabel(platform)}`;
-    button.dataset.publishAction = "queue-platform";
-    button.dataset.platform = platform;
-    button.dataset.runId = runId;
-    button.dataset.optionId = optionId;
-    button.disabled = !connected.includes(platform) || !optionId;
-    wrap.appendChild(button);
-  });
+  const publishButton = document.createElement("button");
+  publishButton.type = "button";
+  publishButton.className = "btn btn-secondary btn-small";
+  publishButton.textContent = "Publish";
+  publishButton.dataset.publishAction = "queue-option";
+  publishButton.dataset.runId = runId;
+  publishButton.dataset.optionId = optionId;
+  publishButton.disabled = !connectedAvailable.length || !optionId || !available.length;
+  if (connectedAvailable.length) {
+    publishButton.title = `Will create a publish job for: ${connectedAvailable.map(platformLabel).join(", ")}`;
+  } else {
+    publishButton.title = "Connect Facebook or Google first.";
+  }
+  wrap.appendChild(publishButton);
 
   return wrap;
 }
@@ -482,13 +486,6 @@ function renderPublishQueue() {
     const actions = document.createElement("div");
     actions.className = "publish-actions";
 
-    const payloadCopy = document.createElement("button");
-    payloadCopy.type = "button";
-    payloadCopy.className = "btn btn-secondary btn-small";
-    payloadCopy.textContent = "Copy Payload JSON";
-    payloadCopy.dataset.copy = JSON.stringify(job.payload || {}, null, 2);
-    actions.appendChild(payloadCopy);
-
     if (String(job.status || "").toLowerCase() !== "sent") {
       const sentBtn = document.createElement("button");
       sentBtn.type = "button";
@@ -537,7 +534,7 @@ function renderPublishQueue() {
   });
 }
 
-function createCopyRow(label, value) {
+function createCopyRow(label, value, options = {}) {
   const row = document.createElement("div");
   row.className = "copy-row";
 
@@ -545,55 +542,424 @@ function createCopyRow(label, value) {
   name.className = "copy-label";
   name.textContent = label;
 
-  const text = document.createElement("p");
-  text.className = "copy-value";
-  text.textContent = value;
+  const type = String(options.type || "text").toLowerCase();
+  let text;
 
-  const actions = document.createElement("div");
-  actions.className = "copy-actions";
+  if (type === "textarea") {
+    text = document.createElement("textarea");
+    text.rows = Number(options.rows || 3);
+    text.className = "pack-field pack-field-textarea";
+  } else if (type === "select") {
+    text = document.createElement("select");
+    text.className = "pack-field";
+    const choices = Array.isArray(options.choices) ? options.choices : [];
+    choices.forEach((entry) => {
+      const option = document.createElement("option");
+      option.value = String(entry.value || "");
+      option.textContent = String(entry.label || entry.value || "");
+      text.appendChild(option);
+    });
+  } else {
+    text = document.createElement("input");
+    text.type = ["number", "url", "date", "datetime-local"].includes(type) ? type : "text";
+    text.className = "pack-field";
+    if (options.min !== undefined) text.min = String(options.min);
+    if (options.max !== undefined) text.max = String(options.max);
+    if (options.step !== undefined) text.step = String(options.step);
+  }
 
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "btn btn-secondary btn-small";
-  button.textContent = "Copy";
-  button.dataset.copy = value;
+  text.value = String(value || "");
+  if (options.placeholder) {
+    text.placeholder = String(options.placeholder);
+  }
 
-  actions.appendChild(button);
+  if (type === "select" && text instanceof HTMLSelectElement && text.value !== String(value || "")) {
+    const fallback = String(value || "");
+    if (fallback) {
+      const extra = document.createElement("option");
+      extra.value = fallback;
+      extra.textContent = fallback;
+      text.appendChild(extra);
+      text.value = fallback;
+    }
+  }
+
+  if (options.field) {
+    text.dataset.packField = String(options.field);
+  }
+
   row.appendChild(name);
   row.appendChild(text);
-  row.appendChild(actions);
   return row;
 }
 
-function facebookPackText(pack) {
-  return [
-    `Campaign Name: ${pack.campaignName}`,
-    `Objective: ${pack.objective}`,
-    `Audience: ${pack.adSetAudience}`,
-    `Placements: ${pack.placements}`,
-    `Primary Text: ${pack.primaryText}`,
-    `Headline: ${pack.headline}`,
-    `Description: ${pack.description}`,
-    `CTA: ${pack.cta}`,
-    `Destination URL: ${pack.destinationUrl}`
-  ].join("\n");
+function fieldValueForDisplay(pack, definition) {
+  if (!pack || typeof pack !== "object") return "";
+  const raw = pack[definition.field];
+  if (definition.multiline) {
+    if (Array.isArray(raw)) return raw.join("\n");
+    return String(raw || "");
+  }
+  return raw === undefined || raw === null ? "" : String(raw);
 }
 
-function googlePackText(pack) {
-  return [
-    `Campaign Name: ${pack.campaignName}`,
-    `Campaign Type: ${pack.campaignType}`,
-    `Final URL: ${pack.finalUrl}`,
-    `Path 1: ${pack.path1}`,
-    `Path 2: ${pack.path2}`,
-    `Headlines:`,
-    ...(Array.isArray(pack.headlines) ? pack.headlines.map((item, index) => `${index + 1}. ${item}`) : []),
-    `Descriptions:`,
-    ...(Array.isArray(pack.descriptions) ? pack.descriptions.map((item, index) => `${index + 1}. ${item}`) : []),
-    `Keywords:`,
-    ...(Array.isArray(pack.keywords) ? pack.keywords.map((item, index) => `${index + 1}. ${item}`) : []),
-    `Audience Signal: ${pack.audienceSignal}`
-  ].join("\n");
+const FACEBOOK_FIELD_DEFS = [
+  { label: "Campaign Name", field: "campaignName" },
+  {
+    label: "Campaign Status",
+    field: "campaignStatus",
+    type: "select",
+    choices: [{ value: "ACTIVE" }, { value: "PAUSED" }]
+  },
+  {
+    label: "Buying Type",
+    field: "buyingType",
+    type: "select",
+    choices: [{ value: "AUCTION" }, { value: "RESERVED" }]
+  },
+  {
+    label: "Objective",
+    field: "objective",
+    type: "select",
+    choices: [
+      { value: "OUTCOME_LEADS" },
+      { value: "OUTCOME_SALES" },
+      { value: "OUTCOME_TRAFFIC" },
+      { value: "OUTCOME_ENGAGEMENT" },
+      { value: "OUTCOME_AWARENESS" }
+    ]
+  },
+  { label: "Special Ad Categories (one per line)", field: "specialAdCategories", type: "textarea", rows: 2, multiline: true },
+  {
+    label: "Campaign Budget Optimization",
+    field: "campaignBudgetOptimization",
+    type: "select",
+    choices: [{ value: "on", label: "On" }, { value: "off", label: "Off" }]
+  },
+  { label: "Daily Budget (USD)", field: "dailyBudget", type: "number", min: 0, step: 1 },
+  { label: "Lifetime Budget (USD)", field: "lifetimeBudget", type: "number", min: 0, step: 1 },
+  {
+    label: "Bid Strategy",
+    field: "bidStrategy",
+    type: "select",
+    choices: [{ value: "LOWEST_COST" }, { value: "COST_CAP" }, { value: "BID_CAP" }, { value: "LOWEST_COST_WITH_MIN_ROAS" }]
+  },
+  { label: "Bid Amount", field: "bidAmount", type: "number", min: 0, step: 0.01 },
+  { label: "Target Cost", field: "targetCost", type: "number", min: 0, step: 0.01 },
+  { label: "Target ROAS", field: "targetRoas", type: "number", min: 0, step: 0.01 },
+  { label: "Start Time", field: "scheduleStart", type: "datetime-local" },
+  { label: "End Time", field: "scheduleEnd", type: "datetime-local" },
+  { label: "Audience", field: "adSetAudience", type: "textarea", rows: 2 },
+  { label: "Custom Audience IDs (one per line)", field: "customAudienceIds", type: "textarea", rows: 2, multiline: true },
+  { label: "Lookalike Audience IDs (one per line)", field: "lookalikeAudienceIds", type: "textarea", rows: 2, multiline: true },
+  { label: "Geo Includes (one per line)", field: "geoInclude", type: "textarea", rows: 2, multiline: true },
+  { label: "Geo Excludes (one per line)", field: "geoExclude", type: "textarea", rows: 2, multiline: true },
+  { label: "Age Min", field: "ageMin", type: "number", min: 13, max: 65, step: 1 },
+  { label: "Age Max", field: "ageMax", type: "number", min: 13, max: 65, step: 1 },
+  {
+    label: "Genders",
+    field: "genders",
+    type: "select",
+    choices: [{ value: "all", label: "All" }, { value: "male", label: "Male" }, { value: "female", label: "Female" }]
+  },
+  { label: "Languages (one per line)", field: "languages", type: "textarea", rows: 2, multiline: true },
+  { label: "Placements", field: "placements", type: "textarea", rows: 2 },
+  { label: "Publisher Platforms (one per line)", field: "publisherPlatforms", type: "textarea", rows: 2, multiline: true },
+  { label: "Device Platforms (one per line)", field: "devicePlatforms", type: "textarea", rows: 2, multiline: true },
+  { label: "Optimization Goal", field: "optimizationGoal" },
+  { label: "Billing Event", field: "billingEvent" },
+  {
+    label: "Attribution Window",
+    field: "attributionWindow",
+    type: "select",
+    choices: [{ value: "7d_click_1d_view" }, { value: "7d_click" }, { value: "1d_click" }, { value: "1d_view" }]
+  },
+  { label: "Pixel ID", field: "pixelId" },
+  { label: "Conversion Event", field: "conversionEvent" },
+  { label: "Page ID", field: "pageId" },
+  { label: "Instagram Actor ID", field: "instagramActorId" },
+  { label: "Primary Text", field: "primaryText", type: "textarea", rows: 4 },
+  { label: "Headline", field: "headline" },
+  { label: "Description", field: "description", type: "textarea", rows: 3 },
+  {
+    label: "CTA",
+    field: "cta",
+    type: "select",
+    choices: [
+      { value: "Learn More" },
+      { value: "Shop Now" },
+      { value: "Sign Up" },
+      { value: "Book Now" },
+      { value: "Get Quote" }
+    ]
+  },
+  { label: "Destination URL", field: "destinationUrl", type: "url" },
+  { label: "URL Parameters", field: "urlParameters", type: "textarea", rows: 2 },
+  {
+    label: "Creative Type",
+    field: "creativeType",
+    type: "select",
+    choices: [{ value: "image", label: "Image" }, { value: "video", label: "Video" }]
+  },
+  { label: "Creative URL", field: "mediaUrl", type: "url" },
+  { label: "Thumbnail URL", field: "thumbnailUrl", type: "url" }
+];
+
+const GOOGLE_FIELD_DEFS = [
+  { label: "Campaign Name", field: "campaignName" },
+  {
+    label: "Campaign Status",
+    field: "campaignStatus",
+    type: "select",
+    choices: [{ value: "ENABLED" }, { value: "PAUSED" }]
+  },
+  {
+    label: "Campaign Type",
+    field: "campaignType",
+    type: "select",
+    choices: [{ value: "SEARCH" }, { value: "PERFORMANCE_MAX" }, { value: "DISPLAY" }, { value: "VIDEO" }]
+  },
+  { label: "Channel Sub Type", field: "channelSubType" },
+  {
+    label: "Bidding Strategy",
+    field: "biddingStrategyType",
+    type: "select",
+    choices: [
+      { value: "MAXIMIZE_CONVERSIONS" },
+      { value: "TARGET_CPA" },
+      { value: "MAXIMIZE_CONVERSION_VALUE" },
+      { value: "TARGET_ROAS" },
+      { value: "MANUAL_CPC" }
+    ]
+  },
+  { label: "Target CPA", field: "targetCpa", type: "number", min: 0, step: 0.01 },
+  { label: "Target ROAS", field: "targetRoas", type: "number", min: 0, step: 0.01 },
+  { label: "Daily Budget (USD)", field: "dailyBudget", type: "number", min: 0, step: 1 },
+  { label: "Start Date", field: "startDate", type: "date" },
+  { label: "End Date", field: "endDate", type: "date" },
+  { label: "Networks (one per line)", field: "networkSettings", type: "textarea", rows: 2, multiline: true },
+  { label: "Locations Include (one per line)", field: "locationsInclude", type: "textarea", rows: 2, multiline: true },
+  { label: "Locations Exclude (one per line)", field: "locationsExclude", type: "textarea", rows: 2, multiline: true },
+  { label: "Languages (one per line)", field: "languages", type: "textarea", rows: 2, multiline: true },
+  { label: "Audience Signal", field: "audienceSignal", type: "textarea", rows: 2 },
+  { label: "Customer Match List IDs (one per line)", field: "customerMatchListIds", type: "textarea", rows: 2, multiline: true },
+  { label: "Ad Schedule Rules (one per line)", field: "adSchedule", type: "textarea", rows: 2, multiline: true },
+  { label: "Ad Group Name", field: "adGroupName" },
+  {
+    label: "Ad Group Status",
+    field: "adGroupStatus",
+    type: "select",
+    choices: [{ value: "ENABLED" }, { value: "PAUSED" }]
+  },
+  { label: "Keywords (one per line)", field: "keywords", type: "textarea", rows: 4, multiline: true },
+  { label: "Negative Keywords (one per line)", field: "negativeKeywords", type: "textarea", rows: 3, multiline: true },
+  { label: "Headlines (one per line)", field: "headlines", type: "textarea", rows: 4, multiline: true },
+  { label: "Descriptions (one per line)", field: "descriptions", type: "textarea", rows: 4, multiline: true },
+  { label: "Final URL", field: "finalUrl", type: "url" },
+  { label: "Path 1", field: "path1" },
+  { label: "Path 2", field: "path2" },
+  { label: "Final URL Suffix", field: "finalUrlSuffix" },
+  { label: "Tracking Template", field: "trackingTemplate" },
+  { label: "Conversion Action IDs (one per line)", field: "conversionActionIds", type: "textarea", rows: 2, multiline: true },
+  { label: "Device Bid Modifiers (one per line)", field: "deviceBidModifiers", type: "textarea", rows: 2, multiline: true },
+  { label: "Sitelinks (one per line)", field: "assetsSitelinks", type: "textarea", rows: 3, multiline: true },
+  { label: "Callouts (one per line)", field: "assetsCallouts", type: "textarea", rows: 3, multiline: true },
+  { label: "Structured Snippets (one per line)", field: "assetsStructuredSnippets", type: "textarea", rows: 3, multiline: true },
+  { label: "Business Name", field: "businessName" },
+  { label: "Logo URL", field: "logoUrl", type: "url" },
+  { label: "Image URLs (one per line)", field: "imageUrls", type: "textarea", rows: 3, multiline: true },
+  { label: "Video URLs (one per line)", field: "videoUrls", type: "textarea", rows: 3, multiline: true }
+];
+
+function fieldDefinitions(platform) {
+  return platform === "Facebook" ? FACEBOOK_FIELD_DEFS : GOOGLE_FIELD_DEFS;
+}
+
+function domainFromUrl(url) {
+  try {
+    const parsed = new URL(String(url || ""));
+    return parsed.hostname.replace(/^www\./, "");
+  } catch {
+    return "yourdomain.com";
+  }
+}
+
+function readFieldValue(grid, field) {
+  const node = grid.querySelector(`[data-pack-field="${field}"]`);
+  if (
+    node instanceof HTMLInputElement ||
+    node instanceof HTMLTextAreaElement ||
+    node instanceof HTMLSelectElement
+  ) {
+    return String(node.value || "").trim();
+  }
+  return "";
+}
+
+function splitLines(value) {
+  return String(value || "")
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function hydratePackFromGrid(pack, grid, definitions) {
+  definitions.forEach((definition) => {
+    const raw = readFieldValue(grid, definition.field);
+    if (definition.multiline) {
+      pack[definition.field] = splitLines(raw);
+      return;
+    }
+    if (definition.type === "number") {
+      if (!raw) {
+        pack[definition.field] = "";
+        return;
+      }
+      const numeric = Number(raw);
+      pack[definition.field] = Number.isFinite(numeric) ? numeric : raw;
+      return;
+    }
+    pack[definition.field] = raw;
+  });
+  return pack;
+}
+
+function buildPackFromInputs(platform, sourcePack, grid) {
+  const pack = hydratePackFromGrid({ ...(sourcePack || {}) }, grid, fieldDefinitions(platform));
+  if (platform === "Facebook") {
+    const creativeType = String(pack.creativeType || "").toLowerCase();
+    pack.creativeType = creativeType === "video" ? "video" : "image";
+  }
+  return pack;
+}
+
+function createFacebookPreview(pack) {
+  const preview = document.createElement("section");
+  preview.className = "ad-preview facebook-preview";
+
+  const label = document.createElement("p");
+  label.className = "preview-label";
+  label.textContent = "Facebook Feed Preview";
+
+  const card = document.createElement("article");
+  card.className = "preview-card facebook-feed-card";
+
+  const top = document.createElement("header");
+  top.className = "facebook-top";
+
+  const avatar = document.createElement("div");
+  avatar.className = "facebook-avatar";
+  avatar.textContent = (pack.campaignName || "B").slice(0, 1).toUpperCase();
+
+  const metaWrap = document.createElement("div");
+  metaWrap.className = "facebook-meta";
+  const pageName = document.createElement("strong");
+  pageName.textContent = pack.campaignName || "Brand Page";
+  const sponsored = document.createElement("span");
+  sponsored.textContent = "Sponsored";
+  metaWrap.appendChild(pageName);
+  metaWrap.appendChild(sponsored);
+  top.appendChild(avatar);
+  top.appendChild(metaWrap);
+
+  const body = document.createElement("p");
+  body.className = "preview-body";
+  body.textContent = pack.primaryText || "Primary text goes here.";
+
+  const media = document.createElement("div");
+  media.className = "preview-media facebook-media";
+  const mediaUrl = String(pack.mediaUrl || "").trim();
+  const creativeType = String(pack.creativeType || "image").toLowerCase();
+  if (mediaUrl) {
+    if (creativeType === "video") {
+      const video = document.createElement("video");
+      video.src = mediaUrl;
+      video.controls = true;
+      video.preload = "metadata";
+      media.appendChild(video);
+    } else {
+      const image = document.createElement("img");
+      image.src = mediaUrl;
+      image.alt = "Facebook ad creative preview";
+      image.loading = "lazy";
+      media.appendChild(image);
+    }
+  } else {
+    media.textContent = creativeType === "video" ? "Video placeholder" : "Image placeholder";
+  }
+
+  const bottom = document.createElement("div");
+  bottom.className = "preview-bottom facebook-link-row";
+
+  const domain = document.createElement("p");
+  domain.className = "facebook-domain";
+  domain.textContent = domainFromUrl(pack.destinationUrl || "");
+
+  const head = document.createElement("strong");
+  head.textContent = pack.headline || "Headline";
+
+  const desc = document.createElement("p");
+  desc.textContent = pack.description || "Description";
+
+  const cta = document.createElement("span");
+  cta.className = "preview-cta";
+  cta.textContent = pack.cta || "Learn More";
+
+  bottom.appendChild(domain);
+  bottom.appendChild(head);
+  bottom.appendChild(desc);
+  bottom.appendChild(cta);
+
+  card.appendChild(top);
+  card.appendChild(body);
+  card.appendChild(media);
+  card.appendChild(bottom);
+
+  preview.appendChild(label);
+  preview.appendChild(card);
+  return preview;
+}
+
+function createGooglePreview(pack) {
+  const preview = document.createElement("section");
+  preview.className = "ad-preview google-preview";
+
+  const label = document.createElement("p");
+  label.className = "preview-label";
+  label.textContent = "Google Search Preview";
+
+  const card = document.createElement("article");
+  card.className = "preview-card google-search-card";
+
+  const url = document.createElement("div");
+  url.className = "google-url-row";
+  const dot = document.createElement("span");
+  dot.className = "google-url-dot";
+  dot.textContent = "Ad";
+  const urlText = document.createElement("p");
+  urlText.className = "google-url";
+  const domain = domainFromUrl(pack.finalUrl);
+  urlText.textContent = `${domain}/${pack.path1 || ""}/${pack.path2 || ""}`.replace(/\/+$/, "");
+  url.appendChild(dot);
+  url.appendChild(urlText);
+
+  const headlineList = (pack.headlines || []).slice(0, 3).filter(Boolean);
+  const headline = document.createElement("p");
+  headline.className = "google-headline";
+  headline.textContent = headlineList.length ? headlineList.join(" | ") : "Headline 1 | Headline 2 | Headline 3";
+
+  const desc = document.createElement("p");
+  desc.className = "google-desc";
+  const descriptionList = (pack.descriptions || []).slice(0, 2).filter(Boolean);
+  desc.textContent = descriptionList.length ? descriptionList.join(" ") : "Ad description copy appears here.";
+
+  card.appendChild(url);
+  card.appendChild(headline);
+  card.appendChild(desc);
+
+  preview.appendChild(label);
+  preview.appendChild(card);
+  return preview;
 }
 
 function createPlatformBlock(platform, pack) {
@@ -606,41 +972,35 @@ function createPlatformBlock(platform, pack) {
   const title = document.createElement("h5");
   title.textContent = platform;
 
-  const copyAll = document.createElement("button");
-  copyAll.type = "button";
-  copyAll.className = "btn btn-secondary btn-small";
-  copyAll.textContent = "Copy All";
-  copyAll.dataset.copy = platform === "Facebook" ? facebookPackText(pack) : googlePackText(pack);
+  const refreshBtn = document.createElement("button");
+  refreshBtn.type = "button";
+  refreshBtn.className = "btn btn-secondary btn-small";
+  refreshBtn.textContent = "Refresh Preview";
+  refreshBtn.dataset.previewRefresh = "platform";
 
   head.appendChild(title);
-  head.appendChild(copyAll);
+  head.appendChild(refreshBtn);
+
+  const previewSlot = document.createElement("div");
+  previewSlot.className = "platform-preview";
 
   const grid = document.createElement("div");
   grid.className = "copy-grid";
+  fieldDefinitions(platform).forEach((definition) => {
+    grid.appendChild(createCopyRow(definition.label, fieldValueForDisplay(pack, definition), definition));
+  });
 
-  if (platform === "Facebook") {
-    grid.appendChild(createCopyRow("Campaign Name", pack.campaignName));
-    grid.appendChild(createCopyRow("Objective", pack.objective));
-    grid.appendChild(createCopyRow("Audience", pack.adSetAudience));
-    grid.appendChild(createCopyRow("Placements", pack.placements));
-    grid.appendChild(createCopyRow("Primary Text", pack.primaryText));
-    grid.appendChild(createCopyRow("Headline", pack.headline));
-    grid.appendChild(createCopyRow("Description", pack.description));
-    grid.appendChild(createCopyRow("CTA", pack.cta));
-    grid.appendChild(createCopyRow("Destination URL", pack.destinationUrl));
-  } else {
-    grid.appendChild(createCopyRow("Campaign Name", pack.campaignName));
-    grid.appendChild(createCopyRow("Campaign Type", pack.campaignType));
-    grid.appendChild(createCopyRow("Final URL", pack.finalUrl));
-    grid.appendChild(createCopyRow("Path 1", pack.path1));
-    grid.appendChild(createCopyRow("Path 2", pack.path2));
-    grid.appendChild(createCopyRow("Headlines", (pack.headlines || []).join("\n")));
-    grid.appendChild(createCopyRow("Descriptions", (pack.descriptions || []).join("\n")));
-    grid.appendChild(createCopyRow("Keywords", (pack.keywords || []).join("\n")));
-    grid.appendChild(createCopyRow("Audience Signal", pack.audienceSignal));
-  }
+  const refreshPreview = () => {
+    const updated = buildPackFromInputs(platform, pack, grid);
+    Object.assign(pack, updated);
+    previewSlot.innerHTML = "";
+    previewSlot.appendChild(platform === "Facebook" ? createFacebookPreview(pack) : createGooglePreview(pack));
+  };
+  refreshBtn.addEventListener("click", refreshPreview);
+  refreshPreview();
 
   block.appendChild(head);
+  block.appendChild(previewSlot);
   block.appendChild(grid);
   return block;
 }
@@ -663,6 +1023,8 @@ function renderAdInputRuns() {
   runs.slice(0, 12).forEach((run) => {
     const runCard = document.createElement("article");
     runCard.className = "ad-run";
+    const runId = String(run.id || "");
+    const options = Array.isArray(run.options) ? run.options : [];
 
     const head = document.createElement("div");
     head.className = "ad-run-head";
@@ -677,12 +1039,54 @@ function renderAdInputRuns() {
     headText.appendChild(meta);
     head.appendChild(headText);
 
+    const optionNav = document.createElement("div");
+    optionNav.className = "option-nav";
+
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "btn btn-secondary btn-small option-nav-btn";
+    prevBtn.textContent = "←";
+    prevBtn.title = "Previous campaign option";
+    prevBtn.ariaLabel = "Previous campaign option";
+    prevBtn.dataset.optionNav = "prev";
+    prevBtn.dataset.runId = runId;
+    prevBtn.dataset.optionCount = String(options.length);
+    prevBtn.disabled = options.length <= 1;
+
+    const navLabel = document.createElement("span");
+    navLabel.className = "option-nav-label";
+    navLabel.textContent = options.length ? `Campaign ${selectedOptionIndex(runId, options.length) + 1} of ${options.length}` : "Campaign 0 of 0";
+
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "btn btn-secondary btn-small option-nav-btn";
+    nextBtn.textContent = "→";
+    nextBtn.title = "Next campaign option";
+    nextBtn.ariaLabel = "Next campaign option";
+    nextBtn.dataset.optionNav = "next";
+    nextBtn.dataset.runId = runId;
+    nextBtn.dataset.optionCount = String(options.length);
+    nextBtn.disabled = options.length <= 1;
+
+    optionNav.appendChild(prevBtn);
+    optionNav.appendChild(navLabel);
+    optionNav.appendChild(nextBtn);
+    head.appendChild(optionNav);
+
     const optionsWrap = document.createElement("div");
     optionsWrap.className = "ad-options";
 
-    (run.options || []).forEach((option) => {
+    if (!options.length) {
+      const empty = document.createElement("p");
+      empty.className = "empty-col";
+      empty.textContent = "No generated options for this campaign yet.";
+      optionsWrap.appendChild(empty);
+    } else {
+      const selectedIndex = selectedOptionIndex(runId, options.length);
+      const option = options[selectedIndex];
       const optionCard = document.createElement("section");
       optionCard.className = "ad-option";
+      const optionKey = `${runId}:${String(option && option.id ? option.id : selectedIndex)}`;
 
       const optionTitle = document.createElement("h4");
       optionTitle.textContent = option.label || "Ad Option";
@@ -694,16 +1098,52 @@ function renderAdInputRuns() {
       optionCard.appendChild(rationale);
       optionCard.appendChild(createQueueButtons(run.id, option));
 
-      if (option.facebook) {
-        optionCard.appendChild(createPlatformBlock("Facebook", option.facebook));
-      }
+      const platformItems = [];
+      if (option.facebook) platformItems.push({ platform: "Facebook", pack: option.facebook });
+      if (option.google) platformItems.push({ platform: "Google", pack: option.google });
 
-      if (option.google) {
-        optionCard.appendChild(createPlatformBlock("Google", option.google));
+      if (platformItems.length) {
+        const platformNav = document.createElement("div");
+        platformNav.className = "option-nav option-nav-inline";
+
+        const platformPrev = document.createElement("button");
+        platformPrev.type = "button";
+        platformPrev.className = "btn btn-secondary btn-small option-nav-btn";
+        platformPrev.textContent = "←";
+        platformPrev.title = "Previous platform ad";
+        platformPrev.ariaLabel = "Previous platform ad";
+        platformPrev.dataset.platformNav = "prev";
+        platformPrev.dataset.optionKey = optionKey;
+        platformPrev.dataset.platformCount = String(platformItems.length);
+        platformPrev.disabled = platformItems.length <= 1;
+
+        const platformIndex = selectedPlatformIndex(optionKey, platformItems.length);
+        const platformLabelText = document.createElement("span");
+        platformLabelText.className = "option-nav-label";
+        platformLabelText.textContent = `Ad ${platformIndex + 1} of ${platformItems.length} (${platformItems[platformIndex].platform})`;
+
+        const platformNext = document.createElement("button");
+        platformNext.type = "button";
+        platformNext.className = "btn btn-secondary btn-small option-nav-btn";
+        platformNext.textContent = "→";
+        platformNext.title = "Next platform ad";
+        platformNext.ariaLabel = "Next platform ad";
+        platformNext.dataset.platformNav = "next";
+        platformNext.dataset.optionKey = optionKey;
+        platformNext.dataset.platformCount = String(platformItems.length);
+        platformNext.disabled = platformItems.length <= 1;
+
+        platformNav.appendChild(platformPrev);
+        platformNav.appendChild(platformLabelText);
+        platformNav.appendChild(platformNext);
+        optionCard.appendChild(platformNav);
+
+        const selectedPlatform = platformItems[platformIndex];
+        optionCard.appendChild(createPlatformBlock(selectedPlatform.platform, selectedPlatform.pack));
       }
 
       optionsWrap.appendChild(optionCard);
-    });
+    }
 
     runCard.appendChild(head);
     runCard.appendChild(optionsWrap);
@@ -718,7 +1158,6 @@ function renderAll() {
   renderIntegrations();
   renderCustomerDefaultsHint();
   applyCustomerDefaults(false);
-  renderGuardrails();
   renderMetrics();
   renderAdInputRuns();
   renderPublishQueue();
@@ -924,7 +1363,9 @@ buildCampaignForm.addEventListener("submit", async (event) => {
         artifactText: String(form.get("artifactText") || "").trim(),
         audience: String(form.get("audience") || "").trim(),
         strategyNotes: String(form.get("strategyNotes") || "").trim(),
-        customInputs: String(form.get("customInputs") || "").trim()
+        customInputs: String(form.get("customInputs") || "").trim(),
+        creativeType: String(form.get("creativeType") || "image").trim(),
+        creativeUrl: String(form.get("creativeUrl") || "").trim()
       }
     });
 
@@ -933,37 +1374,6 @@ buildCampaignForm.addEventListener("submit", async (event) => {
     setMessage(buildCampaignMessage, "success", payload.message || "Campaigns created.");
   } catch (error) {
     setMessage(buildCampaignMessage, "error", error.message);
-  }
-});
-
-budgetCap.addEventListener("input", () => {
-  budgetCapValue.textContent = `${money(budgetCap.value)} cap`;
-});
-
-cpaCap.addEventListener("input", () => {
-  cpaCapValue.textContent = `${money(cpaCap.value)} cap`;
-});
-
-guardrailForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  try {
-    const payload = await request("/api/guardrails", {
-      method: "PUT",
-      body: {
-        budgetCap: Number(budgetCap.value || 2500),
-        cpaCap: Number(cpaCap.value || 120),
-        policyGate: Boolean(policyGate.checked),
-        creativeGate: Boolean(creativeGate.checked),
-        killSwitch: Boolean(killSwitch.checked)
-      }
-    });
-
-    state = payload.state;
-    renderAll();
-    setMessage(guardrailMessage, "success", payload.message || "Guardrails saved.");
-  } catch (error) {
-    setMessage(guardrailMessage, "error", error.message);
   }
 });
 
@@ -984,56 +1394,47 @@ boardColumns.addEventListener("click", async (event) => {
     state = payload.state;
     renderAll();
   } catch (error) {
-    setMessage(guardrailMessage, "error", error.message);
+    setMessage(buildCampaignMessage, "error", error.message);
   }
 });
-
-async function copyToClipboard(text) {
-  if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(text);
-    return;
-  }
-
-  const input = document.createElement("textarea");
-  input.value = text;
-  input.style.position = "fixed";
-  input.style.opacity = "0";
-  document.body.appendChild(input);
-  input.select();
-  document.execCommand("copy");
-  document.body.removeChild(input);
-}
 
 adInputRuns.addEventListener("click", async (event) => {
   const target = event.target;
   if (!(target instanceof HTMLElement)) return;
 
+  const optionNav = String(target.dataset.optionNav || "");
+  if (optionNav) {
+    const runId = String(target.dataset.runId || "");
+    const optionCount = Number(target.dataset.optionCount || 0);
+    if (!runId || !optionCount) return;
+    shiftOptionIndex(runId, optionCount, optionNav);
+    renderAdInputRuns();
+    return;
+  }
+
+  const platformNav = String(target.dataset.platformNav || "");
+  if (platformNav) {
+    const optionKey = String(target.dataset.optionKey || "");
+    const platformCount = Number(target.dataset.platformCount || 0);
+    if (!optionKey || !platformCount) return;
+    shiftPlatformIndex(optionKey, platformCount, platformNav);
+    renderAdInputRuns();
+    return;
+  }
+
   const publishAction = String(target.dataset.publishAction || "");
   if (publishAction) {
     const runId = String(target.dataset.runId || "");
     const optionId = String(target.dataset.optionId || "");
-    const platform = platformKey(target.dataset.platform);
 
     try {
       if (publishAction === "queue-option") {
         await queuePublish(runId, optionId, []);
-      } else if (publishAction === "queue-platform" && platform) {
-        await queuePublish(runId, optionId, [platform]);
       }
     } catch (error) {
       setMessage(publishMessage, "error", error.message);
     }
     return;
-  }
-
-  const text = target.dataset.copy;
-  if (!text) return;
-
-  try {
-    await copyToClipboard(text);
-    setMessage(buildCampaignMessage, "success", "Copied to clipboard.");
-  } catch {
-    setMessage(buildCampaignMessage, "error", "Unable to copy. Copy manually from the field text.");
   }
 });
 
@@ -1056,14 +1457,6 @@ if (publishQueue) {
       return;
     }
 
-    const text = target.dataset.copy;
-    if (!text) return;
-    try {
-      await copyToClipboard(text);
-      setMessage(publishMessage, "success", "Payload copied.");
-    } catch {
-      setMessage(publishMessage, "error", "Unable to copy payload.");
-    }
   });
 }
 
@@ -1072,9 +1465,9 @@ simulateBtn.addEventListener("click", async () => {
     const payload = await request("/api/simulate", { method: "POST" });
     state = payload.state;
     renderAll();
-    setMessage(guardrailMessage, "success", payload.message || "Cycle complete.");
+    setMessage(buildCampaignMessage, "success", payload.message || "Cycle complete.");
   } catch (error) {
-    setMessage(guardrailMessage, "error", error.message);
+    setMessage(buildCampaignMessage, "error", error.message);
   }
 });
 
@@ -1083,7 +1476,7 @@ simulateBtn.addEventListener("click", async () => {
     serviceHealth = await request("/api/health");
     await syncStateFromApi();
   } catch (error) {
-    setMessage(guardrailMessage, "error", `Failed to load backend state: ${error.message}`);
+    setMessage(buildCampaignMessage, "error", `Failed to load backend state: ${error.message}`);
     renderServiceStatus();
   }
 })();

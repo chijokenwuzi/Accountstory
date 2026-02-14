@@ -207,32 +207,19 @@
                     placeholder='{"funnelStage":"MOFU","promoWindow":"14 days","location":"Texas"}'
                   ></textarea>
                 </label>
+                <label>
+                  Creative type
+                  <select name="creativeType">
+                    <option value="image" selected>Image</option>
+                    <option value="video">Video</option>
+                  </select>
+                </label>
+                <label>
+                  Creative media URL
+                  <input name="creativeUrl" type="url" maxlength="400" placeholder="https://cdn.client.com/ad-creative.jpg" />
+                </label>
                 <button class="btn btn-primary full" type="submit">Build Campaigns + Generate Ad Input Packs</button>
                 <p id="buildCampaignMessage" class="message full"></p>
-              </form>
-            </article>
-
-            <article class="panel">
-              <div class="panel-head">
-                <h2>Human Guardrails</h2>
-                <p>Keep automation safe while your team scales.</p>
-              </div>
-              <form id="guardrailForm" class="form-stack">
-                <label>
-                  Daily budget cap
-                  <input id="budgetCap" name="budgetCap" type="range" min="200" max="10000" step="50" />
-                  <strong id="budgetCapValue" class="range-value"></strong>
-                </label>
-                <label>
-                  Max CPA/CPL cap
-                  <input id="cpaCap" name="cpaCap" type="range" min="20" max="500" step="5" />
-                  <strong id="cpaCapValue" class="range-value"></strong>
-                </label>
-                <label class="choice-chip"><input id="policyGate" name="policyGate" type="checkbox" /> Require policy check</label>
-                <label class="choice-chip"><input id="creativeGate" name="creativeGate" type="checkbox" /> Require first-creative approval</label>
-                <label class="choice-chip"><input id="killSwitch" name="killSwitch" type="checkbox" /> Auto-pause if metrics drift</label>
-                <button class="btn btn-secondary" type="submit">Save Guardrails</button>
-                <p id="guardrailMessage" class="message"></p>
               </form>
             </article>
 
@@ -299,7 +286,7 @@
           <section class="panel ad-output-panel">
             <div class="panel-head">
               <h2>Generated Ad Input Packs</h2>
-              <p>Copy each field directly into Facebook Ads Manager or Google Ads UI.</p>
+              <p>Use arrows to switch campaign options and ad platforms. One ad is shown per view with full controls.</p>
             </div>
             <div id="adInputRuns" class="ad-run-list"></div>
           </section>
