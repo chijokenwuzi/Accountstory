@@ -1,0 +1,2314 @@
+[
+  {
+    "id": "walmart",
+    "name": "Walmart",
+    "industry": "Retailing",
+    "employees": "2,100,000",
+    "region": "Global",
+    "hq": "Bentonville, Arkansas",
+    "revenueUsdMillions": 648125,
+    "fortune500Rank2025": 1,
+    "winLikelihood": "61%",
+    "accountContext": "Global retailer focused on supply chain efficiency, store operations, and omnichannel execution.",
+    "stakeholders": [
+      {
+        "name": "EVP & Chief Technology Officer",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "SVP, Global Supply Chain Technology",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Omni-Channel Product Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Store Systems Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Merchandising Data Platform",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Enterprise Security Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Procurement Director, Technology Sourcing",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Transformation PMO",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Senior Counsel, Commercial Technology",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Use Case Prioritization",
+        "owner": "Store Operations",
+        "timeline": "Week 1-2",
+        "guess": "Pilot opportunities are prioritized by measurable impact on store throughput and labor hours."
+      },
+      {
+        "phase": "Security + Integration",
+        "owner": "Merch Tech",
+        "timeline": "Week 3-5",
+        "guess": "Enterprise integration and uptime expectations drive technical acceptance criteria."
+      },
+      {
+        "phase": "Commercial Review",
+        "owner": "Procurement",
+        "timeline": "Week 6-8",
+        "guess": "Commercial terms typically require volume-based pricing and strict service-level commitments."
+      }
+    ],
+    "notes": [
+      "Lead with hard operational KPIs.",
+      "Propose phased regional rollout.",
+      "Prepare enterprise security packet early."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Walmart Global Tech (Retail Systems)",
+        "Supply Chain & Fulfillment Engineering",
+        "Store Experience & POS Engineering"
+      ],
+      "platformAndInfra": [
+        "Data platform for merchandising/ops analytics",
+        "Cloud and SRE for retail workloads",
+        "Identity, security, and enterprise integration"
+      ],
+      "engineeringDecisionPath": [
+        "Director/VP Engineering validates architecture",
+        "Store/Ops product leaders co-sponsor ROI",
+        "Procurement + security finalize enterprise rollout"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "amazon",
+    "name": "Amazon",
+    "industry": "Retailing",
+    "employees": "1,525,000",
+    "region": "Global",
+    "hq": "Seattle, Washington",
+    "revenueUsdMillions": 574785,
+    "fortune500Rank2025": 2,
+    "winLikelihood": "57%",
+    "accountContext": "Complex org with multiple buying centers across retail, logistics, and cloud organizations.",
+    "stakeholders": [
+      {
+        "name": "VP, Worldwide Operations Technology",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Fulfillment Automation Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Marketplace Platform Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Principal Product Manager, Ops Systems",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Senior Manager, Data Infrastructure",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Security Compliance Lead, Enterprise Systems",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Vendor Management Director, Strategic Suppliers",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Manager, Operations Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Enterprise Procurement",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "PR/FAQ Alignment",
+        "owner": "Product",
+        "timeline": "Week 1-2",
+        "guess": "Initial discussion likely framed around business narrative and customer impact rationale."
+      },
+      {
+        "phase": "Technical Validation",
+        "owner": "Engineering + Security",
+        "timeline": "Week 3-4",
+        "guess": "Approval depends on performance at scale and security architecture review."
+      },
+      {
+        "phase": "Vendor Onboarding",
+        "owner": "Procurement",
+        "timeline": "Week 5-7",
+        "guess": "Vendor onboarding process includes legal redlines and operational readiness checks."
+      }
+    ],
+    "notes": [
+      "Be precise and metric-driven.",
+      "Map decision path by org, not company-wide.",
+      "Expect rigorous security review."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "AWS service engineering organizations",
+        "Stores/Consumer engineering",
+        "Devices & Alexa engineering"
+      ],
+      "platformAndInfra": [
+        "Large-scale distributed systems and observability",
+        "Security engineering and compliance platforms",
+        "Internal developer platforms and CI/CD"
+      ],
+      "engineeringDecisionPath": [
+        "Principal/Director engineering review technical fit",
+        "Security and reliability gates at org level",
+        "Business owner and finance approve scoped adoption"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "unitedhealth-group",
+    "name": "UnitedHealth Group",
+    "industry": "Health Care",
+    "employees": "440,000",
+    "region": "US + Global",
+    "hq": "Minnetonka, Minnesota",
+    "revenueUsdMillions": 371622,
+    "fortune500Rank2025": 3,
+    "winLikelihood": "66%",
+    "accountContext": "Healthcare enterprise balancing care quality, compliance, and operational efficiency.",
+    "stakeholders": [
+      {
+        "name": "EVP, Enterprise Technology",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "SVP, Claims & Benefits Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Care Delivery Platform Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Clinical Interoperability Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Data Platform & AI Ops",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Chief Privacy Architect, Health Data",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Sourcing Director, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Transformation Portfolio",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Regulatory Counsel, Digital Health",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Clinical Use Case Selection",
+        "owner": "Clinical Ops",
+        "timeline": "Week 1-2",
+        "guess": "Opportunities are prioritized by member outcomes and cost of care impact."
+      },
+      {
+        "phase": "Compliance + Security",
+        "owner": "Compliance",
+        "timeline": "Week 3-4",
+        "guess": "Regulatory and data protection controls likely determine technical viability."
+      },
+      {
+        "phase": "Enterprise Rollout Decision",
+        "owner": "Exec Committee",
+        "timeline": "Week 5-7",
+        "guess": "Decision often depends on pilot evidence and deployment risk profile."
+      }
+    ],
+    "notes": [
+      "Anchor on member outcomes.",
+      "Bring compliance artifacts early.",
+      "Offer controlled pilot structure."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Digital platform engineering for payer/provider workflows",
+        "Data and analytics engineering",
+        "Care operations technology engineering"
+      ],
+      "platformAndInfra": [
+        "HIPAA-aligned security and data governance",
+        "Integration with clinical and claims systems",
+        "Reliability and audit logging platforms"
+      ],
+      "engineeringDecisionPath": [
+        "Platform engineering validates integration path",
+        "Compliance/security sign-off required early",
+        "Clinical/ops executive sponsor approves scaled rollout"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "apple",
+    "name": "Apple",
+    "industry": "Technology",
+    "employees": "161,000",
+    "region": "Global",
+    "hq": "Cupertino, California",
+    "revenueUsdMillions": 383285,
+    "fortune500Rank2025": 4,
+    "winLikelihood": "52%",
+    "accountContext": "High standard for privacy, quality, and design alignment in partner evaluations.",
+    "stakeholders": [
+      {
+        "name": "VP, Business Technology Platforms",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Senior Director, Internal Developer Platforms",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Global Supply Chain Systems",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Engineering Manager, Enterprise Data Platforms",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Program Director, Process Transformation",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Product Security Engineering",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Procurement Manager, Enterprise Systems",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Manager, Corporate Functions Tech",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Data Governance",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Needs Definition",
+        "owner": "Business Systems",
+        "timeline": "Week 1-2",
+        "guess": "Team aligns around measurable internal productivity and reliability goals."
+      },
+      {
+        "phase": "Privacy Assessment",
+        "owner": "Privacy + Legal",
+        "timeline": "Week 3-5",
+        "guess": "Data handling and privacy controls likely represent strict gate criteria."
+      },
+      {
+        "phase": "Commercial Negotiation",
+        "owner": "Procurement",
+        "timeline": "Week 6-8",
+        "guess": "Final approval tied to long-term support commitments and clear SLA language."
+      }
+    ],
+    "notes": [
+      "Lead with privacy posture.",
+      "Avoid feature sprawl in demos.",
+      "Show reliability benchmarks."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Software Engineering (platform + apps)",
+        "Hardware Engineering",
+        "Services Engineering"
+      ],
+      "platformAndInfra": [
+        "Privacy/security architecture",
+        "Build/release and quality systems",
+        "Cloud services infrastructure"
+      ],
+      "engineeringDecisionPath": [
+        "Engineering leadership screens for quality/privacy fit",
+        "Cross-functional program management aligns dependencies",
+        "Legal/procurement closes with strict support terms"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "cvs-health",
+    "name": "CVS Health",
+    "industry": "Health Care",
+    "employees": "259,500",
+    "region": "US",
+    "hq": "Woonsocket, Rhode Island",
+    "revenueUsdMillions": 357776,
+    "fortune500Rank2025": 5,
+    "winLikelihood": "63%",
+    "accountContext": "Cross-functional healthcare organization with payer, pharmacy, and care delivery teams.",
+    "stakeholders": [
+      {
+        "name": "EVP, Enterprise Digital & Technology",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "SVP, Pharmacy Technology Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Care Delivery Platform Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Retail Health Systems Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Analytics & Data Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Security & Compliance Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Sourcing Director, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Clinical Technology Programs",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Healthcare Technology Contracts",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Program Prioritization",
+        "owner": "Enterprise Programs",
+        "timeline": "Week 1-2",
+        "guess": "Initiatives are filtered by member experience impact and operational savings."
+      },
+      {
+        "phase": "Technical Due Diligence",
+        "owner": "Security + IT",
+        "timeline": "Week 3-4",
+        "guess": "Integration and security evidence likely required before procurement."
+      },
+      {
+        "phase": "Contracting",
+        "owner": "Procurement",
+        "timeline": "Week 5-7",
+        "guess": "Commercial terms tied to phased implementation milestones."
+      }
+    ],
+    "notes": [
+      "Show member and ops impact together.",
+      "Prepare integration architecture diagrams.",
+      "Offer phased deployment plan."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Digital health and consumer engineering",
+        "Pharmacy systems engineering",
+        "Enterprise platform engineering"
+      ],
+      "platformAndInfra": [
+        "Security, compliance, and identity platforms",
+        "Data engineering for care/member insights",
+        "APIs across payer/pharmacy/care systems"
+      ],
+      "engineeringDecisionPath": [
+        "Engineering + architecture review integration viability",
+        "Security/compliance control assessment",
+        "Program sponsor and procurement approve rollout"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "berkshire-hathaway",
+    "name": "Berkshire Hathaway",
+    "industry": "Financials",
+    "employees": "396,500",
+    "region": "US + Global",
+    "hq": "Omaha, Nebraska",
+    "revenueUsdMillions": 364482,
+    "fortune500Rank2025": 6,
+    "winLikelihood": "49%",
+    "accountContext": "Decentralized portfolio means buying decisions vary by operating subsidiary.",
+    "stakeholders": [
+      {
+        "name": "Group CFO, Shared Technology Investments",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "CIO, Operating Company Portfolio",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Enterprise Applications (Core Subsidiary)",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Infrastructure Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Data & Reporting Platforms",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Cybersecurity Governance",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Procurement Director, Strategic IT Spend",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Controller, Capital Programs",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Corporate Counsel, Vendor Risk",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Subsidiary-Level Discovery",
+        "owner": "Business Unit",
+        "timeline": "Week 1-3",
+        "guess": "Evaluation starts within subsidiary with local business case ownership."
+      },
+      {
+        "phase": "Risk + Contract Review",
+        "owner": "Legal",
+        "timeline": "Week 4-5",
+        "guess": "Contract terms and liability structure often drive go/no-go decisions."
+      },
+      {
+        "phase": "Budget Sign-off",
+        "owner": "CFO",
+        "timeline": "Week 6",
+        "guess": "Approval depends on payback period and fit with subsidiary priorities."
+      }
+    ],
+    "notes": [
+      "Sell into specific subsidiary first.",
+      "Keep proposal operational and practical.",
+      "Expect conservative contract posture."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Subsidiary-level engineering teams (decentralized)",
+        "Business-unit IT engineering",
+        "Local operations systems engineering"
+      ],
+      "platformAndInfra": [
+        "Mostly subsidiary-specific infrastructure stacks",
+        "Security and identity handled by each operating company",
+        "Integration typically scoped at business-unit level"
+      ],
+      "engineeringDecisionPath": [
+        "Local IT/engineering sponsor leads evaluation",
+        "Subsidiary leadership validates business case",
+        "Legal/procurement finalized per operating company"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "alphabet",
+    "name": "Alphabet",
+    "industry": "Technology",
+    "employees": "183,323",
+    "region": "Global",
+    "hq": "Mountain View, California",
+    "revenueUsdMillions": 349822,
+    "fortune500Rank2025": 7,
+    "winLikelihood": "54%",
+    "accountContext": "Large technical org requiring strong product justification and integration clarity.",
+    "stakeholders": [
+      {
+        "name": "VP, Engineering Productivity",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Senior Director, Internal Developer Experience",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Cloud Platform Reliability Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Data Infrastructure Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Technical Program Management",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Staff Security Architect, Enterprise Systems",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Sourcing Lead, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Platforms Portfolio",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Commercial Counsel, Cloud Procurement",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Problem Definition",
+        "owner": "Product",
+        "timeline": "Week 1",
+        "guess": "Initial alignment centered on measurable developer or business productivity gains."
+      },
+      {
+        "phase": "Architecture Review",
+        "owner": "Engineering",
+        "timeline": "Week 2-4",
+        "guess": "Scalability, SSO, and security posture likely drive technical buy-in."
+      },
+      {
+        "phase": "Commercial + Legal",
+        "owner": "Vendor Mgmt",
+        "timeline": "Week 5-6",
+        "guess": "Final terms focus on data governance and service reliability commitments."
+      }
+    ],
+    "notes": [
+      "Be concise and technical.",
+      "Provide benchmarked performance data.",
+      "Address data governance early."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Core product engineering organizations",
+        "Cloud engineering organizations",
+        "Ads/platform engineering"
+      ],
+      "platformAndInfra": [
+        "Large-scale infra and SRE practices",
+        "Security engineering and IAM",
+        "Internal developer productivity tooling"
+      ],
+      "engineeringDecisionPath": [
+        "Senior engineering manager validates technical fit",
+        "Security and privacy checks for data handling",
+        "Product/business owner approves production adoption"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "exxon-mobil",
+    "name": "Exxon Mobil",
+    "industry": "Energy",
+    "employees": "61,500",
+    "region": "Global",
+    "hq": "Spring, Texas",
+    "revenueUsdMillions": 344582,
+    "fortune500Rank2025": 8,
+    "winLikelihood": "58%",
+    "accountContext": "Energy major focused on operational reliability, safety, and long-horizon ROI.",
+    "stakeholders": [
+      {
+        "name": "VP, Digital & Emerging Technology",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Upstream Operations Technology",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Refining & Chemicals Engineering Systems",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Manager, Asset Reliability Platforms",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Manager, Industrial Data Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Lead OT Security Architect",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Sourcing Manager, Enterprise Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Manager, Operations Excellence Programs",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "HSE Compliance Counsel, Digital Systems",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Operational Scoping",
+        "owner": "Operations",
+        "timeline": "Week 1-2",
+        "guess": "Use cases prioritized by downtime prevention and throughput improvements."
+      },
+      {
+        "phase": "Safety + Reliability Review",
+        "owner": "HSE",
+        "timeline": "Week 3-5",
+        "guess": "Safety implications and reliability evidence are likely mandatory gates."
+      },
+      {
+        "phase": "Capital Approval",
+        "owner": "Finance",
+        "timeline": "Week 6-9",
+        "guess": "Final decision linked to multi-year return profile and implementation risk."
+      }
+    ],
+    "notes": [
+      "Lead with reliability outcomes.",
+      "Include safety controls and auditability.",
+      "Model long-term ROI."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Operations technology engineering",
+        "Digital transformation engineering",
+        "Enterprise IT engineering"
+      ],
+      "platformAndInfra": [
+        "Industrial data platforms",
+        "Reliability and monitoring systems",
+        "Cybersecurity for critical operations"
+      ],
+      "engineeringDecisionPath": [
+        "Ops engineering validates safety/reliability impact",
+        "Security/HSE review operational risk",
+        "Business/finance committee approves scaled deployment"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "mckesson",
+    "name": "McKesson",
+    "industry": "Health Care",
+    "employees": "51,000",
+    "region": "US + Global",
+    "hq": "Irving, Texas",
+    "revenueUsdMillions": 308951,
+    "fortune500Rank2025": 9,
+    "winLikelihood": "62%",
+    "accountContext": "Distribution-driven business emphasizing accuracy, compliance, and network efficiency.",
+    "stakeholders": [
+      {
+        "name": "EVP, Enterprise Information Technology",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "SVP, Distribution Technology Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Pharmacy Automation Platforms",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Logistics Systems Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Master Data & Integration",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Security & Regulatory Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Sourcing Director, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Distribution Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Healthcare Vendor Contracts",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Network Pain Analysis",
+        "owner": "Ops",
+        "timeline": "Week 1-2",
+        "guess": "Focus likely on fill-rate performance and order cycle-time improvements."
+      },
+      {
+        "phase": "Regulatory Validation",
+        "owner": "Regulatory",
+        "timeline": "Week 3-4",
+        "guess": "Compliance fit and audit traceability reviewed before expansion."
+      },
+      {
+        "phase": "Scale Decision",
+        "owner": "Exec Sponsors",
+        "timeline": "Week 5-7",
+        "guess": "Enterprise rollout contingent on pilot KPI lift and low implementation risk."
+      }
+    ],
+    "notes": [
+      "Tie pitch to distribution KPIs.",
+      "Demonstrate audit trails.",
+      "Use warehouse-focused pilot scope."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Distribution systems engineering",
+        "Healthcare platform engineering",
+        "Enterprise integration engineering"
+      ],
+      "platformAndInfra": [
+        "Logistics data and automation platforms",
+        "Compliance and auditability systems",
+        "Warehouse and routing integration services"
+      ],
+      "engineeringDecisionPath": [
+        "Engineering lead validates workflow/system compatibility",
+        "Regulatory and quality stakeholders review controls",
+        "Ops and procurement approve expanded deployment"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "cencora",
+    "name": "Cencora",
+    "industry": "Health Care",
+    "employees": "42,000",
+    "region": "Global",
+    "hq": "Conshohocken, Pennsylvania",
+    "revenueUsdMillions": 294000,
+    "fortune500Rank2025": 10,
+    "winLikelihood": "60%",
+    "accountContext": "Global pharmaceutical services business with strict controls around quality and compliance.",
+    "stakeholders": [
+      {
+        "name": "EVP, Technology & Digital Solutions",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "SVP, Distribution Platform Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Provider Solutions Technology",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Warehouse Systems Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Data Governance & Integrations",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Information Security Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Sourcing Director, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Enterprise Programs",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Compliance Technology",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Business Case",
+        "owner": "Supply Chain",
+        "timeline": "Week 1-2",
+        "guess": "Business case likely framed around throughput and service quality targets."
+      },
+      {
+        "phase": "Quality + Compliance",
+        "owner": "QA",
+        "timeline": "Week 3-5",
+        "guess": "Quality systems and compliance alignment are likely hard requirements."
+      },
+      {
+        "phase": "Commercial Approval",
+        "owner": "Procurement",
+        "timeline": "Week 6",
+        "guess": "Pricing and delivery guarantees drive final agreement."
+      }
+    ],
+    "notes": [
+      "Address quality controls in detail.",
+      "Lead with supply-chain outcomes.",
+      "Prepare compliance documentation."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Supply chain technology engineering",
+        "Pharma services platform engineering",
+        "Enterprise applications engineering"
+      ],
+      "platformAndInfra": [
+        "Quality/compliance control systems",
+        "Data integration across distribution workflows",
+        "Security and governance services"
+      ],
+      "engineeringDecisionPath": [
+        "Digital ops engineering reviews architecture",
+        "Quality/compliance team signs off requirements",
+        "Business unit and procurement authorize rollout"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "jpmorgan-chase",
+    "name": "JPMorgan Chase",
+    "industry": "Financials",
+    "employees": "313,206",
+    "region": "Global",
+    "hq": "New York, New York",
+    "revenueUsdMillions": 278905,
+    "fortune500Rank2025": 11,
+    "winLikelihood": "55%",
+    "accountContext": "Highly regulated financial institution with multiple business lines and strict risk governance.",
+    "stakeholders": [
+      {
+        "name": "CIO, Corporate & Investment Bank Platforms",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Managing Director, Engineering Transformation",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Executive Director, Developer Platforms",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Workflow & Automation Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Data Risk Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Operational Risk Security Architect",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Third-Party Oversight Director",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Technology Investments",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Technology Sourcing",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Use Case Qualification",
+        "owner": "Transformation",
+        "timeline": "Week 1-2",
+        "guess": "Prioritization often tied to risk-reduction and processing efficiency gains."
+      },
+      {
+        "phase": "Control Framework Review",
+        "owner": "Risk",
+        "timeline": "Week 3-5",
+        "guess": "Control evidence and auditability likely required before production approval."
+      },
+      {
+        "phase": "Vendor Governance",
+        "owner": "Third-Party Risk",
+        "timeline": "Week 6-8",
+        "guess": "Decision depends on vendor governance scoring and contractual safeguards."
+      }
+    ],
+    "notes": [
+      "Map controls to regulatory expectations.",
+      "Include audit and access logs.",
+      "Plan for third-party risk workflows."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Enterprise technology engineering",
+        "Line-of-business platform engineering",
+        "Data/AI engineering organizations"
+      ],
+      "platformAndInfra": [
+        "Strong control and risk engineering layers",
+        "Developer platforms and SDLC controls",
+        "Identity/security and observability platforms"
+      ],
+      "engineeringDecisionPath": [
+        "Engineering director evaluates architecture/control fit",
+        "Risk/control functions validate governance",
+        "Business sponsor plus third-party risk approves launch"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "costco-wholesale",
+    "name": "Costco Wholesale",
+    "industry": "Retailing",
+    "employees": "333,000",
+    "region": "Global",
+    "hq": "Issaquah, Washington",
+    "revenueUsdMillions": 254453,
+    "fortune500Rank2025": 12,
+    "winLikelihood": "59%",
+    "accountContext": "Membership-led retailer focused on operational consistency and low-cost execution.",
+    "stakeholders": [
+      {
+        "name": "SVP, Information Systems & Technology",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "VP, Warehouse Technology Operations",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, E-Commerce Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Inventory & Replenishment Systems",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Data Platform & Reporting",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Security Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Procurement Director, Enterprise Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Operations Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Counsel, Vendor & Data Agreements",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Operational Gap Review",
+        "owner": "Operations",
+        "timeline": "Week 1",
+        "guess": "Evaluation begins with throughput, inventory accuracy, and labor efficiency gaps."
+      },
+      {
+        "phase": "Pilot in Select Warehouses",
+        "owner": "Store Systems",
+        "timeline": "Week 2-4",
+        "guess": "Pilot likely limited to a few warehouses before broader commitment."
+      },
+      {
+        "phase": "Rollout Approval",
+        "owner": "Leadership",
+        "timeline": "Week 5-6",
+        "guess": "Scale decision depends on clear pilot gains and minimal workflow disruption."
+      }
+    ],
+    "notes": [
+      "Keep pitch simple and operational.",
+      "Use pilot proof points.",
+      "Show low-overhead implementation plan."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Store systems engineering",
+        "E-commerce engineering",
+        "Supply chain systems engineering"
+      ],
+      "platformAndInfra": [
+        "Inventory and order orchestration platforms",
+        "Core data and reporting pipelines",
+        "Enterprise integration and reliability operations"
+      ],
+      "engineeringDecisionPath": [
+        "Store/systems engineering validates implementation effort",
+        "Ops leadership confirms warehouse impact",
+        "Finance/procurement signs phased rollout"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "cigna-group",
+    "name": "Cigna",
+    "industry": "Health Care",
+    "employees": "71,413",
+    "region": "US",
+    "hq": "Bloomfield, Connecticut",
+    "revenueUsdMillions": 247122,
+    "fortune500Rank2025": 13,
+    "winLikelihood": "58%",
+    "accountContext": "Enterprise account with cross-functional buying committee and multi-stage evaluation process.",
+    "stakeholders": [
+      {
+        "name": "EVP, Enterprise Technology Strategy",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "SVP, Health Services Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Claims Platform Modernization",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Clinical Data Interoperability",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Integration & API Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Privacy & Security Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Sourcing Director, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Enterprise Programs",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Healthcare Technology",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Business Prioritization",
+        "owner": "Operations",
+        "timeline": "Week 1-2",
+        "guess": "Business team prioritizes based on measurable cost, risk, and speed outcomes."
+      },
+      {
+        "phase": "Technical Validation",
+        "owner": "Engineering",
+        "timeline": "Week 3-4",
+        "guess": "Engineering and security teams validate integration, reliability, and control requirements."
+      },
+      {
+        "phase": "Commercial Approval",
+        "owner": "Procurement",
+        "timeline": "Week 5-7",
+        "guess": "Final stage focuses on commercial terms, support model, and implementation risk."
+      }
+    ],
+    "notes": [
+      "Lead with measurable operational outcomes.",
+      "Bring security/integration detail early.",
+      "Offer phased rollout plan."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Business systems engineering",
+        "Platform engineering",
+        "Data/analytics engineering"
+      ],
+      "platformAndInfra": [
+        "Integration and API platform",
+        "Security and identity controls",
+        "Reliability and observability tooling"
+      ],
+      "engineeringDecisionPath": [
+        "Engineering lead validates technical fit",
+        "Security/compliance confirms controls",
+        "Business sponsor and procurement approve rollout"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "microsoft",
+    "name": "Microsoft",
+    "industry": "Technology",
+    "employees": "228,000",
+    "region": "Global",
+    "hq": "Redmond, Washington",
+    "revenueUsdMillions": 245122,
+    "fortune500Rank2025": 14,
+    "winLikelihood": "53%",
+    "accountContext": "Large cross-functional environment with rigorous security and integration expectations.",
+    "stakeholders": [
+      {
+        "name": "CVP, Business & Industry Solutions Engineering",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "VP, Developer Productivity Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Commercial Cloud Platform Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Enterprise Data Platform",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Technical Program Operations",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Principal Security Architect, Internal Platforms",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Procurement Director, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Cloud Engineering Investments",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Commercial Counsel, Enterprise Vendor Contracts",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Problem Framing",
+        "owner": "Business Unit",
+        "timeline": "Week 1-2",
+        "guess": "Opportunity is framed around measurable productivity and platform alignment."
+      },
+      {
+        "phase": "Technical + Security Review",
+        "owner": "Engineering",
+        "timeline": "Week 3-4",
+        "guess": "Architecture and security validation likely required before sponsor sign-off."
+      },
+      {
+        "phase": "Commercial Close",
+        "owner": "Procurement",
+        "timeline": "Week 5-7",
+        "guess": "Final close depends on licensing fit and enterprise support terms."
+      }
+    ],
+    "notes": [
+      "Be explicit on integration points.",
+      "Include enterprise security controls.",
+      "Show adoption plan by team."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Cloud + platform engineering organizations",
+        "Business application engineering",
+        "Security engineering organizations"
+      ],
+      "platformAndInfra": [
+        "Developer platform and release systems",
+        "Identity/security and compliance controls",
+        "Data platform and observability tooling"
+      ],
+      "engineeringDecisionPath": [
+        "Engineering leadership validates platform compatibility",
+        "Security/compliance review deployment model",
+        "Business owner and procurement finalize terms"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "cardinal-health",
+    "name": "Cardinal Health",
+    "industry": "Health Care",
+    "employees": "48,900",
+    "region": "US + Global",
+    "hq": "Dublin, Ohio",
+    "revenueUsdMillions": 226827,
+    "fortune500Rank2025": 15,
+    "winLikelihood": "62%",
+    "accountContext": "Healthcare supply chain organization focused on fulfillment accuracy and compliance.",
+    "stakeholders": [
+      {
+        "name": "EVP, Enterprise Technology & Security",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "SVP, Supply Chain Technology Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Pharmacy Systems Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Distribution Center Automation Systems",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Data Integration Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Regulatory Security Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Sourcing Director, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Operations Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Healthcare Contracts",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Operational Baseline",
+        "owner": "Distribution",
+        "timeline": "Week 1",
+        "guess": "Initial phase benchmarks picking accuracy and cycle-time performance."
+      },
+      {
+        "phase": "Validation Pilot",
+        "owner": "Automation",
+        "timeline": "Week 2-4",
+        "guess": "Pilot likely scoped to one or two facilities with strict KPI targets."
+      },
+      {
+        "phase": "Compliance + Contract",
+        "owner": "Compliance + Procurement",
+        "timeline": "Week 5-6",
+        "guess": "Scale approval depends on quality controls and acceptable commercial terms."
+      }
+    ],
+    "notes": [
+      "Quantify fulfillment improvements.",
+      "Show facility-level rollout path.",
+      "Align with compliance checkpoints."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Distribution engineering",
+        "Enterprise healthcare systems engineering",
+        "Automation engineering"
+      ],
+      "platformAndInfra": [
+        "Warehouse and fulfillment integration layers",
+        "Quality/compliance and traceability controls",
+        "Data reporting and operational analytics"
+      ],
+      "engineeringDecisionPath": [
+        "Engineering validates distribution workflow integration",
+        "Compliance/quality confirms requirements",
+        "Ops leadership and procurement approve wider rollout"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "chevron",
+    "name": "Chevron",
+    "industry": "Energy",
+    "employees": "45,511",
+    "region": "Global",
+    "hq": "Houston, Texas",
+    "revenueUsdMillions": 200949,
+    "fortune500Rank2025": 16,
+    "winLikelihood": "57%",
+    "accountContext": "Energy operations prioritize asset reliability, safety, and capital discipline.",
+    "stakeholders": [
+      {
+        "name": "VP, Digital Platform & Innovation",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Upstream Digital Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Downstream Operations Systems",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Manager, Reliability & Maintenance Platforms",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Manager, Data Engineering for Asset Performance",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Lead OT Cybersecurity Architect",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Sourcing Manager, Technology Programs",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Capital Projects Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "HSE Counsel, Operational Technology",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Asset Opportunity Assessment",
+        "owner": "Asset Performance",
+        "timeline": "Week 1-2",
+        "guess": "Use cases evaluated by reliability and cost-per-barrel improvement potential."
+      },
+      {
+        "phase": "Safety + Engineering Review",
+        "owner": "HSE + Engineering",
+        "timeline": "Week 3-5",
+        "guess": "Safety impact and engineering feasibility likely determine progression."
+      },
+      {
+        "phase": "Capital Planning",
+        "owner": "Finance",
+        "timeline": "Week 6-9",
+        "guess": "Funding decision tied to risk-adjusted return profile."
+      }
+    ],
+    "notes": [
+      "Lead with uptime and safety outcomes.",
+      "Include engineering implementation plan.",
+      "Use conservative ROI model."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Asset operations engineering",
+        "Digital/analytics engineering",
+        "Enterprise IT engineering"
+      ],
+      "platformAndInfra": [
+        "Industrial telemetry/data platforms",
+        "Reliability and maintenance systems",
+        "Cybersecurity controls for operational environments"
+      ],
+      "engineeringDecisionPath": [
+        "Ops engineering assesses operational fit",
+        "HSE/security review risk and safeguards",
+        "Finance/business leadership approves scale"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "bank-of-america",
+    "name": "Bank of America",
+    "industry": "Financials",
+    "employees": "213,193",
+    "region": "Global",
+    "hq": "Charlotte, North Carolina",
+    "revenueUsdMillions": 192443,
+    "fortune500Rank2025": 17,
+    "winLikelihood": "56%",
+    "accountContext": "Large banking institution emphasizing control frameworks, resilience, and regulatory alignment.",
+    "stakeholders": [
+      {
+        "name": "CIO, Enterprise Payments & Operations",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Managing Director, Technology Modernization",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Executive Director, Platform Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Process Automation Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Data Governance Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Enterprise Security Governance Architect",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Vendor Management Director, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Enterprise Technology Spend",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Third-Party Technology Risk",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Business Prioritization",
+        "owner": "Ops",
+        "timeline": "Week 1-2",
+        "guess": "Priorities set by efficiency potential and control-risk reduction."
+      },
+      {
+        "phase": "Risk/Control Assessment",
+        "owner": "Risk",
+        "timeline": "Week 3-5",
+        "guess": "Evidence of control design and monitoring likely required."
+      },
+      {
+        "phase": "Procurement + Legal",
+        "owner": "Vendor Mgmt",
+        "timeline": "Week 6-8",
+        "guess": "Final stage focuses on legal protections and vendor oversight commitments."
+      }
+    ],
+    "notes": [
+      "Map to controls library.",
+      "Prepare detailed security questionnaires.",
+      "Demonstrate enterprise resilience."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Enterprise platform engineering",
+        "Consumer/wealth tech engineering",
+        "Risk/control technology engineering"
+      ],
+      "platformAndInfra": [
+        "Control-monitoring and audit systems",
+        "Security/identity and compliance infrastructure",
+        "Developer platform and integration tooling"
+      ],
+      "engineeringDecisionPath": [
+        "Engineering director validates architecture and controls",
+        "Risk/compliance teams review governance",
+        "Business sponsor + vendor governance approve go-live"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "general-motors",
+    "name": "General Motors",
+    "industry": "Motor Vehicles & Parts",
+    "employees": "162,000",
+    "region": "US",
+    "hq": "Detroit, Michigan",
+    "revenueUsdMillions": 187442,
+    "fortune500Rank2025": 18,
+    "winLikelihood": "58%",
+    "accountContext": "Automotive manufacturer modernizing product engineering, plant systems, and connected vehicle software delivery.",
+    "stakeholders": [
+      {
+        "name": "SVP, Software & Services Engineering",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "VP, Manufacturing Systems Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Vehicle Platforms Software Integration",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Plant IT & Controls Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Connected Vehicle Data Platforms",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Automotive Cybersecurity Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Sourcing Director, Engineering Systems",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Manufacturing Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Product Software Compliance",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Plant & Program Scoping",
+        "owner": "Manufacturing Engineering",
+        "timeline": "Week 1-2",
+        "guess": "Evaluation likely starts with one plant/program where throughput and quality KPIs are measurable."
+      },
+      {
+        "phase": "Technical Integration Review",
+        "owner": "Software Platforms",
+        "timeline": "Week 3-5",
+        "guess": "Architecture review focuses on MES, quality systems, and vehicle software toolchain integration."
+      },
+      {
+        "phase": "Pilot Validation",
+        "owner": "Plant Operations",
+        "timeline": "Week 6-8",
+        "guess": "Pilot success depends on measurable cycle-time, rework, and downtime improvements."
+      },
+      {
+        "phase": "Commercial & Rollout Approval",
+        "owner": "Procurement + Leadership",
+        "timeline": "Week 9-10",
+        "guess": "Final approval tied to plant rollout plan, support model, and total cost profile."
+      }
+    ],
+    "notes": [
+      "Lead with plant throughput and quality metrics.",
+      "Show compatibility with manufacturing toolchain.",
+      "Propose phased plant rollout with clear governance."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Manufacturing systems engineering",
+        "Vehicle software/platform engineering",
+        "Connected services engineering"
+      ],
+      "platformAndInfra": [
+        "Plant execution and telemetry data systems",
+        "Developer platforms for vehicle software",
+        "Security and quality assurance toolchains"
+      ],
+      "engineeringDecisionPath": [
+        "Manufacturing + platform engineering validate technical feasibility",
+        "Plant leadership confirms operational impact",
+        "Executive sponsor and procurement approve scale"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "ford-motor",
+    "name": "Ford Motor",
+    "industry": "Motor Vehicles & Parts",
+    "employees": "177,000",
+    "region": "Global",
+    "hq": "Dearborn, Michigan",
+    "revenueUsdMillions": 176191,
+    "fortune500Rank2025": 19,
+    "winLikelihood": "58%",
+    "accountContext": "Automotive manufacturer balancing product programs, plant operations, and supply chain constraints.",
+    "stakeholders": [
+      {
+        "name": "SVP, Ford Pro & Digital Systems Engineering",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "VP, Manufacturing Technology Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Connected Vehicle Platform Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Plant Systems & Automation Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Mobility Data Platform",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Vehicle Cybersecurity Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Procurement Director, Engineering Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Digital Engineering Programs",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Software & Telematics Contracts",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Plant-Level Discovery",
+        "owner": "Manufacturing",
+        "timeline": "Week 1-2",
+        "guess": "Need identification likely starts with throughput and quality bottlenecks by plant."
+      },
+      {
+        "phase": "Technical Pilot",
+        "owner": "Plant Systems",
+        "timeline": "Week 3-4",
+        "guess": "Pilot proves integration with existing manufacturing systems and workflows."
+      },
+      {
+        "phase": "Procurement + Scale",
+        "owner": "Procurement",
+        "timeline": "Week 5-7",
+        "guess": "Scale approval depends on cost profile and implementation timeline confidence."
+      }
+    ],
+    "notes": [
+      "Focus on plant throughput and quality.",
+      "Bring integration playbook.",
+      "Show phased manufacturing rollout."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Manufacturing systems engineering",
+        "Connected vehicle/software engineering",
+        "Enterprise platform engineering"
+      ],
+      "platformAndInfra": [
+        "Plant data and execution systems",
+        "Integration across manufacturing toolchain",
+        "Security and quality engineering processes"
+      ],
+      "engineeringDecisionPath": [
+        "Plant/platform engineering reviews feasibility",
+        "Program leadership validates quality/throughput impact",
+        "Procurement/finance approve scale plan"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  },
+  {
+    "id": "elevance-health",
+    "name": "Elevance Health",
+    "industry": "Health Care",
+    "employees": "104,900",
+    "region": "US",
+    "hq": "Indianapolis, Indiana",
+    "revenueUsdMillions": 175249,
+    "fortune500Rank2025": 20,
+    "winLikelihood": "58%",
+    "accountContext": "Healthcare benefits enterprise scaling digital member experience, care operations platforms, and data-driven workflows.",
+    "stakeholders": [
+      {
+        "name": "EVP, Enterprise Digital Platforms",
+        "role": "Economic Buyer",
+        "influence": "High",
+        "stance": "Neutral"
+      },
+      {
+        "name": "SVP, Health Plan Technology Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "VP, Clinical Programs Platform Engineering",
+        "role": "Champion",
+        "influence": "High",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, Claims & Benefits Data Engineering",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Positive"
+      },
+      {
+        "name": "Director, API & Interoperability Platforms",
+        "role": "Evaluator",
+        "influence": "Medium",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Director, Privacy Security Architecture",
+        "role": "Blocker Risk",
+        "influence": "Medium",
+        "stance": "Skeptical"
+      },
+      {
+        "name": "Strategic Sourcing Director, Technology",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Finance Director, Care Technology Portfolio",
+        "role": "Approver",
+        "influence": "Low",
+        "stance": "Neutral"
+      },
+      {
+        "name": "Legal Counsel, Health Data Contracts",
+        "role": "Blocker Risk",
+        "influence": "Low",
+        "stance": "Skeptical"
+      }
+    ],
+    "buyingProcess": [
+      {
+        "phase": "Member/Care Use Case Prioritization",
+        "owner": "Digital & Technology",
+        "timeline": "Week 1-2",
+        "guess": "Priority usually based on member experience, care outcome, and admin-efficiency impact."
+      },
+      {
+        "phase": "Platform & Data Review",
+        "owner": "Care Platform Engineering",
+        "timeline": "Week 3-4",
+        "guess": "Engineering review likely emphasizes interoperability, reliability, and operational controls."
+      },
+      {
+        "phase": "Compliance Validation",
+        "owner": "Compliance & Privacy",
+        "timeline": "Week 5-6",
+        "guess": "Regulatory and privacy requirements are typically hard gates before production use."
+      },
+      {
+        "phase": "Business Case Approval",
+        "owner": "Finance + Exec Sponsor",
+        "timeline": "Week 7-8",
+        "guess": "Approval depends on quantified ROI and low-risk implementation sequencing."
+      }
+    ],
+    "notes": [
+      "Lead with member and care outcomes.",
+      "Map controls to healthcare compliance needs.",
+      "Offer phased deployment by business unit."
+    ],
+    "engineeringOrg": {
+      "coreOrgs": [
+        "Digital experience engineering",
+        "Care platform engineering",
+        "Data and analytics engineering"
+      ],
+      "platformAndInfra": [
+        "Identity, privacy, and security controls",
+        "Healthcare workflow integration services",
+        "Operational observability and reliability platforms"
+      ],
+      "engineeringDecisionPath": [
+        "Platform engineering validates architecture and controls",
+        "Compliance/privacy confirm governance readiness",
+        "Executive and finance sponsors approve staged rollout"
+      ]
+    },
+    "dataQuality": "public+inferred",
+    "dataSources": [
+      "https://en.wikipedia.org/wiki/Fortune_500",
+      "https://www.fortune.com/ranking/fortune500/"
+    ]
+  }
+]

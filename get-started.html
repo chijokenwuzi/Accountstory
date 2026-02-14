@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountstory | Get Started</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/marketing.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-wrap">
+        <a class="brand" href="/">Accountstory</a>
+        <nav class="top-nav">
+          <a href="/">Home</a>
+          <a href="/features">Features</a>
+          <a href="/marketing-lead-gen">Marketing Lead Gen</a>
+          <a href="/workspace">Account Insights</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/login">Login</a>
+        </nav>
+        <a class="cta-pill" href="/workspace">Workspace</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Get Started</p>
+        <h1>Create your seller workspace</h1>
+        <p>Set up your team in under two minutes.</p>
+      </section>
+
+      <section class="steps-grid">
+        <article class="step-card"><h3>1. Create account</h3><p>Use your work email and create your workspace.</p></article>
+        <article class="step-card"><h3>2. Pick target accounts</h3><p>Start with strategic Fortune 500 opportunities.</p></article>
+        <article class="step-card"><h3>3. Align your motion</h3><p>Map stakeholders, buying process, and stories together.</p></article>
+      </section>
+
+      <section class="centered-card auth-card">
+        <form id="registerForm">
+          <label>
+            Full Name
+            <input name="name" type="text" required />
+          </label>
+          <label>
+            Work Email
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" minlength="8" required />
+          </label>
+          <label>
+            Workspace Name
+            <input name="workspaceName" type="text" required />
+          </label>
+          <button class="btn-solid" type="submit">Create workspace</button>
+        </form>
+        <p id="registerMessage" class="message"></p>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('registerForm');
+      const message = document.getElementById('registerMessage');
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        message.textContent = 'Creating workspace...';
+        message.className = 'message';
+        const data = new FormData(form);
+        const payload = {
+          name: String(data.get('name') || '').trim(),
+          email: String(data.get('email') || '').trim(),
+          password: String(data.get('password') || ''),
+          workspaceName: String(data.get('workspaceName') || '').trim()
+        };
+
+        try {
+          const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.error || 'Unable to create workspace');
+          }
+          localStorage.setItem('accountstory_token', result.token);
+          window.location.href = '/workspace';
+        } catch (error) {
+          message.textContent = error.message;
+          message.className = 'message error';
+        }
+      });
+    </script>
+  </body>
+</html>

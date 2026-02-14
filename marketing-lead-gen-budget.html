@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountstory | Marketing Lead Gen - Budget</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/marketing.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-wrap">
+        <a class="brand" href="/">Accountstory</a>
+        <nav class="top-nav">
+          <a href="/">Home</a>
+          <a href="/features">Features</a>
+          <a class="active" href="/marketing-lead-gen">Marketing Lead Gen</a>
+          <a href="/workspace">Account Insights</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/login">Login</a>
+        </nav>
+        <a class="cta-pill" href="/marketing-lead-gen/assets">Step 3</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Marketing Lead Gen Funnel</p>
+        <h1>Budget Allocation by Channel</h1>
+      </section>
+
+      <section class="section">
+        <div class="leadgen-shell single">
+          <article class="leadgen-card">
+            <p class="step-kicker">Step 4 of 4</p>
+            <h2>Allocate Budget Across Selected Channels</h2>
+            <p id="budgetSummary" class="leadgen-meta"></p>
+
+            <form id="budgetForm" class="leadgen-form single-col">
+              <div id="allocationContainer" class="allocation-stack"></div>
+              <p id="allocationTotal" class="leadgen-meta"></p>
+              <p id="allocationLeads" class="leadgen-meta"></p>
+
+              <div class="funnel-actions">
+                <a class="btn btn-secondary" href="/marketing-lead-gen/assets">Back</a>
+                <button class="btn btn-primary" type="submit">Generate Final Lead Gen Plan</button>
+              </div>
+            </form>
+
+            <p id="budgetStatus" class="message" aria-live="polite"></p>
+            <div class="funnel-actions">
+              <button id="retryGenerateBtn" class="btn btn-secondary" type="button" style="display: none">
+                Retry Generate
+              </button>
+            </div>
+          </article>
+
+          <article class="leadgen-card">
+            <h2>Generated Plan</h2>
+            <div class="funnel-actions">
+              <button id="exportPlanBtn" class="btn btn-secondary" type="button" disabled>Export Plan (JSON)</button>
+            </div>
+            <div id="budgetOutput">
+              <p class="leadgen-empty">Submit the allocation to generate your final plan.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="/marketing-lead-gen-funnel-storage.js"></script>
+    <script src="/marketing-lead-gen-budget.js"></script>
+  </body>
+</html>

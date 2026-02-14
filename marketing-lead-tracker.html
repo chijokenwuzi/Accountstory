@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountstory | CRM Lead Tracker (Example)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/marketing.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-wrap">
+        <a class="brand" href="/">Accountstory</a>
+        <nav class="top-nav">
+          <a href="/">Home</a>
+          <a href="/features">Features</a>
+          <a class="active" href="/marketing-lead-gen">Marketing Lead Gen</a>
+          <a href="/workspace">Account Insights</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/login">Login</a>
+        </nav>
+        <a class="cta-pill" href="/marketing-lead-gen">Back to Lead Gen</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Example CRM Dashboard</p>
+        <h1>Marketing Leads Tracker</h1>
+        <p>
+          Demo data showing spend, leads, and campaign performance by source. Use filters to inspect channel-specific
+          results.
+        </p>
+      </section>
+
+      <section class="tracker-kpi-grid" id="trackerKpis"></section>
+
+      <section class="section">
+        <div class="tracker-filter-row" id="trackerFilters"></div>
+      </section>
+
+      <section class="tracker-chart-grid">
+        <article class="tracker-card">
+          <h3>Spend By Source</h3>
+          <div id="spendBreakdown"></div>
+        </article>
+        <article class="tracker-card">
+          <h3>Leads Trend (6 Weeks)</h3>
+          <svg id="leadsTrendChart" viewBox="0 0 680 260" class="trend-chart" aria-label="Leads trend chart"></svg>
+        </article>
+      </section>
+
+      <section class="section">
+        <h2>Source Performance</h2>
+        <div class="source-section-grid" id="sourceSections"></div>
+      </section>
+
+      <section class="section">
+        <h2>Campaign Performance</h2>
+        <div class="table-wrap">
+          <table class="tracker-table">
+            <thead>
+              <tr>
+                <th>Campaign</th>
+                <th>Source</th>
+                <th>Spend</th>
+                <th>Leads</th>
+                <th>CPL</th>
+                <th>Qualified</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="campaignRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/marketing-lead-tracker.js"></script>
+  </body>
+</html>

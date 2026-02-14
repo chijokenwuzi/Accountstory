@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountstory | Marketing Lead Gen - Creative</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/marketing.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-wrap">
+        <a class="brand" href="/">Accountstory</a>
+        <nav class="top-nav">
+          <a href="/">Home</a>
+          <a href="/features">Features</a>
+          <a class="active" href="/marketing-lead-gen">Marketing Lead Gen</a>
+          <a href="/workspace">Account Insights</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/login">Login</a>
+        </nav>
+        <a class="cta-pill" href="/marketing-lead-gen">Step 1</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Marketing Lead Gen Funnel</p>
+        <h1>Creative Setup</h1>
+      </section>
+
+      <section class="section">
+        <div class="leadgen-shell single">
+          <article class="leadgen-card">
+            <p class="step-kicker">Step 2 of 4</p>
+            <h2>Upload Creative or Ask Us To Build It</h2>
+            <p id="vslSummary" class="leadgen-meta"></p>
+
+            <div class="instruction-card">
+              <h3>How to prepare high-converting creative</h3>
+              <ol class="leadgen-list">
+                <li>Open with one painful problem your audience already feels.</li>
+                <li>Show why current options fail and what your method changes.</li>
+                <li>Use one proof point: metric, case study, or testimonial snippet.</li>
+                <li>Explain the offer in plain language with outcomes and timeline.</li>
+                <li>End with one clear CTA and urgency reason to act now.</li>
+              </ol>
+            </div>
+
+            <form id="vslForm" class="leadgen-form single-col">
+              <fieldset class="channel-fieldset">
+                <legend>Creative Production Choice</legend>
+                <div class="choice-stack">
+                  <label class="choice-item">
+                    <input type="radio" name="vslMode" value="upload" checked />
+                    Upload Existing Creative
+                  </label>
+                  <label class="choice-item">
+                    <input type="radio" name="vslMode" value="done-for-you" />
+                    Ask Us To Create Creative
+                  </label>
+                </div>
+              </fieldset>
+
+              <label>
+                Upload Video or Creative File (optional if using link)
+                <input id="vslFileInput" name="vslFile" type="file" accept="video/*" />
+              </label>
+
+              <label>
+                Existing Creative URL (optional)
+                <input name="vslUrl" type="url" maxlength="260" placeholder="https://www.youtube.com/watch?v=..." />
+              </label>
+
+              <label>
+                Creative Instructions / Notes
+                <textarea
+                  name="vslNotes"
+                  rows="4"
+                  maxlength="1500"
+                  placeholder="Key talking points, audience pain points, compliance notes, required CTA"
+                ></textarea>
+              </label>
+
+              <div class="funnel-actions">
+                <a class="btn btn-secondary" href="/marketing-lead-gen">Back</a>
+                <button class="btn btn-primary" type="submit">Continue to Business Assets</button>
+              </div>
+            </form>
+            <p id="vslStatus" class="message" aria-live="polite"></p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="/marketing-lead-gen-funnel-storage.js"></script>
+    <script src="/marketing-lead-gen-vsl.js"></script>
+  </body>
+</html>

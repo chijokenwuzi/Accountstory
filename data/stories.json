@@ -1,0 +1,582 @@
+{
+  "walmart": [
+    {
+      "id": "seed-walmart-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Avery Kim",
+      "createdAt": "2025-08-05T15:30:00.000Z",
+      "story": "At Walmart, we ran a joint architecture and security workshop around merchandising and inventory systems before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-walmart-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Jordan Patel",
+      "createdAt": "2025-08-14T15:30:00.000Z",
+      "story": "The pilot focused on store operations and replenishment. We agreed on one KPI (on-shelf availability) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-walmart-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Samira Reed",
+      "createdAt": "2025-08-23T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for merchandising and inventory systems. That avoided an end-of-cycle stall and helped close the agreement for Walmart."
+    }
+  ],
+  "amazon": [
+    {
+      "id": "seed-amazon-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Jordan Patel",
+      "createdAt": "2025-08-07T15:30:00.000Z",
+      "story": "At Amazon, we ran a joint architecture and security workshop around fulfillment automation and marketplace tooling before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-amazon-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Samira Reed",
+      "createdAt": "2025-08-16T15:30:00.000Z",
+      "story": "The pilot focused on fulfillment and seller operations. We agreed on one KPI (order cycle time) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-amazon-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Marcus Lee",
+      "createdAt": "2025-08-25T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for fulfillment automation and marketplace tooling. That avoided an end-of-cycle stall and helped close the agreement for Amazon."
+    }
+  ],
+  "unitedhealth-group": [
+    {
+      "id": "seed-unitedhealth-group-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Samira Reed",
+      "createdAt": "2025-08-09T15:30:00.000Z",
+      "story": "At UnitedHealth Group, we ran a joint architecture and security workshop around payer platform and clinical data systems before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-unitedhealth-group-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Marcus Lee",
+      "createdAt": "2025-08-18T15:30:00.000Z",
+      "story": "The pilot focused on claims and care management workflows. We agreed on one KPI (case throughput) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-unitedhealth-group-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Noah Bennett",
+      "createdAt": "2025-08-27T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for payer platform and clinical data systems. That avoided an end-of-cycle stall and helped close the agreement for UnitedHealth Group."
+    }
+  ],
+  "apple": [
+    {
+      "id": "seed-apple-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Marcus Lee",
+      "createdAt": "2025-08-11T15:30:00.000Z",
+      "story": "At Apple, we ran a joint architecture and security workshop around business systems and developer platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-apple-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Noah Bennett",
+      "createdAt": "2025-08-20T15:30:00.000Z",
+      "story": "The pilot focused on internal platform reliability for product teams. We agreed on one KPI (release-cycle lead time) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-apple-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Elena Rossi",
+      "createdAt": "2025-08-29T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for business systems and developer platforms. That avoided an end-of-cycle stall and helped close the agreement for Apple."
+    }
+  ],
+  "cvs-health": [
+    {
+      "id": "seed-cvs-health-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Noah Bennett",
+      "createdAt": "2025-08-13T15:30:00.000Z",
+      "story": "At CVS Health, we ran a joint architecture and security workshop around retail health and pharmacy technology before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-cvs-health-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Elena Rossi",
+      "createdAt": "2025-08-22T15:30:00.000Z",
+      "story": "The pilot focused on pharmacy and care delivery operations. We agreed on one KPI (medication turnaround time) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-cvs-health-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Tariq Johnson",
+      "createdAt": "2025-08-31T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for retail health and pharmacy technology. That avoided an end-of-cycle stall and helped close the agreement for CVS Health."
+    }
+  ],
+  "berkshire-hathaway": [
+    {
+      "id": "seed-berkshire-hathaway-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Elena Rossi",
+      "createdAt": "2025-08-15T15:30:00.000Z",
+      "story": "At Berkshire Hathaway, we ran a joint architecture and security workshop around portfolio operating company systems before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-berkshire-hathaway-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Tariq Johnson",
+      "createdAt": "2025-08-24T15:30:00.000Z",
+      "story": "The pilot focused on cross-subsidiary reporting and operations. We agreed on one KPI (reporting cycle time) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-berkshire-hathaway-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Priya Nair",
+      "createdAt": "2025-09-02T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for portfolio operating company systems. That avoided an end-of-cycle stall and helped close the agreement for Berkshire Hathaway."
+    }
+  ],
+  "alphabet": [
+    {
+      "id": "seed-alphabet-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Tariq Johnson",
+      "createdAt": "2025-08-17T15:30:00.000Z",
+      "story": "At Alphabet, we ran a joint architecture and security workshop around internal engineering productivity tooling before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-alphabet-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Priya Nair",
+      "createdAt": "2025-08-26T15:30:00.000Z",
+      "story": "The pilot focused on developer productivity and platform efficiency. We agreed on one KPI (service onboarding time) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-alphabet-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Avery Kim",
+      "createdAt": "2025-09-04T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for internal engineering productivity tooling. That avoided an end-of-cycle stall and helped close the agreement for Alphabet."
+    }
+  ],
+  "exxon-mobil": [
+    {
+      "id": "seed-exxon-mobil-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Priya Nair",
+      "createdAt": "2025-08-19T15:30:00.000Z",
+      "story": "At Exxon Mobil, we ran a joint architecture and security workshop around industrial operations and reliability platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-exxon-mobil-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Avery Kim",
+      "createdAt": "2025-08-28T15:30:00.000Z",
+      "story": "The pilot focused on asset reliability and plant operations. We agreed on one KPI (unplanned downtime) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-exxon-mobil-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Jordan Patel",
+      "createdAt": "2025-09-06T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for industrial operations and reliability platforms. That avoided an end-of-cycle stall and helped close the agreement for Exxon Mobil."
+    }
+  ],
+  "mckesson": [
+    {
+      "id": "seed-mckesson-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Avery Kim",
+      "createdAt": "2025-08-21T15:30:00.000Z",
+      "story": "At McKesson, we ran a joint architecture and security workshop around healthcare distribution and automation platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-mckesson-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Jordan Patel",
+      "createdAt": "2025-08-30T15:30:00.000Z",
+      "story": "The pilot focused on distribution center and pharmacy workflows. We agreed on one KPI (order exception rate) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-mckesson-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Samira Reed",
+      "createdAt": "2025-09-08T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for healthcare distribution and automation platforms. That avoided an end-of-cycle stall and helped close the agreement for McKesson."
+    }
+  ],
+  "cencora": [
+    {
+      "id": "seed-cencora-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Jordan Patel",
+      "createdAt": "2025-08-23T15:30:00.000Z",
+      "story": "At Cencora, we ran a joint architecture and security workshop around distribution and provider technology systems before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-cencora-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Samira Reed",
+      "createdAt": "2025-09-01T15:30:00.000Z",
+      "story": "The pilot focused on provider distribution and inventory visibility. We agreed on one KPI (fill-rate consistency) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-cencora-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Marcus Lee",
+      "createdAt": "2025-09-10T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for distribution and provider technology systems. That avoided an end-of-cycle stall and helped close the agreement for Cencora."
+    }
+  ],
+  "jpmorgan-chase": [
+    {
+      "id": "seed-jpmorgan-chase-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Samira Reed",
+      "createdAt": "2025-08-25T15:30:00.000Z",
+      "story": "At JPMorgan Chase, we ran a joint architecture and security workshop around enterprise workflow and risk platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-jpmorgan-chase-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Marcus Lee",
+      "createdAt": "2025-09-03T15:30:00.000Z",
+      "story": "The pilot focused on operations workflow automation. We agreed on one KPI (straight-through processing rate) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-jpmorgan-chase-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Noah Bennett",
+      "createdAt": "2025-09-12T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for enterprise workflow and risk platforms. That avoided an end-of-cycle stall and helped close the agreement for JPMorgan Chase."
+    }
+  ],
+  "costco-wholesale": [
+    {
+      "id": "seed-costco-wholesale-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Marcus Lee",
+      "createdAt": "2025-08-27T15:30:00.000Z",
+      "story": "At Costco Wholesale, we ran a joint architecture and security workshop around warehouse systems and commerce platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-costco-wholesale-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Noah Bennett",
+      "createdAt": "2025-09-05T15:30:00.000Z",
+      "story": "The pilot focused on warehouse and membership operations. We agreed on one KPI (inventory accuracy) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-costco-wholesale-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Elena Rossi",
+      "createdAt": "2025-09-14T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for warehouse systems and commerce platforms. That avoided an end-of-cycle stall and helped close the agreement for Costco Wholesale."
+    }
+  ],
+  "cigna-group": [
+    {
+      "id": "seed-cigna-group-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Noah Bennett",
+      "createdAt": "2025-08-29T15:30:00.000Z",
+      "story": "At Cigna, we ran a joint architecture and security workshop around health services and integration platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-cigna-group-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Elena Rossi",
+      "createdAt": "2025-09-07T15:30:00.000Z",
+      "story": "The pilot focused on claims and member service execution. We agreed on one KPI (first-pass claims resolution) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-cigna-group-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Tariq Johnson",
+      "createdAt": "2025-09-16T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for health services and integration platforms. That avoided an end-of-cycle stall and helped close the agreement for Cigna."
+    }
+  ],
+  "microsoft": [
+    {
+      "id": "seed-microsoft-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Elena Rossi",
+      "createdAt": "2025-08-31T15:30:00.000Z",
+      "story": "At Microsoft, we ran a joint architecture and security workshop around cloud platform and internal engineering systems before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-microsoft-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Tariq Johnson",
+      "createdAt": "2025-09-09T15:30:00.000Z",
+      "story": "The pilot focused on commercial engineering execution. We agreed on one KPI (developer cycle time) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-microsoft-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Priya Nair",
+      "createdAt": "2025-09-18T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for cloud platform and internal engineering systems. That avoided an end-of-cycle stall and helped close the agreement for Microsoft."
+    }
+  ],
+  "cardinal-health": [
+    {
+      "id": "seed-cardinal-health-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Tariq Johnson",
+      "createdAt": "2025-09-02T15:30:00.000Z",
+      "story": "At Cardinal Health, we ran a joint architecture and security workshop around supply chain and pharmacy systems before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-cardinal-health-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Priya Nair",
+      "createdAt": "2025-09-11T15:30:00.000Z",
+      "story": "The pilot focused on distribution and pharmacy execution. We agreed on one KPI (shipment exception rate) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-cardinal-health-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Avery Kim",
+      "createdAt": "2025-09-20T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for supply chain and pharmacy systems. That avoided an end-of-cycle stall and helped close the agreement for Cardinal Health."
+    }
+  ],
+  "chevron": [
+    {
+      "id": "seed-chevron-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Priya Nair",
+      "createdAt": "2025-09-04T15:30:00.000Z",
+      "story": "At Chevron, we ran a joint architecture and security workshop around operations technology and maintenance platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-chevron-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Avery Kim",
+      "createdAt": "2025-09-13T15:30:00.000Z",
+      "story": "The pilot focused on field reliability and maintenance planning. We agreed on one KPI (mean time between failures) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-chevron-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Jordan Patel",
+      "createdAt": "2025-09-22T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for operations technology and maintenance platforms. That avoided an end-of-cycle stall and helped close the agreement for Chevron."
+    }
+  ],
+  "bank-of-america": [
+    {
+      "id": "seed-bank-of-america-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Avery Kim",
+      "createdAt": "2025-09-06T15:30:00.000Z",
+      "story": "At Bank of America, we ran a joint architecture and security workshop around payments processing and governance tooling before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-bank-of-america-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Jordan Patel",
+      "createdAt": "2025-09-15T15:30:00.000Z",
+      "story": "The pilot focused on payments and operations modernization. We agreed on one KPI (exception handling volume) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-bank-of-america-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Samira Reed",
+      "createdAt": "2025-09-24T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for payments processing and governance tooling. That avoided an end-of-cycle stall and helped close the agreement for Bank of America."
+    }
+  ],
+  "general-motors": [
+    {
+      "id": "seed-general-motors-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Jordan Patel",
+      "createdAt": "2025-09-08T15:30:00.000Z",
+      "story": "At General Motors, we ran a joint architecture and security workshop around manufacturing systems and vehicle software platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-general-motors-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Samira Reed",
+      "createdAt": "2025-09-17T15:30:00.000Z",
+      "story": "The pilot focused on plant and vehicle software coordination. We agreed on one KPI (line interruption minutes) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-general-motors-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Marcus Lee",
+      "createdAt": "2025-09-26T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for manufacturing systems and vehicle software platforms. That avoided an end-of-cycle stall and helped close the agreement for General Motors."
+    }
+  ],
+  "ford-motor": [
+    {
+      "id": "seed-ford-motor-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Samira Reed",
+      "createdAt": "2025-09-10T15:30:00.000Z",
+      "story": "At Ford Motor, we ran a joint architecture and security workshop around manufacturing and connected mobility platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-ford-motor-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Marcus Lee",
+      "createdAt": "2025-09-19T15:30:00.000Z",
+      "story": "The pilot focused on connected vehicle and plant systems. We agreed on one KPI (plant changeover time) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-ford-motor-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Noah Bennett",
+      "createdAt": "2025-09-28T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for manufacturing and connected mobility platforms. That avoided an end-of-cycle stall and helped close the agreement for Ford Motor."
+    }
+  ],
+  "elevance-health": [
+    {
+      "id": "seed-elevance-health-1",
+      "title": "Security Mapping Before Procurement",
+      "stage": "Discovery + Security",
+      "outcome": "Won",
+      "author": "Marcus Lee",
+      "createdAt": "2025-09-12T15:30:00.000Z",
+      "story": "At Elevance Health, we ran a joint architecture and security workshop around health plan and interoperability platforms before formal sourcing started. Pulling controls and data-handling decisions into discovery removed late redlines and kept the deal moving."
+    },
+    {
+      "id": "seed-elevance-health-2",
+      "title": "Pilot KPI Proof Unlocked Budget",
+      "stage": "Pilot + Business Case",
+      "outcome": "Won",
+      "author": "Noah Bennett",
+      "createdAt": "2025-09-21T15:30:00.000Z",
+      "story": "The pilot focused on clinical and member operations. We agreed on one KPI (prior-authorization turnaround) with the champion and finance lead, then published weekly outcomes. The measurable lift gave the economic buyer enough confidence to release expansion budget."
+    },
+    {
+      "id": "seed-elevance-health-3",
+      "title": "Buying Committee Alignment Closed the Deal",
+      "stage": "Procurement + Final Approval",
+      "outcome": "Won",
+      "author": "Elena Rossi",
+      "createdAt": "2025-09-30T15:30:00.000Z",
+      "story": "Before procurement kicked off, we aligned legal, security, finance, and operations on ownership, rollout sequencing, and support model for health plan and interoperability platforms. That avoided an end-of-cycle stall and helped close the agreement for Elevance Health."
+    }
+  ]
+}

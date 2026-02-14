@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountstory | Marketing Lead Gen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/marketing.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-wrap">
+        <a class="brand" href="/">Accountstory</a>
+        <nav class="top-nav">
+          <a href="/">Home</a>
+          <a href="/features">Features</a>
+          <a class="active" href="/marketing-lead-gen">Marketing Lead Gen</a>
+          <a href="/workspace">Account Insights</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/login">Login</a>
+        </nav>
+        <a class="cta-pill" href="/get-started">Start Free</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">New Offering</p>
+        <h1>Marketing Lead Gen</h1>
+        <p>
+          A separate offer from the workspace: automated creative planning, Google/Twitter/TikTok ads, SEO, funnel flow, and
+          lifecycle follow-up.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-secondary" href="/marketing-lead-tracker">View Example CRM Lead Tracker</a>
+        </div>
+      </section>
+
+      <section class="card-grid">
+        <article class="card">
+          <h3>Creative Automation</h3>
+          <p>Generate ad hooks, angle ideas, and conversion-first creative direction.</p>
+        </article>
+        <article class="card">
+          <h3>Channel Mix</h3>
+          <p>Choose one or more: Google Ads, Twitter Ads, TikTok Ads, and SEO.</p>
+        </article>
+        <article class="card">
+          <h3>Funnel + CRM Ops</h3>
+          <p>Get landing-page sections, retargeting logic, nurture sequence, and pipeline stages.</p>
+        </article>
+      </section>
+
+      <section class="section">
+        <div class="leadgen-shell single">
+          <article class="leadgen-card">
+            <p class="step-kicker">Step 1 of 4</p>
+            <h2>Business + Channel Intake</h2>
+            <p class="lead">Enter your business details and selected channels. Then continue to the creative step.</p>
+
+            <form id="leadGenForm" class="leadgen-form">
+              <label>
+                Business Name
+                <input name="businessName" type="text" maxlength="120" placeholder="Netflix" />
+              </label>
+              <label>
+                Industry
+                <input name="industry" type="text" maxlength="120" placeholder="Streaming Entertainment" />
+              </label>
+              <label>
+                Product / Service Name
+                <input name="productName" type="text" maxlength="120" placeholder="Netflix Subscriber Growth" />
+              </label>
+              <label class="full">
+                Monthly Budget (USD)
+                <input
+                  id="budgetSlider"
+                  name="monthlyBudgetUsd"
+                  type="range"
+                  min="1000"
+                  max="50000"
+                  step="500"
+                  value="5000"
+                />
+                <div class="budget-slider-row">
+                  <strong id="budgetSliderValue">$5,000 / month</strong>
+                  <span id="leadEstimatePreview">Estimated leads: select channels</span>
+                </div>
+              </label>
+              <fieldset class="full channel-fieldset">
+                <legend>Choose Channels (select one or more)</legend>
+                <div class="channel-choice-grid">
+                  <label class="channel-choice">
+                    <input type="checkbox" name="channels" value="google-ads" checked />
+                    Google Ads
+                  </label>
+                  <label class="channel-choice">
+                    <input type="checkbox" name="channels" value="twitter-ads" checked />
+                    Twitter Ads
+                  </label>
+                  <label class="channel-choice">
+                    <input type="checkbox" name="channels" value="tiktok-ads" />
+                    TikTok Ads
+                  </label>
+                  <label class="channel-choice">
+                    <input type="checkbox" name="channels" value="seo" />
+                    SEO
+                  </label>
+                </div>
+              </fieldset>
+              <label class="full">
+                Offer
+                <textarea
+                  name="offer"
+                  rows="3"
+                  maxlength="360"
+                  placeholder="Example: Promote new Netflix originals and ad-supported plan with multi-channel growth campaigns"
+                ></textarea>
+              </label>
+              <label class="full">
+                Audience
+                <textarea
+                  name="audience"
+                  rows="3"
+                  maxlength="280"
+                  placeholder="Example: Streaming viewers aged 18-44 comparing Netflix, Hulu, Disney+, and Prime Video"
+                ></textarea>
+              </label>
+              <label class="full">
+                Differentiators (one per line)
+                <textarea
+                  name="differentiators"
+                  rows="3"
+                  maxlength="900"
+                  placeholder="Original content slate\nAd-supported plan option\nPersonalized recommendations"
+                ></textarea>
+              </label>
+              <label>
+                Objective
+                <input
+                  name="objective"
+                  type="text"
+                  maxlength="120"
+                  value="Generate booked sales calls"
+                />
+              </label>
+              <label>
+                Tone
+                <select name="tone">
+                  <option value="Confident" selected>Confident</option>
+                  <option value="Direct response">Direct response</option>
+                  <option value="Consultative">Consultative</option>
+                </select>
+              </label>
+              <label class="full">
+                Landing Page URL (optional)
+                <input name="landingPage" type="url" maxlength="260" placeholder="https://www.netflix.com" />
+              </label>
+              <button class="btn btn-primary" type="submit">Continue to Creative Step</button>
+            </form>
+            <p id="leadGenStatus" class="message" aria-live="polite"></p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="/marketing-lead-gen-funnel-storage.js"></script>
+    <script src="/marketing-lead-gen.js"></script>
+  </body>
+</html>

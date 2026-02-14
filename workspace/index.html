@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountstory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <section id="authGate" class="auth-gate">
+      <div class="auth-card">
+        <p class="eyebrow">Accountstory</p>
+        <h1>Seller Workspace</h1>
+        <p class="tagline">Sign in or create an account to save notes by workspace.</p>
+
+        <div class="tab-row">
+          <button id="showLogin" class="tab active" type="button">Login</button>
+          <button id="showRegister" class="tab" type="button">Create Account</button>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+          <label>
+            Email
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" required />
+          </label>
+          <button type="submit" class="primary">Login</button>
+        </form>
+
+        <form id="registerForm" class="auth-form hidden">
+          <label>
+            Full Name
+            <input name="name" type="text" required />
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" required minlength="8" />
+          </label>
+          <label>
+            Workspace Name
+            <input name="workspaceName" type="text" required />
+          </label>
+          <button type="submit" class="primary">Create Account</button>
+        </form>
+
+        <p id="authMessage" class="auth-message"></p>
+        <p class="tagline">Need a fast walkthrough?</p>
+        <a class="secondary" href="/workspace?demo=1">Try Demo Mode</a>
+      </div>
+    </section>
+
+    <div id="appShell" class="hidden">
+      <header class="hero">
+        <div class="hero-inner">
+          <div class="topbar">
+            <div class="topbar-left">
+              <button id="backBtn" type="button" class="secondary">Back</button>
+              <p class="eyebrow">Pipeline Intelligence</p>
+            </div>
+            <div class="workspace-pill">
+              <span id="workspaceName"></span>
+              <button id="logoutBtn" type="button">Logout</button>
+            </div>
+          </div>
+          <h2><a class="hero-home-link" href="/">Accountstory</a></h2>
+          <p class="tagline">
+            Search accounts, inspect account maps, and capture buying process and story context in one workspace.
+          </p>
+          <div class="company-controls">
+            <div class="search-shell">
+              <label for="companySearch" class="sr-only">Search accounts</label>
+              <input
+                id="companySearch"
+                type="search"
+                placeholder="Search account name or industry..."
+                autocomplete="off"
+              />
+            </div>
+            <p id="companyResultMeta" class="company-tabs-meta"></p>
+          </div>
+          <div class="company-tabs-shell">
+            <p class="company-tabs-label">Accounts</p>
+            <div id="companyTabs" class="company-tabs" role="tablist" aria-label="Demo companies"></div>
+          </div>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section id="companyDetail" class="detail-panel">
+          <p class="empty-state">Select a company to load its account story.</p>
+        </section>
+      </main>
+    </div>
+
+    <template id="accountTemplate">
+      <article>
+        <div class="company-header">
+          <div>
+            <h2 id="detailName"></h2>
+            <p id="detailMeta"></p>
+          </div>
+          <div class="fit-score">
+            <span>Win Likelihood</span>
+            <strong id="detailWinRate"></strong>
+          </div>
+        </div>
+
+        <section class="section">
+          <h3>Account Map</h3>
+          <p id="accountContext"></p>
+          <div id="accountMap" class="account-map"></div>
+          <form id="addStakeholderForm" class="inline-form compact-form">
+            <h4>Quick Add Stakeholder</h4>
+            <label>
+              Name
+              <input name="name" type="text" required maxlength="120" />
+            </label>
+            <label>
+              Role
+              <input name="role" type="text" required maxlength="80" />
+            </label>
+            <label>
+              Influence
+              <select name="influence">
+                <option value="High">High</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </label>
+            <label>
+              Stance
+              <select name="stance">
+                <option value="Positive">Positive</option>
+                <option value="Neutral" selected>Neutral</option>
+                <option value="Skeptical">Skeptical</option>
+              </select>
+            </label>
+            <button type="submit" class="secondary">Add to Map</button>
+            <p id="stakeholderStatus" class="note-status full"></p>
+          </form>
+        </section>
+
+        <section class="section">
+          <h3>Engineering Org Snapshot</h3>
+          <p class="section-subtext">Working view of engineering org structure based on available account context.</p>
+          <div class="engineering-grid">
+            <article class="engineering-card">
+              <h4>Core Engineering Orgs</h4>
+              <ul id="engineeringCoreList" class="notes-list"></ul>
+            </article>
+            <article class="engineering-card">
+              <h4>Platform / Infra Focus</h4>
+              <ul id="engineeringPlatformList" class="notes-list"></ul>
+            </article>
+            <article class="engineering-card full">
+              <h4>Decision Path</h4>
+              <ul id="engineeringDecisionList" class="notes-list"></ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h3>Data Sources</h3>
+          <p class="section-subtext">Company profiles use public ranking data with inferred buying/engineering maps.</p>
+          <ul id="sourceList" class="notes-list"></ul>
+        </section>
+
+        <section class="section">
+          <h3>Buying Process</h3>
+          <div id="processSteps" class="steps-grid"></div>
+          <form id="addProcessForm" class="inline-form compact-form">
+            <h4>Quick Add Process Step</h4>
+            <label>
+              Step
+              <input name="phase" type="text" required maxlength="120" />
+            </label>
+            <label>
+              Owner
+              <input name="owner" type="text" maxlength="120" placeholder="Optional" />
+            </label>
+            <label>
+              Timing
+              <input name="timeline" type="text" maxlength="80" placeholder="Optional" />
+            </label>
+            <label class="full">
+              Details
+              <textarea name="guess" rows="2" maxlength="1200" placeholder="Add any notes for this step"></textarea>
+            </label>
+            <button type="submit" class="secondary">Add Step</button>
+            <p id="processStatus" class="note-status full"></p>
+          </form>
+        </section>
+
+        <section class="section">
+          <h3>Sales Notes</h3>
+          <ul id="salesNotes" class="notes-list"></ul>
+        </section>
+
+        <section class="section">
+          <div class="workspace-note-header">
+            <h3>Workspace Notes</h3>
+            <span id="workspaceNoteStatus" class="note-status"></span>
+          </div>
+          <label for="workspaceNote" class="sr-only">Workspace Notes</label>
+          <textarea id="workspaceNote" rows="6" placeholder="Add your team notes for this account..."></textarea>
+          <button id="saveWorkspaceNote" type="button" class="primary">Save Notes</button>
+        </section>
+
+        <section class="section">
+          <div class="stories-heading">
+            <h3>Deal Stories</h3>
+            <button id="viewStories" type="button" class="secondary">View All Stories</button>
+          </div>
+          <p class="section-subtext">Past seller stories attached to this account.</p>
+          <div id="storyPreviewList" class="stories-grid"></div>
+        </section>
+      </article>
+    </template>
+
+    <template id="storiesTemplate">
+      <article>
+        <div class="stories-topbar">
+          <button id="backToAccount" type="button" class="secondary">Back to Account</button>
+          <h2 id="storiesCompanyName"></h2>
+        </div>
+        <p class="section-subtext">Stories from sellers who have sold to this account before.</p>
+
+        <section class="section stories-add">
+          <h3>Add a Story</h3>
+          <form id="addStoryForm" class="story-form">
+            <label>
+              Story Title
+              <input name="title" type="text" required maxlength="160" />
+            </label>
+            <label>
+              Stage
+              <input name="stage" type="text" required maxlength="80" placeholder="Example: Technical Evaluation" />
+            </label>
+            <label>
+              Outcome
+              <select name="outcome" required>
+                <option value="">Select outcome</option>
+                <option value="Won">Won</option>
+                <option value="Lost">Lost</option>
+                <option value="Stalled">Stalled</option>
+              </select>
+            </label>
+            <label>
+              Story
+              <textarea name="story" rows="5" required maxlength="4000"></textarea>
+            </label>
+            <button type="submit" class="primary">Add Story</button>
+          </form>
+          <p id="storyFormStatus" class="note-status"></p>
+        </section>
+
+        <section class="section">
+          <h3>All Stories</h3>
+          <div id="companyStoriesList" class="stories-list"></div>
+        </section>
+      </article>
+    </template>
+
+    <template id="storyDetailTemplate">
+      <article>
+        <div class="stories-topbar">
+          <button id="backToStories" type="button" class="secondary">Back to Stories</button>
+          <h2 id="storyTitle"></h2>
+        </div>
+        <div class="story-meta" id="storyMeta"></div>
+        <section class="section">
+          <p id="storyBody" class="story-body"></p>
+        </section>
+      </article>
+    </template>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

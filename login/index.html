@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountstory | Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/marketing.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-wrap">
+        <a class="brand" href="/">Accountstory</a>
+        <nav class="top-nav">
+          <a href="/">Home</a>
+          <a href="/features">Features</a>
+          <a href="/workspace">Account Insights</a>
+          <a href="/pricing">Pricing</a>
+          <a class="active" href="/login">Login</a>
+        </nav>
+        <a class="cta-pill" href="/get-started">Create Account</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Login</p>
+        <h1>Welcome back to Accountstory</h1>
+      </section>
+
+      <section class="centered-card auth-card">
+        <form id="loginForm">
+          <label>
+            Email
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" required />
+          </label>
+          <button class="btn-solid" type="submit">Sign in</button>
+        </form>
+        <p id="loginMessage" class="message"></p>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('loginForm');
+      const message = document.getElementById('loginMessage');
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        message.textContent = 'Signing in...';
+        message.className = 'message';
+        const data = new FormData(form);
+        const payload = {
+          email: String(data.get('email') || '').trim(),
+          password: String(data.get('password') || '')
+        };
+
+        try {
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.error || 'Unable to sign in');
+          }
+          localStorage.setItem('accountstory_token', result.token);
+          window.location.href = '/workspace';
+        } catch (error) {
+          message.textContent = error.message;
+          message.className = 'message error';
+        }
+      });
+    </script>
+  </body>
+</html>

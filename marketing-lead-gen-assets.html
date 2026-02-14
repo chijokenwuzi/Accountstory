@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountstory | Marketing Lead Gen - Assets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/marketing.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-wrap">
+        <a class="brand" href="/">Accountstory</a>
+        <nav class="top-nav">
+          <a href="/">Home</a>
+          <a href="/features">Features</a>
+          <a class="active" href="/marketing-lead-gen">Marketing Lead Gen</a>
+          <a href="/workspace">Account Insights</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/login">Login</a>
+        </nav>
+        <a class="cta-pill" href="/marketing-lead-gen/creative">Step 2</a>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Marketing Lead Gen Funnel</p>
+        <h1>Business Content Upload</h1>
+      </section>
+
+      <section class="section">
+        <div class="leadgen-shell single">
+          <article class="leadgen-card">
+            <p class="step-kicker">Step 3 of 4</p>
+            <h2>Upload Brand Assets and Proof</h2>
+            <p id="assetsSummary" class="leadgen-meta"></p>
+
+            <form id="assetsForm" class="leadgen-form single-col">
+              <label>
+                Pictures / Creative Assets
+                <input name="imageFiles" type="file" accept="image/*" multiple />
+              </label>
+
+              <label>
+                Testimonials (documents, screenshots, or video)
+                <input name="testimonialFiles" type="file" multiple />
+              </label>
+
+              <label>
+                Blogs / Articles / PDFs
+                <input name="blogFiles" type="file" multiple />
+              </label>
+
+              <label>
+                Testimonial Text (optional)
+                <textarea
+                  name="testimonialText"
+                  rows="5"
+                  maxlength="3000"
+                  placeholder="Paste testimonials you want featured in ads or landing pages"
+                ></textarea>
+              </label>
+
+              <label>
+                Links to Existing Content (optional)
+                <textarea
+                  name="contentLinks"
+                  rows="4"
+                  maxlength="2500"
+                  placeholder="https://...\nhttps://...\nhttps://..."
+                ></textarea>
+              </label>
+
+              <div class="funnel-actions">
+                <a class="btn btn-secondary" href="/marketing-lead-gen/creative">Back</a>
+                <button class="btn btn-primary" type="submit">Continue to Budget Allocation</button>
+              </div>
+            </form>
+            <p id="assetsStatus" class="message" aria-live="polite"></p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="/marketing-lead-gen-funnel-storage.js"></script>
+    <script src="/marketing-lead-gen-assets.js"></script>
+  </body>
+</html>
