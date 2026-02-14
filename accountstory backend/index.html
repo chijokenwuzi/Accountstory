@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountstory Backend | Team Ad Ops Workspace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb bg-orb-a" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb-b" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Accountstory Backend</p>
+        <h1>Team Ad Ops Workspace</h1>
+        <p class="subtext">Run Facebook and Google campaigns for customers with controlled automation.</p>
+      </div>
+      <button id="simulateBtn" class="btn btn-primary" type="button">Run 24h Cycle</button>
+    </header>
+
+    <div class="workspace-scroll">
+      <main class="shell">
+        <aside class="panel roster-panel">
+          <div class="panel-head">
+            <h2>Customer Roster</h2>
+            <p>Select who the team is operating for.</p>
+          </div>
+          <ul id="customerList" class="customer-list"></ul>
+
+          <form id="customerForm" class="form-stack">
+            <h3>Add Customer</h3>
+            <label>
+              Company name
+              <input name="companyName" type="text" maxlength="140" required placeholder="Northline Dental" />
+            </label>
+            <label>
+              Industry
+              <input name="industry" type="text" maxlength="140" required placeholder="Healthcare" />
+            </label>
+            <label>
+              Service tier
+              <select name="tier">
+                <option value="Core">Core</option>
+                <option value="Growth">Growth</option>
+                <option value="Enterprise">Enterprise</option>
+              </select>
+            </label>
+            <label>
+              Website
+              <input name="website" type="url" maxlength="280" placeholder="https://clientdomain.com" />
+            </label>
+            <label>
+              Location / geo focus
+              <input name="location" type="text" maxlength="140" placeholder="Florida" />
+            </label>
+            <label>
+              Default offer
+              <input name="defaultOffer" type="text" maxlength="220" placeholder="Free consult for new patients" />
+            </label>
+            <label>
+              Default audience
+              <input name="defaultAudience" type="text" maxlength="220" placeholder="Adults 28-55 looking for cosmetic dentistry" />
+            </label>
+            <label>
+              Default landing URL
+              <input name="defaultLandingUrl" type="url" maxlength="280" placeholder="https://clientdomain.com/offer" />
+            </label>
+            <label>
+              Customer notes
+              <textarea
+                name="customerNotes"
+                rows="3"
+                maxlength="1500"
+                placeholder="Brand constraints, compliance notes, USP, or positioning details"
+              ></textarea>
+            </label>
+            <button class="btn btn-secondary" type="submit">Add Customer</button>
+            <p id="customerMessage" class="message"></p>
+          </form>
+        </aside>
+
+        <section class="main-grid">
+          <section class="metric-grid">
+            <article class="metric-card">
+              <p>Customers</p>
+              <strong id="metricCustomers">0</strong>
+            </article>
+            <article class="metric-card">
+              <p>Live Campaigns</p>
+              <strong id="metricLive">0</strong>
+            </article>
+            <article class="metric-card">
+              <p>Autopilot Share</p>
+              <strong id="metricAutopilot">0%</strong>
+            </article>
+            <article class="metric-card">
+              <p>Risk Flags</p>
+              <strong id="metricRisk">0</strong>
+            </article>
+          </section>
+
+          <section class="ops-grid">
+            <article class="panel">
+              <div class="panel-head">
+                <h2>Campaign Builder</h2>
+                <p>
+                  Add campaign + artifact inputs once. The system will generate 2-3 Facebook/Google input packs and
+                  create specific campaigns on the board below.
+                </p>
+                <p id="openAiStatus" class="subtext"></p>
+              </div>
+              <form id="buildCampaignForm" class="form-grid">
+                <label>
+                  Customer
+                  <select id="buildCustomer" name="customerId"></select>
+                </label>
+                <div class="full choice-row">
+                  <button id="loadCustomerDefaultsBtn" class="btn btn-secondary" type="button">Load Customer Defaults</button>
+                  <p id="customerDefaultsHint" class="subtext"></p>
+                </div>
+                <label>
+                  Base campaign name
+                  <input name="campaignBaseName" type="text" maxlength="160" required placeholder="Q2 Smile Makeover" />
+                </label>
+                <label>
+                  Objective
+                  <input name="objective" type="text" maxlength="80" required placeholder="Leads, Sales, Booked Calls" value="Leads" />
+                </label>
+                <label>
+                  Automation mode
+                  <input name="mode" type="text" maxlength="40" list="modeSuggestions" value="Hybrid" />
+                </label>
+                <datalist id="modeSuggestions">
+                  <option value="Assist"></option>
+                  <option value="Hybrid"></option>
+                  <option value="Autopilot"></option>
+                </datalist>
+                <label>
+                  Total daily budget (USD)
+                  <input name="dailyBudget" type="number" min="50" max="50000" step="10" value="300" required />
+                </label>
+                <label>
+                  Target CPA/CPL (USD)
+                  <input name="targetCpa" type="number" min="5" max="5000" step="1" value="75" required />
+                </label>
+                <fieldset class="full channel-fieldset">
+                  <legend>Build For</legend>
+                  <div class="choice-row">
+                    <label class="choice-chip"><input type="checkbox" name="buildChannels" value="Facebook" checked /> Facebook Ads</label>
+                    <label class="choice-chip"><input type="checkbox" name="buildChannels" value="Google" checked /> Google Ads</label>
+                  </div>
+                </fieldset>
+                <label>
+                  CTA
+                  <input name="cta" type="text" maxlength="40" value="Learn More" placeholder="Learn More" />
+                </label>
+                <label>
+                  Artifact name
+                  <input name="artifactName" type="text" maxlength="160" placeholder="Founder VSL v3" />
+                </label>
+                <label class="full">
+                  Offer summary
+                  <input name="offer" type="text" maxlength="220" placeholder="Whiter smile package in 10 days" />
+                </label>
+                <label class="full">
+                  Landing URL
+                  <input name="landingUrl" type="url" maxlength="280" placeholder="https://clientdomain.com/offer" />
+                </label>
+                <label class="full">
+                  Artifact content
+                  <textarea
+                    name="artifactText"
+                    rows="4"
+                    maxlength="2200"
+                    placeholder="Paste transcript, VSL notes, claims, testimonials, differentiators, and audience notes"
+                  ></textarea>
+                </label>
+                <label class="full">
+                  Primary audience
+                  <input name="audience" type="text" maxlength="200" placeholder="Example: US parents with kids 4-10 and recent purchase intent" />
+                </label>
+                <label class="full">
+                  Campaign instructions
+                  <textarea
+                    name="strategyNotes"
+                    rows="3"
+                    maxlength="1800"
+                    placeholder="Any direction for tone, offers to prioritize, exclusions, policy constraints, etc."
+                  ></textarea>
+                </label>
+                <label class="full">
+                  Extra input values (JSON or plain text)
+                  <textarea
+                    name="customInputs"
+                    rows="4"
+                    maxlength="4000"
+                    placeholder='{"funnelStage":"MOFU","promoWindow":"14 days","location":"Texas"}'
+                  ></textarea>
+                </label>
+                <button class="btn btn-primary full" type="submit">Build Campaigns + Generate Ad Input Packs</button>
+                <p id="buildCampaignMessage" class="message full"></p>
+              </form>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <h2>Human Guardrails</h2>
+                <p>Keep automation safe while your team scales.</p>
+              </div>
+              <form id="guardrailForm" class="form-stack">
+                <label>
+                  Daily budget cap
+                  <input id="budgetCap" name="budgetCap" type="range" min="200" max="10000" step="50" />
+                  <strong id="budgetCapValue" class="range-value"></strong>
+                </label>
+                <label>
+                  Max CPA/CPL cap
+                  <input id="cpaCap" name="cpaCap" type="range" min="20" max="500" step="5" />
+                  <strong id="cpaCapValue" class="range-value"></strong>
+                </label>
+                <label class="choice-chip"><input id="policyGate" name="policyGate" type="checkbox" /> Require policy check</label>
+                <label class="choice-chip"><input id="creativeGate" name="creativeGate" type="checkbox" /> Require first-creative approval</label>
+                <label class="choice-chip"><input id="killSwitch" name="killSwitch" type="checkbox" /> Auto-pause if metrics drift</label>
+                <button class="btn btn-secondary" type="submit">Save Guardrails</button>
+                <p id="guardrailMessage" class="message"></p>
+              </form>
+            </article>
+          </section>
+
+          <section class="panel ad-output-panel">
+            <div class="panel-head">
+              <h2>Generated Ad Input Packs</h2>
+              <p>Copy each field directly into Facebook Ads Manager or Google Ads UI.</p>
+            </div>
+            <div id="adInputRuns" class="ad-run-list"></div>
+          </section>
+
+          <section class="panel board-panel">
+            <div class="panel-head">
+              <h2>Operations Board</h2>
+              <p>Specific campaigns generated from your inputs appear here.</p>
+            </div>
+            <div id="boardColumns" class="board-grid"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

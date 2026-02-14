@@ -1,0 +1,9 @@
+{
+  "name": "accountstory-backend-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone backend + workspace UI for customer ad automation ops",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

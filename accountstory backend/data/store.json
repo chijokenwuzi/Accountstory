@@ -1,0 +1,268 @@
+{
+  "selectedCustomerId": "cust-1771082991745-aon421",
+  "customers": [
+    {
+      "id": "cust-1",
+      "name": "Cobalt Care",
+      "industry": "Healthcare",
+      "tier": "Enterprise"
+    },
+    {
+      "id": "cust-2",
+      "name": "Astera Retail",
+      "industry": "Ecommerce",
+      "tier": "Growth"
+    },
+    {
+      "id": "cust-3",
+      "name": "Beacon Freight",
+      "industry": "Logistics",
+      "tier": "Core"
+    },
+    {
+      "id": "cust-1771082991745-aon421",
+      "name": "Databricks",
+      "industry": "Technology",
+      "tier": "Enterprise"
+    }
+  ],
+  "guardrails": {
+    "budgetCap": 2500,
+    "cpaCap": 120,
+    "policyGate": true,
+    "creativeGate": true,
+    "killSwitch": true
+  },
+  "campaigns": [
+    {
+      "id": "cmp-1771083164299-0x115r",
+      "customerId": "cust-1771082991745-aon421",
+      "name": "First Campaign | Consolidation & Cost Reduction",
+      "goal": "Leads",
+      "channels": [
+        "Facebook",
+        "Google"
+      ],
+      "dailyBudget": 833,
+      "targetCpa": 120,
+      "mode": "Hybrid",
+      "stage": "Intake",
+      "risk": "Medium",
+      "adRunId": "run-1771083164299-f3377g",
+      "adOptionId": "adopt-1771083164291-p47m0s"
+    },
+    {
+      "id": "cmp-1771083164299-sqhinx",
+      "customerId": "cust-1771082991745-aon421",
+      "name": "First Campaign | Faster Time-to-Insight & Production AI",
+      "goal": "Leads",
+      "channels": [
+        "Facebook",
+        "Google"
+      ],
+      "dailyBudget": 833,
+      "targetCpa": 120,
+      "mode": "Hybrid",
+      "stage": "Intake",
+      "risk": "Medium",
+      "adRunId": "run-1771083164299-f3377g",
+      "adOptionId": "adopt-1771083164298-o5qtzu"
+    },
+    {
+      "id": "cmp-1771083164299-rnmlcj",
+      "customerId": "cust-1771082991745-aon421",
+      "name": "First Campaign | Eliminate Silos & Operational Efficiency",
+      "goal": "Leads",
+      "channels": [
+        "Facebook",
+        "Google"
+      ],
+      "dailyBudget": 833,
+      "targetCpa": 120,
+      "mode": "Hybrid",
+      "stage": "Intake",
+      "risk": "Medium",
+      "adRunId": "run-1771083164299-f3377g",
+      "adOptionId": "adopt-1771083164299-1fl90x"
+    },
+    {
+      "id": "cmp-1",
+      "customerId": "cust-1",
+      "name": "Patient Enrollment Sprint",
+      "goal": "Lead Volume",
+      "channels": [
+        "Facebook",
+        "Google"
+      ],
+      "dailyBudget": 900,
+      "targetCpa": 88,
+      "mode": "Hybrid",
+      "stage": "Optimization",
+      "risk": "Low"
+    },
+    {
+      "id": "cmp-2",
+      "customerId": "cust-2",
+      "name": "Founder VSL Offer Push",
+      "goal": "Booked Calls",
+      "channels": [
+        "Facebook"
+      ],
+      "dailyBudget": 3000,
+      "targetCpa": 130,
+      "mode": "Autopilot",
+      "stage": "Blocked",
+      "risk": "High"
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset-1",
+      "customerId": "cust-1",
+      "type": "VSL",
+      "url": "",
+      "notes": "90 second founder VSL with compliance-safe claims"
+    }
+  ],
+  "adInputRuns": [
+    {
+      "id": "run-1771083164299-f3377g",
+      "customerId": "cust-1771082991745-aon421",
+      "channels": [
+        "Facebook",
+        "Google"
+      ],
+      "objective": "Leads",
+      "cta": "Learn More",
+      "artifactName": "Enterprise Lakehouse Platform Offer",
+      "offer": "Unify data engineering, analytics, and AI on a single Lakehouse platform — reduce infrastructure costs, accelerate insights, and deploy production-ready AI faster without managing fragmented tools.",
+      "landingUrl": "https://www.databricks.com/product/data-lakehouse",
+      "audience": "Enterprise data leaders, engineering managers, analytics leaders, and AI/ML decision-makers at mid-market to enterprise companies (1,000+ employees).",
+      "strategyNotes": "Generate 2–3 ad input packs for Facebook and Google focused on enterprise data, analytics, and AI buyers. Emphasize cost reduction, platform consolidation, faster time-to-insight, and production AI readiness. Tone should be authoritative, technical, and executive-friendly. Avoid hype language — focus on operational outcomes and business impact. Assume long sales cycles and optimize for high-intent lead capture.",
+      "customInputs": "{\n  \"industry\": \"Enterprise Software\",\n  \"category\": \"Data & AI Platform\",\n  \"buyer_personas\": [\n    \"VP of Data\",\n    \"Head of Analytics\",\n    \"Director of Engineering\",\n    \"Chief Data Officer\",\n    \"AI/ML Lead\"\n  ],\n  \"company_size\": \"1000+ employees\",\n  \"sales_motion\": \"High ACV B2B\"\n}",
+      "createdAt": "2026-02-14T15:32:44.299Z",
+      "options": [
+        {
+          "id": "adopt-1771083164291-p47m0s",
+          "label": "Consolidation & Cost Reduction",
+          "rationale": "Target enterprise data and AI decision-makers with a focus on reducing cloud spend and consolidating tooling. Messaging is executive-technical and optimized for high-intent lead capture for Databricks' Enterprise Lakeho…",
+          "facebook": {
+            "campaignName": "Databricks - Enterprise Lakehouse Platform - Leads - Consolidation",
+            "objective": "Leads",
+            "adSetAudience": "Enterprise data leaders, engineering managers, analytics leaders, and AI/ML decision-makers at mid-market to enterprise companies (1,000+ employees)",
+            "placements": "Facebook Feed, Facebook Right Column, Instagram Feed",
+            "primaryText": "Databricks: Unify data engineering, analytics, and AI on a single Lakehouse platform to eliminate silos and reduce cloud infrastructure costs. Capture high-value leads for platform consolidation and cost optimization.",
+            "headline": "Enterprise Lakehouse Platform",
+            "description": "Consolidate data & AI to lower cloud spend and accelerate insights.",
+            "cta": "Learn More",
+            "destinationUrl": "https://www.databricks.com/product/data-lakehouse"
+          },
+          "google": {
+            "campaignName": "Databricks - Enterprise Lakehouse - Consolidation",
+            "campaignType": "Search",
+            "finalUrl": "https://www.databricks.com/product/data-lakehouse",
+            "path1": "lakehouse",
+            "path2": "enterprise",
+            "headlines": [
+              "Enterprise Lakehouse Platform",
+              "Reduce Cloud Spend",
+              "Production-Ready AI Faster"
+            ],
+            "descriptions": [
+              "Unify data engineering, analytics, and AI on one platform to lower costs and accelerate i…",
+              "Eliminate silos and deploy production-ready AI without managing fragmented infrastructure."
+            ],
+            "keywords": [
+              "lakehouse platform",
+              "enterprise data platform",
+              "unify data engineering and analytics",
+              "reduce cloud spend",
+              "production ready AI"
+            ],
+            "audienceSignal": "VP of Data, Head of Analytics, Director of Engineering, Chief Data Officer, AI/ML Lead at 1000+ employees; Enterprise S…"
+          }
+        },
+        {
+          "id": "adopt-1771083164298-o5qtzu",
+          "label": "Faster Time-to-Insight & Production AI",
+          "rationale": "Prioritize messaging around accelerating insights and achieving production-ready AI. Designed for analytics and AI/ML leaders in large organizations with long sales cycles — promote operational outcomes and faster ML de…",
+          "facebook": {
+            "campaignName": "Databricks - Enterprise Lakehouse Platform - Leads - Speed",
+            "objective": "Leads",
+            "adSetAudience": "Enterprise data leaders, engineering managers, analytics leaders, and AI/ML decision-makers at mid-market to enterprise companies (1,000+ employees)",
+            "placements": "Facebook Feed, Facebook Stories, Instagram Feed",
+            "primaryText": "Move from raw data to production-ready AI faster with Databricks. Consolidate analytics and ML workflows on a single Lakehouse to speed insights and shorten time-to-value for enterprise teams.",
+            "headline": "Faster Insights & Production AI",
+            "description": "Accelerate ML deployment and analytics without managing fragmented tools.",
+            "cta": "Learn More",
+            "destinationUrl": "https://www.databricks.com/product/data-lakehouse"
+          },
+          "google": {
+            "campaignName": "Databricks - Lakehouse - Fast Insights",
+            "campaignType": "Search",
+            "finalUrl": "https://www.databricks.com/product/data-lakehouse",
+            "path1": "data-ai",
+            "path2": "lakehouse",
+            "headlines": [
+              "Deploy Production AI Faster",
+              "Accelerate Time-to-Insight",
+              "Lakehouse for Enterprise"
+            ],
+            "descriptions": [
+              "Consolidate analytics and ML on Databricks to accelerate insights and reduce operational…",
+              "Trusted by enterprise teams to move models into production and unlock faster business imp…"
+            ],
+            "keywords": [
+              "production ready ai",
+              "accelerate time to insight",
+              "enterprise ml platform",
+              "data lakehouse for enterprise",
+              "deploy ai faster"
+            ],
+            "audienceSignal": "VP of Data, Head of Analytics, Director of Engineering, Chief Data Officer, AI/ML Lead at 1000+ employees; Enterprise S…"
+          }
+        },
+        {
+          "id": "adopt-1771083164299-1fl90x",
+          "label": "Eliminate Silos & Operational Efficiency",
+          "rationale": "Emphasize operational outcomes: eliminating data silos, simplifying infrastructure, and achieving real-time analytics. Targets engineering and analytics leaders responsible for platform decisions and cost-efficiency.",
+          "facebook": {
+            "campaignName": "Databricks - Enterprise Lakehouse Platform - Leads - Efficiency",
+            "objective": "Leads",
+            "adSetAudience": "Enterprise data leaders, engineering managers, analytics leaders, and AI/ML decision-makers at mid-market to enterprise companies (1,000+ employees)",
+            "placements": "Facebook Feed, Facebook Right Column, Instagram Feed",
+            "primaryText": "Databricks helps enterprise teams consolidate data engineering, analytics, and AI into a single, scalable Lakehouse platform. Eliminate silos, reduce cloud spend, and run real-time analytics without complex infrastructure management.",
+            "headline": "Consolidate Data & AI",
+            "description": "Eliminate silos and simplify operations for enterprise analytics and ML.",
+            "cta": "Learn More",
+            "destinationUrl": "https://www.databricks.com/product/data-lakehouse"
+          },
+          "google": {
+            "campaignName": "Databricks - Lakehouse - Eliminate Silos",
+            "campaignType": "Search",
+            "finalUrl": "https://www.databricks.com/product/data-lakehouse",
+            "path1": "consolidate",
+            "path2": "data-ai",
+            "headlines": [
+              "Consolidate Data & AI",
+              "Eliminate Data Silos",
+              "Simplify Enterprise Data"
+            ],
+            "descriptions": [
+              "Consolidate engineering, analytics, and ML on the Databricks Lakehouse to lower cloud cos…",
+              "Trusted by leading enterprises for real-time analytics and production ML at scale."
+            ],
+            "keywords": [
+              "eliminate data silos",
+              "consolidate analytics and ml",
+              "enterprise lakehouse",
+              "real time analytics platform",
+              "reduce cloud infrastructure costs"
+            ],
+            "audienceSignal": "VP of Data, Head of Analytics, Director of Engineering, Chief Data Officer, AI/ML Lead at 1000+ employees; Enterprise S…"
+          }
+        }
+      ]
+    }
+  ]
+}
