@@ -708,54 +708,6 @@ select:focus {
   resize: vertical;
 }
 
-.board-panel {
-  padding: 0.9rem;
-}
-
-.board-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.65rem;
-}
-
-.board-col {
-  min-height: 220px;
-  border: 1px solid #334f70;
-  border-radius: 0.8rem;
-  background: #0f1a2a;
-  padding: 0.5rem;
-}
-
-.board-col h3 {
-  font-size: 0.92rem;
-  margin-bottom: 0.45rem;
-}
-
-.board-stack {
-  display: grid;
-  gap: 0.45rem;
-}
-
-.campaign-card {
-  border: 1px solid #405f84;
-  border-radius: 0.7rem;
-  background: #101f33;
-  padding: 0.52rem;
-}
-
-.campaign-card p {
-  margin: 0.2rem 0 0;
-  color: #bdd1ea;
-  font-size: 0.8rem;
-}
-
-.badge-row {
-  display: flex;
-  gap: 0.32rem;
-  flex-wrap: wrap;
-  margin-top: 0.32rem;
-}
-
 .badge {
   border: 1px solid #406384;
   border-radius: 999px;
@@ -772,13 +724,6 @@ select:focus {
 .badge.ok {
   border-color: #2f7f56;
   color: #a7f0ca;
-}
-
-.card-actions {
-  margin-top: 0.4rem;
-  display: flex;
-  gap: 0.3rem;
-  flex-wrap: wrap;
 }
 
 .empty-col {

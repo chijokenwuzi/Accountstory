@@ -1,5 +1,3 @@
-const STAGES = ["Intake", "Creative QA", "Launch", "Optimization", "Scale", "Blocked"];
-
 let state = null;
 let serviceHealth = null;
 
@@ -28,7 +26,6 @@ const metricAutopilot = document.getElementById("metricAutopilot");
 const metricRisk = document.getElementById("metricRisk");
 
 const adInputRuns = document.getElementById("adInputRuns");
-const boardColumns = document.getElementById("boardColumns");
 const simulateBtn = document.getElementById("simulateBtn");
 const runOptionCursor = Object.create(null);
 const optionPlatformCursor = Object.create(null);
@@ -36,12 +33,6 @@ const PLATFORM_LABEL = {
   facebook: "Facebook",
   google: "Google"
 };
-
-function money(value) {
-  const num = Number(value || 0);
-  if (!Number.isFinite(num)) return "$0";
-  return `$${num.toLocaleString("en-US")}`;
-}
 
 function setMessage(node, type, text) {
   if (!node) return;
@@ -265,94 +256,6 @@ function renderIntegrations() {
       googleConnectStatus.textContent = "Not connected.";
     }
   }
-}
-
-function createCampaignCard(campaign) {
-  const card = document.createElement("article");
-  card.className = "campaign-card";
-
-  const title = document.createElement("strong");
-  title.textContent = campaign.name;
-
-  const customer = document.createElement("p");
-  customer.textContent = customerNameById(campaign.customerId);
-
-  const meta = document.createElement("p");
-  meta.textContent = `${campaign.goal} | ${money(campaign.dailyBudget)}/day | tCPA ${money(campaign.targetCpa)}`;
-
-  const badgeRow = document.createElement("div");
-  badgeRow.className = "badge-row";
-
-  const modeBadge = document.createElement("span");
-  modeBadge.className = "badge";
-  modeBadge.textContent = campaign.mode;
-
-  const riskBadge = document.createElement("span");
-  riskBadge.className = `badge${campaign.risk === "High" ? " warn" : ""}`;
-  riskBadge.textContent = `Risk ${campaign.risk}`;
-
-  const channelBadge = document.createElement("span");
-  channelBadge.className = "badge";
-  channelBadge.textContent = Array.isArray(campaign.channels) ? campaign.channels.join("+") : "";
-
-  badgeRow.appendChild(modeBadge);
-  badgeRow.appendChild(riskBadge);
-  badgeRow.appendChild(channelBadge);
-
-  const actions = document.createElement("div");
-  actions.className = "card-actions";
-
-  [
-    { action: "advance", label: "Advance" },
-    { action: "block", label: "Block" },
-    { action: "autopilot", label: "Autopilot" },
-    { action: "archive", label: "Archive" }
-  ].forEach((entry) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "btn btn-secondary btn-small";
-    button.textContent = entry.label;
-    button.dataset.action = entry.action;
-    button.dataset.id = campaign.id;
-    actions.appendChild(button);
-  });
-
-  card.appendChild(title);
-  card.appendChild(customer);
-  card.appendChild(meta);
-  card.appendChild(badgeRow);
-  card.appendChild(actions);
-  return card;
-}
-
-function renderBoard() {
-  boardColumns.innerHTML = "";
-
-  STAGES.forEach((stage) => {
-    const column = document.createElement("section");
-    column.className = "board-col";
-
-    const title = document.createElement("h3");
-    title.textContent = stage;
-
-    const stack = document.createElement("div");
-    stack.className = "board-stack";
-
-    const campaigns = state.campaigns.filter((campaign) => campaign.stage === stage);
-
-    if (!campaigns.length) {
-      const empty = document.createElement("p");
-      empty.className = "empty-col";
-      empty.textContent = "No campaigns";
-      stack.appendChild(empty);
-    } else {
-      campaigns.forEach((campaign) => stack.appendChild(createCampaignCard(campaign)));
-    }
-
-    column.appendChild(title);
-    column.appendChild(stack);
-    boardColumns.appendChild(column);
-  });
 }
 
 function formatTime(stamp) {
@@ -1161,7 +1064,6 @@ function renderAll() {
   renderMetrics();
   renderAdInputRuns();
   renderPublishQueue();
-  renderBoard();
 }
 
 async function saveIntegration(platform, formNode) {
@@ -1368,27 +1270,6 @@ buildCampaignForm.addEventListener("submit", async (event) => {
     state = payload.state;
     renderAll();
     setMessage(buildCampaignMessage, "success", payload.message || "Campaigns created.");
-  } catch (error) {
-    setMessage(buildCampaignMessage, "error", error.message);
-  }
-});
-
-boardColumns.addEventListener("click", async (event) => {
-  const target = event.target;
-  if (!(target instanceof HTMLElement)) return;
-
-  const action = target.dataset.action;
-  const id = target.dataset.id;
-  if (!action || !id) return;
-
-  try {
-    const payload = await request(`/api/campaigns/${encodeURIComponent(id)}/action`, {
-      method: "POST",
-      body: { action }
-    });
-
-    state = payload.state;
-    renderAll();
   } catch (error) {
     setMessage(buildCampaignMessage, "error", error.message);
   }
