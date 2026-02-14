@@ -11,8 +11,16 @@ const buildCampaignForm = document.getElementById("buildCampaignForm");
 const buildCustomer = document.getElementById("buildCustomer");
 const buildCampaignMessage = document.getElementById("buildCampaignMessage");
 const openAiStatus = document.getElementById("openAiStatus");
+const backToLandingBtn = document.getElementById("backToLandingBtn");
 const loadCustomerDefaultsBtn = document.getElementById("loadCustomerDefaultsBtn");
 const customerDefaultsHint = document.getElementById("customerDefaultsHint");
+const integrationMessage = document.getElementById("integrationMessage");
+const facebookConnectForm = document.getElementById("facebookConnectForm");
+const googleConnectForm = document.getElementById("googleConnectForm");
+const facebookConnectStatus = document.getElementById("facebookConnectStatus");
+const googleConnectStatus = document.getElementById("googleConnectStatus");
+const publishQueue = document.getElementById("publishQueue");
+const publishMessage = document.getElementById("publishMessage");
 
 const guardrailForm = document.getElementById("guardrailForm");
 const budgetCap = document.getElementById("budgetCap");
@@ -32,6 +40,10 @@ const metricRisk = document.getElementById("metricRisk");
 const adInputRuns = document.getElementById("adInputRuns");
 const boardColumns = document.getElementById("boardColumns");
 const simulateBtn = document.getElementById("simulateBtn");
+const PLATFORM_LABEL = {
+  facebook: "Facebook",
+  google: "Google"
+};
 
 function money(value) {
   const num = Number(value || 0);
@@ -40,8 +52,33 @@ function money(value) {
 }
 
 function setMessage(node, type, text) {
+  if (!node) return;
   node.textContent = text || "";
   node.className = type ? `message ${type}` : "message";
+}
+
+function platformKey(value) {
+  const key = String(value || "").trim().toLowerCase();
+  return key === "facebook" || key === "google" ? key : "";
+}
+
+function platformLabel(value) {
+  const key = platformKey(value);
+  return PLATFORM_LABEL[key] || key;
+}
+
+function integrationState(platform) {
+  const key = platformKey(platform);
+  if (!state || !key || !state.integrations || typeof state.integrations !== "object") return null;
+  return state.integrations[key] || null;
+}
+
+function connectedPlatforms() {
+  if (!state || !state.integrations) return [];
+  return ["facebook", "google"].filter((platform) => {
+    const entry = state.integrations[platform];
+    return entry && entry.connected;
+  });
 }
 
 function customerNameById(customerId) {
@@ -177,6 +214,10 @@ function renderMetrics() {
 }
 
 function renderServiceStatus() {
+  if (backToLandingBtn && serviceHealth && serviceHealth.landingUrl) {
+    backToLandingBtn.href = String(serviceHealth.landingUrl);
+  }
+
   if (!openAiStatus) return;
   if (!serviceHealth) {
     openAiStatus.textContent = "Checking OpenAI connection...";
@@ -194,6 +235,44 @@ function renderServiceStatus() {
   }
 
   openAiStatus.textContent = "OpenAI key missing. Set OPENAI_API_KEY, then restart the server.";
+}
+
+function fillIntegrationForm(form, connection) {
+  if (!form || !connection) return;
+  const accountName = form.elements.namedItem("accountName");
+  const accountId = form.elements.namedItem("accountId");
+  const businessId = form.elements.namedItem("businessId");
+  const tokenHint = form.elements.namedItem("tokenHint");
+
+  if (accountName instanceof HTMLInputElement) accountName.value = connection.accountName || "";
+  if (accountId instanceof HTMLInputElement) accountId.value = connection.accountId || "";
+  if (businessId instanceof HTMLInputElement) businessId.value = connection.businessId || "";
+  if (tokenHint instanceof HTMLInputElement) tokenHint.value = connection.tokenMask || "";
+}
+
+function renderIntegrations() {
+  const facebook = integrationState("facebook");
+  const google = integrationState("google");
+  fillIntegrationForm(facebookConnectForm, facebook);
+  fillIntegrationForm(googleConnectForm, google);
+
+  if (facebookConnectStatus) {
+    if (facebook && facebook.connected) {
+      const label = facebook.accountName ? facebook.accountName : "connected account";
+      facebookConnectStatus.textContent = `Connected: ${label}${facebook.connectedAt ? ` | ${formatTime(facebook.connectedAt)}` : ""}`;
+    } else {
+      facebookConnectStatus.textContent = "Not connected.";
+    }
+  }
+
+  if (googleConnectStatus) {
+    if (google && google.connected) {
+      const label = google.accountName ? google.accountName : "connected account";
+      googleConnectStatus.textContent = `Connected: ${label}${google.connectedAt ? ` | ${formatTime(google.connectedAt)}` : ""}`;
+    } else {
+      googleConnectStatus.textContent = "Not connected.";
+    }
+  }
 }
 
 function createCampaignCard(campaign) {
@@ -305,6 +384,157 @@ function formatTime(stamp) {
   } catch {
     return "Unknown time";
   }
+}
+
+function optionPlatforms(option) {
+  const platforms = [];
+  if (option && option.facebook) platforms.push("facebook");
+  if (option && option.google) platforms.push("google");
+  return platforms;
+}
+
+function createQueueButtons(runId, option) {
+  const wrap = document.createElement("div");
+  wrap.className = "publish-actions";
+  const optionId = String(option && option.id ? option.id : "");
+
+  const available = optionPlatforms(option);
+  const connected = connectedPlatforms();
+  const connectedAvailable = available.filter((platform) => connected.includes(platform));
+
+  const publishConnected = document.createElement("button");
+  publishConnected.type = "button";
+  publishConnected.className = "btn btn-secondary btn-small";
+  publishConnected.textContent = connectedAvailable.length
+    ? `Queue Connected (${connectedAvailable.map(platformLabel).join(", ")})`
+    : "Queue Connected";
+  publishConnected.dataset.publishAction = "queue-option";
+  publishConnected.dataset.runId = runId;
+  publishConnected.dataset.optionId = optionId;
+  publishConnected.disabled = !connectedAvailable.length || !optionId;
+  wrap.appendChild(publishConnected);
+
+  available.forEach((platform) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn btn-secondary btn-small";
+    button.textContent = `Queue ${platformLabel(platform)}`;
+    button.dataset.publishAction = "queue-platform";
+    button.dataset.platform = platform;
+    button.dataset.runId = runId;
+    button.dataset.optionId = optionId;
+    button.disabled = !connected.includes(platform) || !optionId;
+    wrap.appendChild(button);
+  });
+
+  return wrap;
+}
+
+function statusClass(value) {
+  const status = String(value || "").toLowerCase();
+  if (status === "sent") return "ok";
+  if (status === "failed") return "warn";
+  if (status === "archived") return "";
+  return "";
+}
+
+function renderPublishQueue() {
+  if (!publishQueue) return;
+  publishQueue.innerHTML = "";
+  const jobs = Array.isArray(state.publishJobs)
+    ? state.publishJobs.filter((entry) => entry.customerId === state.selectedCustomerId)
+    : [];
+
+  if (!jobs.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-col";
+    empty.textContent = "No publish jobs yet. Queue jobs from generated ad options.";
+    publishQueue.appendChild(empty);
+    return;
+  }
+
+  jobs.slice(0, 50).forEach((job) => {
+    const card = document.createElement("article");
+    card.className = "queue-job";
+
+    const top = document.createElement("div");
+    top.className = "queue-top";
+
+    const title = document.createElement("strong");
+    title.textContent = `${platformLabel(job.platform)} | ${job.optionLabel || "Option"}`;
+
+    const badge = document.createElement("span");
+    badge.className = `badge ${statusClass(job.status)}`.trim();
+    badge.textContent = job.status || "Ready";
+
+    top.appendChild(title);
+    top.appendChild(badge);
+
+    const meta = document.createElement("p");
+    meta.className = "queue-meta";
+    const account = job.integrationAccountName ? ` | ${job.integrationAccountName}` : "";
+    meta.textContent = `${formatTime(job.createdAt)} | ${job.campaignName || "Campaign"}${account}`;
+
+    const summary = document.createElement("p");
+    summary.className = "queue-meta";
+    summary.textContent = job.lastError ? `Last Error: ${job.lastError}` : "Prepared payload and waiting for API connector.";
+
+    const actions = document.createElement("div");
+    actions.className = "publish-actions";
+
+    const payloadCopy = document.createElement("button");
+    payloadCopy.type = "button";
+    payloadCopy.className = "btn btn-secondary btn-small";
+    payloadCopy.textContent = "Copy Payload JSON";
+    payloadCopy.dataset.copy = JSON.stringify(job.payload || {}, null, 2);
+    actions.appendChild(payloadCopy);
+
+    if (String(job.status || "").toLowerCase() !== "sent") {
+      const sentBtn = document.createElement("button");
+      sentBtn.type = "button";
+      sentBtn.className = "btn btn-secondary btn-small";
+      sentBtn.textContent = "Mark Sent";
+      sentBtn.dataset.publishAction = "job-action";
+      sentBtn.dataset.jobId = job.id;
+      sentBtn.dataset.jobAction = "mark_sent";
+      actions.appendChild(sentBtn);
+    }
+
+    if (String(job.status || "").toLowerCase() !== "failed") {
+      const failBtn = document.createElement("button");
+      failBtn.type = "button";
+      failBtn.className = "btn btn-secondary btn-small";
+      failBtn.textContent = "Mark Failed";
+      failBtn.dataset.publishAction = "job-action";
+      failBtn.dataset.jobId = job.id;
+      failBtn.dataset.jobAction = "mark_failed";
+      actions.appendChild(failBtn);
+    } else {
+      const retryBtn = document.createElement("button");
+      retryBtn.type = "button";
+      retryBtn.className = "btn btn-secondary btn-small";
+      retryBtn.textContent = "Retry";
+      retryBtn.dataset.publishAction = "job-action";
+      retryBtn.dataset.jobId = job.id;
+      retryBtn.dataset.jobAction = "retry";
+      actions.appendChild(retryBtn);
+    }
+
+    const archiveBtn = document.createElement("button");
+    archiveBtn.type = "button";
+    archiveBtn.className = "btn btn-secondary btn-small";
+    archiveBtn.textContent = "Archive";
+    archiveBtn.dataset.publishAction = "job-action";
+    archiveBtn.dataset.jobId = job.id;
+    archiveBtn.dataset.jobAction = "archive";
+    actions.appendChild(archiveBtn);
+
+    card.appendChild(top);
+    card.appendChild(meta);
+    card.appendChild(summary);
+    card.appendChild(actions);
+    publishQueue.appendChild(card);
+  });
 }
 
 function createCopyRow(label, value) {
@@ -462,6 +692,7 @@ function renderAdInputRuns() {
 
       optionCard.appendChild(optionTitle);
       optionCard.appendChild(rationale);
+      optionCard.appendChild(createQueueButtons(run.id, option));
 
       if (option.facebook) {
         optionCard.appendChild(createPlatformBlock("Facebook", option.facebook));
@@ -484,12 +715,64 @@ function renderAll() {
   renderServiceStatus();
   renderCustomerOptions();
   renderCustomerList();
+  renderIntegrations();
   renderCustomerDefaultsHint();
   applyCustomerDefaults(false);
   renderGuardrails();
   renderMetrics();
   renderAdInputRuns();
+  renderPublishQueue();
   renderBoard();
+}
+
+async function saveIntegration(platform, formNode) {
+  const formData = new FormData(formNode);
+  const payload = await request(`/api/integrations/${encodeURIComponent(platform)}/connect`, {
+    method: "POST",
+    body: {
+      accountName: String(formData.get("accountName") || "").trim(),
+      accountId: String(formData.get("accountId") || "").trim(),
+      businessId: String(formData.get("businessId") || "").trim(),
+      tokenHint: String(formData.get("tokenHint") || "").trim()
+    }
+  });
+  state = payload.state;
+  renderAll();
+  setMessage(integrationMessage, "success", payload.message || `${platformLabel(platform)} connected.`);
+}
+
+async function disconnectIntegration(platform) {
+  const payload = await request(`/api/integrations/${encodeURIComponent(platform)}/disconnect`, {
+    method: "POST"
+  });
+  state = payload.state;
+  renderAll();
+  setMessage(integrationMessage, "success", payload.message || `${platformLabel(platform)} disconnected.`);
+}
+
+async function queuePublish(runId, optionId, platforms = []) {
+  const payload = await request("/api/publish/jobs", {
+    method: "POST",
+    body: {
+      customerId: state.selectedCustomerId,
+      runId,
+      optionId,
+      platforms
+    }
+  });
+  state = payload.state;
+  renderAll();
+  setMessage(publishMessage, "success", payload.message || "Publish jobs queued.");
+}
+
+async function runJobAction(jobId, action) {
+  const payload = await request(`/api/publish/jobs/${encodeURIComponent(jobId)}/action`, {
+    method: "POST",
+    body: { action }
+  });
+  state = payload.state;
+  renderAll();
+  setMessage(publishMessage, "success", payload.message || "Publish job updated.");
 }
 
 customerList.addEventListener("click", async (event) => {
@@ -549,6 +832,41 @@ customerForm.addEventListener("submit", async (event) => {
   }
 });
 
+if (facebookConnectForm) {
+  facebookConnectForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    try {
+      await saveIntegration("facebook", facebookConnectForm);
+    } catch (error) {
+      setMessage(integrationMessage, "error", error.message);
+    }
+  });
+}
+
+if (googleConnectForm) {
+  googleConnectForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    try {
+      await saveIntegration("google", googleConnectForm);
+    } catch (error) {
+      setMessage(integrationMessage, "error", error.message);
+    }
+  });
+}
+
+document.addEventListener("click", async (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  const disconnectPlatform = platformKey(target.dataset.disconnectPlatform);
+  if (!disconnectPlatform) return;
+
+  try {
+    await disconnectIntegration(disconnectPlatform);
+  } catch (error) {
+    setMessage(integrationMessage, "error", error.message);
+  }
+});
+
 buildCustomer.addEventListener("change", async () => {
   const customerId = String(buildCustomer.value || "");
   if (!customerId) return;
@@ -567,6 +885,18 @@ if (loadCustomerDefaultsBtn) {
     applyCustomerDefaults(true);
     renderCustomerDefaultsHint();
     setMessage(buildCampaignMessage, "success", "Customer defaults loaded into campaign builder.");
+  });
+}
+
+if (backToLandingBtn) {
+  backToLandingBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    const fallback = serviceHealth && serviceHealth.landingUrl ? String(serviceHealth.landingUrl) : "/landing.html";
+    window.location.href = fallback;
   });
 }
 
@@ -677,6 +1007,25 @@ async function copyToClipboard(text) {
 adInputRuns.addEventListener("click", async (event) => {
   const target = event.target;
   if (!(target instanceof HTMLElement)) return;
+
+  const publishAction = String(target.dataset.publishAction || "");
+  if (publishAction) {
+    const runId = String(target.dataset.runId || "");
+    const optionId = String(target.dataset.optionId || "");
+    const platform = platformKey(target.dataset.platform);
+
+    try {
+      if (publishAction === "queue-option") {
+        await queuePublish(runId, optionId, []);
+      } else if (publishAction === "queue-platform" && platform) {
+        await queuePublish(runId, optionId, [platform]);
+      }
+    } catch (error) {
+      setMessage(publishMessage, "error", error.message);
+    }
+    return;
+  }
+
   const text = target.dataset.copy;
   if (!text) return;
 
@@ -687,6 +1036,36 @@ adInputRuns.addEventListener("click", async (event) => {
     setMessage(buildCampaignMessage, "error", "Unable to copy. Copy manually from the field text.");
   }
 });
+
+if (publishQueue) {
+  publishQueue.addEventListener("click", async (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+
+    const action = String(target.dataset.publishAction || "");
+    if (action === "job-action") {
+      const jobId = String(target.dataset.jobId || "");
+      const jobAction = String(target.dataset.jobAction || "");
+      if (!jobId || !jobAction) return;
+
+      try {
+        await runJobAction(jobId, jobAction);
+      } catch (error) {
+        setMessage(publishMessage, "error", error.message);
+      }
+      return;
+    }
+
+    const text = target.dataset.copy;
+    if (!text) return;
+    try {
+      await copyToClipboard(text);
+      setMessage(publishMessage, "success", "Payload copied.");
+    } catch {
+      setMessage(publishMessage, "error", "Unable to copy payload.");
+    }
+  });
+}
 
 simulateBtn.addEventListener("click", async () => {
   try {

@@ -34,11 +34,13 @@ const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5-mini";
 const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
 const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 30000);
 const OPENAI_ALLOW_FALLBACK = process.env.OPENAI_ALLOW_FALLBACK === "true";
+const LANDING_URL = normalizeLandingUrl(process.env.LANDING_URL);
 const ROOT = __dirname;
 const DATA_DIR = path.join(ROOT, "data");
 const STORE_PATH = path.join(DATA_DIR, "store.json");
 const STAGES = ["Intake", "Creative QA", "Launch", "Optimization", "Scale", "Blocked"];
 const ACTIVE_STAGES = new Set(["Launch", "Optimization", "Scale"]);
+const PUBLISH_PLATFORMS = ["facebook", "google"];
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -170,7 +172,28 @@ const DEFAULT_STORE = {
       notes: "90 second founder VSL with compliance-safe claims"
     }
   ],
-  adInputRuns: []
+  adInputRuns: [],
+  integrations: {
+    facebook: {
+      connected: false,
+      accountName: "",
+      accountId: "",
+      businessId: "",
+      tokenMask: "",
+      connectedAt: "",
+      updatedAt: ""
+    },
+    google: {
+      connected: false,
+      accountName: "",
+      accountId: "",
+      businessId: "",
+      tokenMask: "",
+      connectedAt: "",
+      updatedAt: ""
+    }
+  },
+  publishJobs: []
 };
 
 function cloneDefaults() {
@@ -211,6 +234,31 @@ function normalizeText(value) {
   return String(value || "").replace(/\s+/g, " ").trim();
 }
 
+function normalizeLandingUrl(value) {
+  const text = String(value || "").trim();
+  if (!text) return "/landing.html";
+  return text;
+}
+
+function platformKey(value) {
+  const key = normalizeText(value).toLowerCase();
+  return PUBLISH_PLATFORMS.includes(key) ? key : "";
+}
+
+function platformLabel(value) {
+  const key = platformKey(value);
+  if (key === "facebook") return "Facebook";
+  if (key === "google") return "Google";
+  return key;
+}
+
+function maskCredential(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const safeTail = raw.slice(-4);
+  return `••••${safeTail}`;
+}
+
 function normalizeCustomer(entry, fallbackId) {
   const source = entry && typeof entry === "object" ? entry : {};
   return {
@@ -225,6 +273,65 @@ function normalizeCustomer(entry, fallbackId) {
     defaultLandingUrl: normalizeText(source.defaultLandingUrl),
     customerNotes: normalizeText(source.customerNotes)
   };
+}
+
+function normalizeIntegration(entry) {
+  const source = entry && typeof entry === "object" ? entry : {};
+  return {
+    connected: Boolean(source.connected),
+    accountName: normalizeText(source.accountName),
+    accountId: normalizeText(source.accountId),
+    businessId: normalizeText(source.businessId),
+    tokenMask: normalizeText(source.tokenMask),
+    connectedAt: normalizeText(source.connectedAt),
+    updatedAt: normalizeText(source.updatedAt)
+  };
+}
+
+function normalizePublishJob(entry) {
+  const source = entry && typeof entry === "object" ? entry : {};
+  const statusRaw = normalizeText(source.status) || "Ready";
+  const status =
+    ["Ready", "Sent", "Failed", "Archived"].includes(statusRaw) ? statusRaw : "Ready";
+  const platform = platformKey(source.platform);
+  return {
+    id: String(source.id || uid("job")),
+    customerId: normalizeText(source.customerId),
+    runId: normalizeText(source.runId),
+    optionId: normalizeText(source.optionId),
+    optionLabel: normalizeText(source.optionLabel),
+    campaignName: normalizeText(source.campaignName),
+    platform,
+    status,
+    integrationAccountName: normalizeText(source.integrationAccountName),
+    attempts: Number.isFinite(Number(source.attempts)) ? Math.max(0, Number(source.attempts)) : 0,
+    externalId: normalizeText(source.externalId),
+    lastError: normalizeText(source.lastError),
+    createdAt: normalizeText(source.createdAt) || new Date().toISOString(),
+    updatedAt: normalizeText(source.updatedAt) || new Date().toISOString(),
+    payload: source.payload && typeof source.payload === "object" ? source.payload : {},
+    log: Array.isArray(source.log)
+      ? source.log
+          .filter((item) => item && typeof item === "object")
+          .slice(0, 40)
+          .map((item) => ({
+            at: normalizeText(item.at) || new Date().toISOString(),
+            event: normalizeText(item.event) || "Update",
+            detail: normalizeText(item.detail)
+          }))
+      : []
+  };
+}
+
+function appendJobLog(job, event, detail) {
+  const next = {
+    at: new Date().toISOString(),
+    event: normalizeText(event) || "Update",
+    detail: normalizeText(detail)
+  };
+  const existing = Array.isArray(job.log) ? job.log : [];
+  job.log = [next, ...existing].slice(0, 40);
+  job.updatedAt = next.at;
 }
 
 function parseCustomInputs(value) {
@@ -756,6 +863,7 @@ function normalizeStore(raw) {
   if (!Array.isArray(next.campaigns)) next.campaigns = [];
   if (!Array.isArray(next.assets)) next.assets = [];
   if (!Array.isArray(next.adInputRuns)) next.adInputRuns = [];
+  if (!Array.isArray(next.publishJobs)) next.publishJobs = [];
 
   if (!next.selectedCustomerId || !next.customers.some((entry) => entry.id === next.selectedCustomerId)) {
     next.selectedCustomerId = next.customers[0].id;
@@ -764,6 +872,15 @@ function normalizeStore(raw) {
   next.guardrails = {
     ...base.guardrails,
     ...(next.guardrails && typeof next.guardrails === "object" ? next.guardrails : {})
+  };
+
+  next.integrations = {
+    facebook: normalizeIntegration(
+      next.integrations && typeof next.integrations === "object" ? next.integrations.facebook : {}
+    ),
+    google: normalizeIntegration(
+      next.integrations && typeof next.integrations === "object" ? next.integrations.google : {}
+    )
   };
 
   next.campaigns = next.campaigns.map((campaign) => {
@@ -803,6 +920,12 @@ function normalizeStore(raw) {
       createdAt: normalizeText(entry.createdAt) || new Date().toISOString(),
       options: Array.isArray(entry.options) ? entry.options.slice(0, 3) : []
     }));
+
+  next.publishJobs = next.publishJobs
+    .filter((entry) => entry && typeof entry === "object")
+    .slice(0, 300)
+    .map((entry) => normalizePublishJob(entry))
+    .filter((entry) => Boolean(entry.platform));
 
   return next;
 }
@@ -863,6 +986,23 @@ async function serveStatic(res, pathname) {
   }
 }
 
+function optionByIds(store, runId, optionId) {
+  const run = Array.isArray(store.adInputRuns) ? store.adInputRuns.find((entry) => entry.id === runId) : null;
+  if (!run) return { run: null, option: null };
+  const option = Array.isArray(run.options) ? run.options.find((entry) => entry && entry.id === optionId) : null;
+  return { run, option: option || null };
+}
+
+function publishPayload(option, platform) {
+  if (platform === "facebook") {
+    return option && option.facebook && typeof option.facebook === "object" ? option.facebook : null;
+  }
+  if (platform === "google") {
+    return option && option.google && typeof option.google === "object" ? option.google : null;
+  }
+  return null;
+}
+
 async function handleApi(req, res, pathname) {
   const method = req.method || "GET";
   const store = await readStore();
@@ -873,7 +1013,8 @@ async function handleApi(req, res, pathname) {
       service: "accountstory-backend-workspace",
       openAiConfigured: Boolean(OPENAI_API_KEY),
       openAiFallbackEnabled: OPENAI_ALLOW_FALLBACK,
-      model: OPENAI_MODEL
+      model: OPENAI_MODEL,
+      landingUrl: LANDING_URL
     });
   }
 
@@ -894,6 +1035,76 @@ async function handleApi(req, res, pathname) {
     store.selectedCustomerId = customerId;
     await writeStore(store);
     return sendJson(res, 200, { state: normalizeStore(store), message: "Selection updated." });
+  }
+
+  const connectMatch = pathname.match(/^\/api\/integrations\/([^/]+)\/connect$/);
+  if (method === "POST" && connectMatch) {
+    const platform = platformKey(connectMatch[1]);
+    if (!platform) {
+      return sendJson(res, 404, { error: "Unsupported integration platform." });
+    }
+
+    const body = await parseBody(req);
+    const accountName = normalizeText(body.accountName);
+    const accountId = normalizeText(body.accountId);
+    const businessId = normalizeText(body.businessId);
+    const tokenHint = normalizeText(body.tokenHint);
+    const existing =
+      store.integrations && typeof store.integrations === "object"
+        ? normalizeIntegration(store.integrations[platform])
+        : normalizeIntegration({});
+
+    const now = new Date().toISOString();
+    const next = {
+      ...existing,
+      connected: true,
+      accountName,
+      accountId,
+      businessId,
+      tokenMask: tokenHint ? maskCredential(tokenHint) : existing.tokenMask,
+      connectedAt: existing.connectedAt || now,
+      updatedAt: now
+    };
+
+    store.integrations = {
+      ...(store.integrations && typeof store.integrations === "object" ? store.integrations : {}),
+      [platform]: next
+    };
+
+    await writeStore(store);
+    return sendJson(res, 200, {
+      state: normalizeStore(store),
+      message: `${platformLabel(platform)} connection saved.`
+    });
+  }
+
+  const disconnectMatch = pathname.match(/^\/api\/integrations\/([^/]+)\/disconnect$/);
+  if (method === "POST" && disconnectMatch) {
+    const platform = platformKey(disconnectMatch[1]);
+    if (!platform) {
+      return sendJson(res, 404, { error: "Unsupported integration platform." });
+    }
+
+    const existing =
+      store.integrations && typeof store.integrations === "object"
+        ? normalizeIntegration(store.integrations[platform])
+        : normalizeIntegration({});
+
+    store.integrations = {
+      ...(store.integrations && typeof store.integrations === "object" ? store.integrations : {}),
+      [platform]: {
+        ...existing,
+        connected: false,
+        tokenMask: "",
+        updatedAt: new Date().toISOString()
+      }
+    };
+
+    await writeStore(store);
+    return sendJson(res, 200, {
+      state: normalizeStore(store),
+      message: `${platformLabel(platform)} disconnected.`
+    });
   }
 
   if (method === "POST" && pathname === "/api/customers") {
@@ -1142,6 +1353,106 @@ async function handleApi(req, res, pathname) {
     });
   }
 
+  if (method === "POST" && pathname === "/api/publish/jobs") {
+    const body = await parseBody(req);
+    const customerId = normalizeText(body.customerId) || store.selectedCustomerId;
+    const runId = normalizeText(body.runId);
+    const optionId = normalizeText(body.optionId);
+    const requestedPlatforms = Array.isArray(body.platforms)
+      ? Array.from(new Set(body.platforms.map((entry) => platformKey(entry)).filter(Boolean)))
+      : [];
+
+    if (!customerId || !runId || !optionId) {
+      return sendJson(res, 400, { error: "customerId, runId and optionId are required." });
+    }
+
+    if (!store.customers.some((entry) => entry.id === customerId)) {
+      return sendJson(res, 404, { error: "Customer not found." });
+    }
+
+    const { run, option } = optionByIds(store, runId, optionId);
+    if (!run || !option) {
+      return sendJson(res, 404, { error: "Ad option not found for publish queueing." });
+    }
+
+    if (run.customerId !== customerId) {
+      return sendJson(res, 400, { error: "Run does not belong to selected customer." });
+    }
+
+    const availablePlatforms = [];
+    if (publishPayload(option, "facebook")) availablePlatforms.push("facebook");
+    if (publishPayload(option, "google")) availablePlatforms.push("google");
+    if (!availablePlatforms.length) {
+      return sendJson(res, 400, { error: "Option has no publishable platform payloads." });
+    }
+
+    const targetPlatforms = requestedPlatforms.length
+      ? requestedPlatforms.filter((entry) => availablePlatforms.includes(entry))
+      : availablePlatforms;
+    if (!targetPlatforms.length) {
+      return sendJson(res, 400, { error: "Requested platforms are unavailable for this option." });
+    }
+
+    const queuedJobs = [];
+    const skippedPlatforms = [];
+    targetPlatforms.forEach((platform) => {
+      const integration = normalizeIntegration(
+        store.integrations && typeof store.integrations === "object" ? store.integrations[platform] : {}
+      );
+      if (!integration.connected) {
+        skippedPlatforms.push(platformLabel(platform));
+        return;
+      }
+
+      const payload = publishPayload(option, platform);
+      if (!payload) return;
+      const now = new Date().toISOString();
+      const job = normalizePublishJob({
+        id: uid("job"),
+        customerId,
+        runId,
+        optionId,
+        optionLabel: normalizeText(option.label) || "Ad Option",
+        campaignName: normalizeText(payload.campaignName),
+        platform,
+        status: "Ready",
+        integrationAccountName: integration.accountName || integration.accountId || platformLabel(platform),
+        attempts: 0,
+        createdAt: now,
+        updatedAt: now,
+        payload,
+        log: []
+      });
+      appendJobLog(job, "Queued", "Payload prepared and ready for API connector.");
+      queuedJobs.push(job);
+    });
+
+    if (!queuedJobs.length) {
+      const hint = skippedPlatforms.length
+        ? ` Connect: ${skippedPlatforms.join(", ")}`
+        : "";
+      return sendJson(res, 400, { error: `No jobs queued.${hint}`.trim() });
+    }
+
+    if (!Array.isArray(store.publishJobs)) store.publishJobs = [];
+    for (let i = queuedJobs.length - 1; i >= 0; i -= 1) {
+      store.publishJobs.unshift(queuedJobs[i]);
+    }
+    if (store.publishJobs.length > 300) {
+      store.publishJobs.length = 300;
+    }
+
+    store.selectedCustomerId = customerId;
+    await writeStore(store);
+
+    const skippedLabel = skippedPlatforms.length ? ` Skipped: ${skippedPlatforms.join(", ")}.` : "";
+    return sendJson(res, 201, {
+      state: normalizeStore(store),
+      jobs: queuedJobs,
+      message: `Queued ${queuedJobs.length} publish job(s).${skippedLabel}`
+    });
+  }
+
   if (method === "POST" && pathname === "/api/assets") {
     const body = await parseBody(req);
     const customerId = normalizeText(body.customerId);
@@ -1275,6 +1586,48 @@ async function handleApi(req, res, pathname) {
       state: normalizeStore(store),
       run,
       message: `Generated ${options.length} ad input packs for ${customer.name}.`
+    });
+  }
+
+  const publishActionMatch = pathname.match(/^\/api\/publish\/jobs\/([^/]+)\/action$/);
+  if (method === "POST" && publishActionMatch) {
+    const jobId = decodeURIComponent(publishActionMatch[1]);
+    const body = await parseBody(req);
+    const action = normalizeText(body.action).toLowerCase();
+
+    if (!Array.isArray(store.publishJobs)) store.publishJobs = [];
+    const job = store.publishJobs.find((entry) => entry.id === jobId);
+    if (!job) {
+      return sendJson(res, 404, { error: "Publish job not found." });
+    }
+
+    if (action === "mark_sent") {
+      const externalId = normalizeText(body.externalId) || `${job.platform}-${Date.now()}`;
+      job.status = "Sent";
+      job.externalId = externalId;
+      job.lastError = "";
+      appendJobLog(job, "Marked Sent", `External ID: ${externalId}`);
+    } else if (action === "mark_failed") {
+      const reason = normalizeText(body.reason) || "Marked failed by operator.";
+      job.status = "Failed";
+      job.lastError = reason;
+      appendJobLog(job, "Marked Failed", reason);
+    } else if (action === "retry") {
+      job.status = "Ready";
+      job.lastError = "";
+      job.attempts = Number(job.attempts || 0) + 1;
+      appendJobLog(job, "Retry", `Retry attempt ${job.attempts}`);
+    } else if (action === "archive") {
+      job.status = "Archived";
+      appendJobLog(job, "Archived", "Moved out of active publish queue.");
+    } else {
+      return sendJson(res, 400, { error: "Invalid publish job action." });
+    }
+
+    await writeStore(store);
+    return sendJson(res, 200, {
+      state: normalizeStore(store),
+      message: "Publish job updated."
     });
   }
 

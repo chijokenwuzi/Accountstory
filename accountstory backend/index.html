@@ -22,7 +22,10 @@
         <h1>Team Ad Ops Workspace</h1>
         <p class="subtext">Run Facebook and Google campaigns for customers with controlled automation.</p>
       </div>
-      <button id="simulateBtn" class="btn btn-primary" type="button">Run 24h Cycle</button>
+      <div class="topbar-actions">
+        <a id="backToLandingBtn" class="btn btn-secondary" href="/landing.html">Back</a>
+        <button id="simulateBtn" class="btn btn-primary" type="button">Run 24h Cycle</button>
+      </div>
     </header>
 
     <div class="workspace-scroll">
@@ -232,6 +235,65 @@
                 <p id="guardrailMessage" class="message"></p>
               </form>
             </article>
+
+            <article class="panel">
+              <div class="panel-head">
+                <h2>Channel Connections</h2>
+                <p>Store account details and mark channels as connected. API calls can be plugged in later.</p>
+              </div>
+              <div class="integration-grid">
+                <form id="facebookConnectForm" class="integration-card form-stack" data-platform="facebook">
+                  <h3>Facebook Ads</h3>
+                  <p id="facebookConnectStatus" class="subtext"></p>
+                  <label>
+                    Account name
+                    <input name="accountName" type="text" maxlength="140" placeholder="Northline Dental Ads" />
+                  </label>
+                  <label>
+                    Account ID
+                    <input name="accountId" type="text" maxlength="80" placeholder="act_1234567890" />
+                  </label>
+                  <label>
+                    Business ID (optional)
+                    <input name="businessId" type="text" maxlength="80" placeholder="1234567890" />
+                  </label>
+                  <label>
+                    Token / credential hint
+                    <input name="tokenHint" type="text" maxlength="220" placeholder="Paste token or secret hint" />
+                  </label>
+                  <div class="choice-row">
+                    <button class="btn btn-secondary" type="submit">Save + Connect</button>
+                    <button class="btn btn-secondary" type="button" data-disconnect-platform="facebook">Disconnect</button>
+                  </div>
+                </form>
+
+                <form id="googleConnectForm" class="integration-card form-stack" data-platform="google">
+                  <h3>Google Ads</h3>
+                  <p id="googleConnectStatus" class="subtext"></p>
+                  <label>
+                    Account name
+                    <input name="accountName" type="text" maxlength="140" placeholder="Northline Dental Google" />
+                  </label>
+                  <label>
+                    Customer ID
+                    <input name="accountId" type="text" maxlength="80" placeholder="123-456-7890" />
+                  </label>
+                  <label>
+                    Manager ID (optional)
+                    <input name="businessId" type="text" maxlength="80" placeholder="098-765-4321" />
+                  </label>
+                  <label>
+                    Token / credential hint
+                    <input name="tokenHint" type="text" maxlength="220" placeholder="Paste token or secret hint" />
+                  </label>
+                  <div class="choice-row">
+                    <button class="btn btn-secondary" type="submit">Save + Connect</button>
+                    <button class="btn btn-secondary" type="button" data-disconnect-platform="google">Disconnect</button>
+                  </div>
+                </form>
+              </div>
+              <p id="integrationMessage" class="message"></p>
+            </article>
           </section>
 
           <section class="panel ad-output-panel">
@@ -240,6 +302,15 @@
               <p>Copy each field directly into Facebook Ads Manager or Google Ads UI.</p>
             </div>
             <div id="adInputRuns" class="ad-run-list"></div>
+          </section>
+
+          <section class="panel ad-output-panel">
+            <div class="panel-head">
+              <h2>Publish Queue</h2>
+              <p>API-ready publish jobs. Queue from generated options, then mark sent/failed/retry.</p>
+            </div>
+            <div id="publishQueue" class="queue-list"></div>
+            <p id="publishMessage" class="message"></p>
           </section>
 
           <section class="panel board-panel">

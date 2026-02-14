@@ -73,6 +73,13 @@ h4 {
   border-bottom: 1px solid rgba(255, 255, 255, 0.09);
 }
 
+.topbar-actions {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .eyebrow {
   margin: 0;
   color: #8fe3cf;
@@ -327,6 +334,24 @@ select:focus {
   padding: 0.85rem;
 }
 
+.integration-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.7rem;
+}
+
+.integration-card {
+  border: 1px solid #3c5b80;
+  border-radius: 0.75rem;
+  background: #0f1a2b;
+  padding: 0.6rem;
+}
+
+.integration-card h3 {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
 .range-value {
   color: #d5f2ea;
   font-size: 0.86rem;
@@ -403,6 +428,13 @@ select:focus {
   margin: 0.25rem 0 0;
   color: #bfd3ec;
   font-size: 0.82rem;
+}
+
+.publish-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
 }
 
 .platform-block {
@@ -522,6 +554,11 @@ select:focus {
   color: #ffd994;
 }
 
+.badge.ok {
+  border-color: #2f7f56;
+  color: #a7f0ca;
+}
+
 .card-actions {
   margin-top: 0.4rem;
   display: flex;
@@ -533,6 +570,31 @@ select:focus {
   color: #8ba8c9;
   font-size: 0.79rem;
   margin: 0;
+}
+
+.queue-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.queue-job {
+  border: 1px solid #405f84;
+  border-radius: 0.75rem;
+  background: #101f33;
+  padding: 0.6rem;
+}
+
+.queue-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.queue-meta {
+  margin: 0.3rem 0 0;
+  color: #bfd3ec;
+  font-size: 0.82rem;
 }
 
 @media (max-width: 900px) {

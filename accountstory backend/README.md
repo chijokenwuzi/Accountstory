@@ -37,6 +37,7 @@ Optional:
 export OPENAI_MODEL="gpt-5-mini"
 export OPENAI_TIMEOUT_MS=30000
 export OPENAI_ALLOW_FALLBACK=false
+export LANDING_URL="/landing.html"
 ```
 
 If `OPENAI_API_KEY` is missing and `OPENAI_ALLOW_FALLBACK=false`, campaign option generation returns an error.
@@ -50,14 +51,24 @@ If `OPENAI_ALLOW_FALLBACK=true`, the app will still generate rule-based fallback
 
 Customer profiles can now store extra defaults (website, geo, offer, audience, notes), and the campaign builder can load those defaults to generate campaigns faster.
 
+The workspace now includes API-ready publishing operations:
+- Channel connection manager (Facebook/Google metadata + token hint masking)
+- Queue publish jobs from generated ad options
+- Publish queue state management (mark sent, mark failed, retry, archive)
+- Copyable JSON payloads per queued job for manual/API handoff
+
 ## API
 - `GET /api/state`
 - `PATCH /api/selection`
+- `POST /api/integrations/:platform/connect`
+- `POST /api/integrations/:platform/disconnect`
 - `POST /api/customers`
 - `POST /api/campaigns/build` (single unified campaign builder flow)
 - `POST /api/campaigns`
 - `POST /api/assets`
 - `POST /api/ad-inputs/generate`
+- `POST /api/publish/jobs`
+- `POST /api/publish/jobs/:id/action`
 - `PUT /api/guardrails`
 - `POST /api/campaigns/:id/action`
 - `POST /api/simulate`
