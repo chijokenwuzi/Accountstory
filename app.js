@@ -507,7 +507,7 @@ function enableDemoMode() {
     name: "Demo User",
     email: "demo@accountstory.local",
     workspaceId: "demo-workspace",
-    workspaceName: "Accountstory Demo"
+    workspaceName: "Accountstory"
   };
 }
 
@@ -515,13 +515,8 @@ function showApp() {
   authGate.classList.add("hidden");
   appShell.classList.remove("hidden");
   workspaceName.textContent = state.user.workspaceName;
-  if (state.demoMode) {
-    logoutBtn.textContent = "Exit Demo";
-    logoutBtn.title = "Exit demo mode";
-  } else {
-    logoutBtn.textContent = "Logout";
-    logoutBtn.title = "";
-  }
+  logoutBtn.textContent = "Logout";
+  logoutBtn.title = "";
 }
 
 function showAuth() {

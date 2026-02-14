@@ -1,11 +1,14 @@
 (function () {
   const hasToken = Boolean(localStorage.getItem("accountstory_token"));
-  const inDemoMode = sessionStorage.getItem("accountstory_demo_mode") === "1";
-  if (!hasToken && !inDemoMode) {
+  if (!hasToken) {
     return;
   }
 
   document.querySelectorAll('.top-nav a[href="/login"]').forEach((node) => {
+    node.remove();
+  });
+
+  document.querySelectorAll("a.cta-pill").forEach((node) => {
     node.remove();
   });
 })();
