@@ -983,7 +983,8 @@ function safePathFromUrl(urlPath) {
 }
 
 async function serveStatic(res, pathname) {
-  const routePath = pathname === "/" ? "/index.html" : pathname;
+  const rootPage = String(LANDING_URL || "").startsWith("/") ? String(LANDING_URL) : "/landing.html";
+  const routePath = pathname === "/" ? rootPage : pathname;
   const filePath = safePathFromUrl(routePath);
   if (!filePath) {
     sendText(res, 400, "Bad request path");
