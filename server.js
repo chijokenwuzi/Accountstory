@@ -13,6 +13,7 @@ const STORIES_PATH = path.join(DATA_DIR, "stories.json");
 const STORE_PATH = path.join(DATA_DIR, "store.json");
 const OPENAI_API_KEY = String(process.env.OPENAI_API_KEY || "").trim();
 const OPENAI_MODEL = String(process.env.OPENAI_MODEL || "gpt-4.1-mini").trim();
+const FOUNDER_BACKEND_URL = String(process.env.FOUNDER_BACKEND_URL || "http://127.0.0.1:9091/index.html").trim();
 const CAMPAIGN_STATUSES = new Set(["Draft", "Approved", "Queued"]);
 const LEAD_GEN_CHANNEL_DEFINITIONS = {
   "google-ads": { label: "Google Ads", defaultCpl: 180 },
@@ -1375,6 +1376,12 @@ async function serveStatic(req, res, url) {
   const rawPathname = decodeURIComponent(url.pathname);
   const pathname =
     rawPathname.length > 1 && rawPathname.endsWith("/") ? rawPathname.slice(0, -1) : rawPathname;
+
+  if (pathname === "/founder-backend") {
+    res.writeHead(302, { Location: FOUNDER_BACKEND_URL });
+    res.end();
+    return;
+  }
 
   const pageRoutes = {
     "/": "index.html",
