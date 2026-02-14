@@ -27,7 +27,7 @@ function loadEnvFile(filePath) {
 
 loadEnvFile(path.join(__dirname, ".env"));
 
-const HOST = process.env.HOST || "127.0.0.1";
+const HOST = String(process.env.HOST || "127.0.0.1").trim();
 const PORT = Number(process.env.PORT || 9091);
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5-mini";
@@ -1398,9 +1398,44 @@ async function start() {
     }
   });
 
-  server.listen(PORT, HOST, () => {
-    console.log(`Accountstory backend workspace running at http://${HOST}:${PORT}`);
-  });
+  const listenWithHost = (host) =>
+    new Promise((resolve, reject) => {
+      const onError = (error) => {
+        server.off("listening", onListening);
+        reject(error);
+      };
+      const onListening = () => {
+        server.off("error", onError);
+        resolve();
+      };
+
+      server.once("error", onError);
+      server.once("listening", onListening);
+      if (host) {
+        server.listen(PORT, host);
+      } else {
+        server.listen(PORT);
+      }
+    });
+
+  let boundHost = HOST;
+  try {
+    await listenWithHost(HOST);
+  } catch (error) {
+    if (HOST && (error.code === "ENOTFOUND" || error.code === "EADDRNOTAVAIL")) {
+      boundHost = "";
+      await listenWithHost("");
+    } else {
+      throw error;
+    }
+  }
+
+  const address = server.address();
+  const resolvedHost =
+    typeof address === "object" && address && typeof address.address === "string"
+      ? address.address
+      : boundHost || "0.0.0.0";
+  console.log(`Accountstory backend workspace running at http://${resolvedHost}:${PORT}`);
 }
 
 start().catch((error) => {
