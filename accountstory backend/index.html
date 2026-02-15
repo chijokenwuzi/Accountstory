@@ -136,8 +136,12 @@
                   Objective
                   <input name="objective" type="text" maxlength="80" required placeholder="Leads, Sales, Booked Calls" value="Leads" />
                 </label>
-                <label>
-                  Automation mode
+                <label class="help-label">
+                  <span class="label-text">Automation mode</span>
+                  <details class="help-pop">
+                    <summary aria-label="Automation mode help">i</summary>
+                    <div class="help-popover">Choose how much the system decides automatically: Assist = manual-heavy, Hybrid = mixed control, Autopilot = automation-first.</div>
+                  </details>
                   <input name="mode" type="text" maxlength="40" list="modeSuggestions" value="Hybrid" />
                 </label>
                 <datalist id="modeSuggestions">
@@ -149,8 +153,12 @@
                   Total daily budget (USD)
                   <input name="dailyBudget" type="number" min="50" max="50000" step="10" value="300" required />
                 </label>
-                <label>
-                  Target CPA/CPL (USD)
+                <label class="help-label">
+                  <span class="label-text">Target CPA/CPL (USD)</span>
+                  <details class="help-pop">
+                    <summary aria-label="Target CPA/CPL help">i</summary>
+                    <div class="help-popover">Your target cost per result. CPA = cost per acquisition, CPL = cost per lead. The generator uses this to shape offer strength and channel mix.</div>
+                  </details>
                   <input name="targetCpa" type="number" min="5" max="5000" step="1" value="75" required />
                 </label>
                 <fieldset class="full channel-fieldset">
@@ -176,8 +184,12 @@
                   Landing URL
                   <input name="landingUrl" type="url" maxlength="280" placeholder="https://clientdomain.com/offer" />
                 </label>
-                <label class="full">
-                  Artifact content
+                <label class="full help-label">
+                  <span class="label-text">Artifact content</span>
+                  <details class="help-pop">
+                    <summary aria-label="Artifact content help">i</summary>
+                    <div class="help-popover">Paste core source material here (VSL transcript, angle notes, claims, testimonials). Better source content gives better ad options.</div>
+                  </details>
                   <textarea
                     name="artifactText"
                     rows="4"
@@ -189,8 +201,12 @@
                   Primary audience
                   <input name="audience" type="text" maxlength="200" placeholder="Example: US parents with kids 4-10 and recent purchase intent" />
                 </label>
-                <label class="full">
-                  Campaign instructions
+                <label class="full help-label">
+                  <span class="label-text">Campaign instructions</span>
+                  <details class="help-pop">
+                    <summary aria-label="Campaign instructions help">i</summary>
+                    <div class="help-popover">Specific guardrails or strategy instructions for this campaign only: tone, compliance limits, banned claims, priorities, and exclusions.</div>
+                  </details>
                   <textarea
                     name="strategyNotes"
                     rows="3"
@@ -198,8 +214,12 @@
                     placeholder="Any direction for tone, offers to prioritize, exclusions, policy constraints, etc."
                   ></textarea>
                 </label>
-                <label class="full">
-                  Extra input values (JSON or plain text)
+                <label class="full help-label">
+                  <span class="label-text">Extra input values (JSON or plain text)</span>
+                  <details class="help-pop">
+                    <summary aria-label="Extra input values help">i</summary>
+                    <div class="help-popover">Optional structured context like funnel stage, promo window, geo splits, or offer variants. JSON is best if you want consistent output formatting.</div>
+                  </details>
                   <textarea
                     name="customInputs"
                     rows="4"
@@ -214,8 +234,12 @@
                     <option value="video">Video</option>
                   </select>
                 </label>
-                <label>
-                  Creative media URL
+                <label class="help-label">
+                  <span class="label-text">Creative media URL</span>
+                  <details class="help-pop">
+                    <summary aria-label="Creative media URL help">i</summary>
+                    <div class="help-popover">Direct URL to the image/video asset used in previews and publish payloads. Use a publicly reachable file link.</div>
+                  </details>
                   <input name="creativeUrl" type="url" maxlength="400" placeholder="https://cdn.client.com/ad-creative.jpg" />
                 </label>
                 <button class="btn btn-primary full" type="submit">Build Campaigns + Generate Ad Input Packs</button>
@@ -236,16 +260,28 @@
                     Account name
                     <input name="accountName" type="text" maxlength="140" placeholder="Northline Dental Ads" />
                   </label>
-                  <label>
-                    Account ID
+                  <label class="help-label">
+                    <span class="label-text">Account ID</span>
+                    <details class="help-pop">
+                      <summary aria-label="Facebook account ID help">i</summary>
+                      <div class="help-popover">Meta Ads account identifier. Usually starts with <code>act_</code>. Required for future direct publishing.</div>
+                    </details>
                     <input name="accountId" type="text" maxlength="80" placeholder="act_1234567890" />
                   </label>
-                  <label>
-                    Business ID (optional)
+                  <label class="help-label">
+                    <span class="label-text">Business ID (optional)</span>
+                    <details class="help-pop">
+                      <summary aria-label="Facebook business ID help">i</summary>
+                      <div class="help-popover">Meta Business Manager ID tied to this ad account. Useful when one business controls multiple assets.</div>
+                    </details>
                     <input name="businessId" type="text" maxlength="80" placeholder="1234567890" />
                   </label>
-                  <label>
-                    Token / credential hint
+                  <label class="help-label">
+                    <span class="label-text">Token / credential hint</span>
+                    <details class="help-pop">
+                      <summary aria-label="Facebook token hint help">i</summary>
+                      <div class="help-popover">Placeholder for credential tracking in this UI. For production, store real API secrets in server env vars, not in form fields.</div>
+                    </details>
                     <input name="tokenHint" type="text" maxlength="220" placeholder="Paste token or secret hint" />
                   </label>
                   <div class="choice-row">
@@ -261,16 +297,28 @@
                     Account name
                     <input name="accountName" type="text" maxlength="140" placeholder="Northline Dental Google" />
                   </label>
-                  <label>
-                    Customer ID
+                  <label class="help-label">
+                    <span class="label-text">Customer ID</span>
+                    <details class="help-pop">
+                      <summary aria-label="Google customer ID help">i</summary>
+                      <div class="help-popover">Google Ads account ID in <code>123-456-7890</code> format. Required for future direct publishing.</div>
+                    </details>
                     <input name="accountId" type="text" maxlength="80" placeholder="123-456-7890" />
                   </label>
-                  <label>
-                    Manager ID (optional)
+                  <label class="help-label">
+                    <span class="label-text">Manager ID (optional)</span>
+                    <details class="help-pop">
+                      <summary aria-label="Google manager ID help">i</summary>
+                      <div class="help-popover">MCC/manager account ID if this customer account is managed under a parent Google Ads manager.</div>
+                    </details>
                     <input name="businessId" type="text" maxlength="80" placeholder="098-765-4321" />
                   </label>
-                  <label>
-                    Token / credential hint
+                  <label class="help-label">
+                    <span class="label-text">Token / credential hint</span>
+                    <details class="help-pop">
+                      <summary aria-label="Google token hint help">i</summary>
+                      <div class="help-popover">Placeholder for credential tracking in this UI. For production, keep actual tokens/secrets in server environment variables.</div>
+                    </details>
                     <input name="tokenHint" type="text" maxlength="220" placeholder="Paste token or secret hint" />
                   </label>
                   <div class="choice-row">
