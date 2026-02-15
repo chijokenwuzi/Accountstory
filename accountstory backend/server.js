@@ -245,6 +245,19 @@ function isAbsoluteHttpUrl(value) {
   return /^https?:\/\//i.test(text);
 }
 
+function parseAbsoluteHttpUrl(value) {
+  const text = String(value || "").trim();
+  if (!isAbsoluteHttpUrl(text)) return null;
+  try {
+    const parsed = new URL(text);
+    const protocol = String(parsed.protocol || "").toLowerCase();
+    if (protocol !== "http:" && protocol !== "https:") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 function platformKey(value) {
   const key = normalizeText(value).toLowerCase();
   return PUBLISH_PLATFORMS.includes(key) ? key : "";
@@ -988,10 +1001,22 @@ function safePathFromUrl(urlPath) {
 }
 
 async function serveStatic(res, pathname) {
-  if (pathname === "/" && isAbsoluteHttpUrl(LANDING_URL)) {
-    res.writeHead(302, { Location: LANDING_URL });
-    res.end();
-    return;
+  if (pathname === "/") {
+    const externalLanding = parseAbsoluteHttpUrl(LANDING_URL);
+    if (externalLanding) {
+      const requestHost = String(res.req && res.req.headers ? res.req.headers.host || "" : "")
+        .trim()
+        .toLowerCase();
+      const targetHost = String(externalLanding.host || "").trim().toLowerCase();
+      const targetPath = String(externalLanding.pathname || "/").trim() || "/";
+      const sameHost = requestHost && requestHost === targetHost;
+      const sameRootPath = targetPath === "/";
+      if (!(sameHost && sameRootPath)) {
+        res.writeHead(302, { Location: externalLanding.toString() });
+        res.end();
+        return;
+      }
+    }
   }
 
   const rootPage = String(LANDING_URL || "").startsWith("/") ? String(LANDING_URL) : "/landing.html";
