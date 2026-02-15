@@ -1072,7 +1072,7 @@ async function handleApi(req, res, pathname) {
   if (method === "GET" && pathname === "/api/health") {
     return sendJson(res, 200, {
       ok: true,
-      service: "accountstory-backend-workspace",
+      service: "account-lead-insights-backend-workspace",
       openAiConfigured: Boolean(OPENAI_API_KEY),
       openAiFallbackEnabled: OPENAI_ALLOW_FALLBACK,
       model: OPENAI_MODEL,
@@ -1862,7 +1862,7 @@ async function start() {
     typeof address === "object" && address && typeof address.address === "string"
       ? address.address
       : boundHost || "0.0.0.0";
-  console.log(`Accountstory backend workspace running at http://${resolvedHost}:${PORT}`);
+  console.log(`Account Lead Insights backend workspace running at http://${resolvedHost}:${PORT}`);
 }
 
 start().catch((error) => {

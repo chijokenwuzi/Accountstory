@@ -1,6 +1,6 @@
-# Accountstory Backend Workspace
+# Account Lead Insights Backend Workspace
 
-Standalone app (own server + API + UI) for your team to run ad automation for customers.
+Standalone app (own server + API + UI) for your team to run ad automation for Account Lead Insights customers.
 
 ## Run
 From this folder:
