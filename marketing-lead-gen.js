@@ -6,8 +6,8 @@ const leadEstimatePreview = document.getElementById("leadEstimatePreview");
 
 const CHANNEL_CPL = {
   "google-ads": 180,
-  "twitter-ads": 140,
-  "tiktok-ads": 110,
+  "facebook-ads": 135,
+  "local-services-ads": 95,
   seo: 95
 };
 

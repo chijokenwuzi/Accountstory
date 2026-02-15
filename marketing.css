@@ -70,6 +70,10 @@ a {
   gap: 0.7rem;
 }
 
+.top-nav-minimal {
+  justify-content: flex-end;
+}
+
 .top-nav a {
   color: var(--muted);
   padding: 0.45rem 0.7rem;
@@ -563,6 +567,41 @@ button.btn-solid:focus-visible {
   display: grid;
   gap: 0.8rem;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.owner-summary-card {
+  border: 1px solid #324e73;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #11203a, #0d172a);
+  padding: 0.9rem 1rem;
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.owner-summary-label {
+  margin: 0;
+  color: #94b0d6;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.owner-summary-value {
+  margin: 0.3rem 0 0;
+  color: #dceaff;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.owner-summary-card h2 {
+  margin-top: 0.26rem;
+  font-size: 1.5rem;
+}
+
+.owner-kpi-grid .tracker-kpi-card {
+  border-color: #365279;
+  background: linear-gradient(180deg, #12233f, #0f1b31);
 }
 
 .tracker-kpi-card {

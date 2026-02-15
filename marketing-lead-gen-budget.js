@@ -10,8 +10,8 @@ const retryGenerateBtn = document.getElementById("retryGenerateBtn");
 
 const CHANNEL_CONFIG = {
   "google-ads": { label: "Google Ads", cpl: 180 },
-  "twitter-ads": { label: "Twitter Ads", cpl: 140 },
-  "tiktok-ads": { label: "TikTok Ads", cpl: 110 },
+  "facebook-ads": { label: "Facebook Ads", cpl: 135 },
+  "local-services-ads": { label: "Local Service Ads", cpl: 95 },
   seo: { label: "SEO", cpl: 95 }
 };
 
@@ -258,20 +258,20 @@ function renderPack(pack) {
     `);
   }
 
-  if (channelPlans.twitterAds) {
+  if (channelPlans.facebookAds) {
     sections.push(`
       <section class="leadgen-block">
-        <h3>Twitter Ads</h3>
-        ${listMarkup(channelPlans.twitterAds.postVariants || [])}
+        <h3>Facebook Ads</h3>
+        ${listMarkup(channelPlans.facebookAds.primaryText || [])}
       </section>
     `);
   }
 
-  if (channelPlans.tiktokAds) {
+  if (channelPlans.localServicesAds) {
     sections.push(`
       <section class="leadgen-block">
-        <h3>TikTok Ads</h3>
-        ${listMarkup(channelPlans.tiktokAds.hooks || [])}
+        <h3>Local Service Ads</h3>
+        ${listMarkup(channelPlans.localServicesAds.adGroups || [])}
       </section>
     `);
   }

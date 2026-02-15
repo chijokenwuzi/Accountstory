@@ -11,8 +11,8 @@ if (!Array.isArray(state.channels) || !state.channels.length) {
 
 const channelNames = {
   "google-ads": "Google Ads",
-  "twitter-ads": "Twitter Ads",
-  "tiktok-ads": "TikTok Ads",
+  "facebook-ads": "Facebook Ads",
+  "local-services-ads": "Local Service Ads",
   seo: "SEO"
 };
 

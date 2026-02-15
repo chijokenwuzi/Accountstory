@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Accountstory | Marketing Lead Gen</title>
+    <title>Accountstory | Home Service Lead Gen Setup</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,13 +15,8 @@
   <body>
     <header class="site-header">
       <div class="nav-wrap">
-        <a class="brand" href="/">Accountstory</a>
-        <nav class="top-nav">
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a class="active" href="/marketing-lead-gen">Marketing Lead Gen</a>
-          <a href="/workspace">Account Insights</a>
-          <a href="/pricing">Pricing</a>
+        <a class="brand" href="/marketing">Accountstory</a>
+        <nav class="top-nav top-nav-minimal">
           <a href="/login">Login</a>
         </nav>
         <a class="cta-pill" href="/get-started">Get Started</a>
@@ -30,29 +25,28 @@
 
     <main class="page">
       <section class="hero">
-        <p class="eyebrow">New Offering</p>
-        <h1>Marketing Lead Gen</h1>
+        <p class="eyebrow">Lead Gen Setup</p>
+        <h1>Home Service Lead Gen Setup</h1>
         <p>
-          A separate offer from the workspace: automated creative planning, Google/Twitter/TikTok ads, SEO, funnel flow, and
-          lifecycle follow-up.
+          Set up campaigns for roofers, electricians, plumbers, HVAC installers, and solar teams in one guided flow.
         </p>
         <div class="hero-actions">
-          <a class="btn btn-secondary" href="/marketing-lead-tracker">View Example CRM Lead Tracker</a>
+          <a class="btn btn-secondary" href="/marketing-lead-tracker">View Owner Lead Dashboard</a>
         </div>
       </section>
 
       <section class="card-grid">
         <article class="card">
-          <h3>Creative Automation</h3>
-          <p>Generate ad hooks, angle ideas, and conversion-first creative direction.</p>
+          <h3>Local Intent Targeting</h3>
+          <p>Build campaigns around service area, urgent jobs, and high-intent homeowners.</p>
         </article>
         <article class="card">
-          <h3>Channel Mix</h3>
-          <p>Choose one or more: Google Ads, Twitter Ads, TikTok Ads, and SEO.</p>
+          <h3>Google + Facebook + LSA</h3>
+          <p>Pick practical channels for booked calls: Google Ads, Facebook Ads, Local Service Ads, and SEO.</p>
         </article>
         <article class="card">
-          <h3>Funnel + CRM Ops</h3>
-          <p>Get landing-page sections, retargeting logic, nurture sequence, and pipeline stages.</p>
+          <h3>Booked Job Tracking</h3>
+          <p>Track leads, booked calls, closed jobs, and ROI by source.</p>
         </article>
       </section>
 
@@ -66,15 +60,15 @@
             <form id="leadGenForm" class="leadgen-form">
               <label>
                 Business Name
-                <input name="businessName" type="text" maxlength="120" placeholder="Netflix" />
+                <input name="businessName" type="text" maxlength="120" placeholder="Summit Roofing & Solar" />
               </label>
               <label>
                 Industry
-                <input name="industry" type="text" maxlength="120" placeholder="Streaming Entertainment" />
+                <input name="industry" type="text" maxlength="120" placeholder="Roofing, Plumbing, HVAC, Electrical, Solar" />
               </label>
               <label>
                 Product / Service Name
-                <input name="productName" type="text" maxlength="120" placeholder="Netflix Subscriber Growth" />
+                <input name="productName" type="text" maxlength="120" placeholder="Emergency Plumbing + Water Heater Installs" />
               </label>
               <label class="full">
                 Monthly Budget (USD)
@@ -100,12 +94,12 @@
                     Google Ads
                   </label>
                   <label class="channel-choice">
-                    <input type="checkbox" name="channels" value="twitter-ads" checked />
-                    Twitter Ads
+                    <input type="checkbox" name="channels" value="facebook-ads" checked />
+                    Facebook Ads
                   </label>
                   <label class="channel-choice">
-                    <input type="checkbox" name="channels" value="tiktok-ads" />
-                    TikTok Ads
+                    <input type="checkbox" name="channels" value="local-services-ads" checked />
+                    Local Service Ads
                   </label>
                   <label class="channel-choice">
                     <input type="checkbox" name="channels" value="seo" />
@@ -119,7 +113,7 @@
                   name="offer"
                   rows="3"
                   maxlength="360"
-                  placeholder="Example: Promote new Netflix originals and ad-supported plan with multi-channel growth campaigns"
+                  placeholder="Example: Same-day service call, $79 diagnostic waived with repair, financing available"
                 ></textarea>
               </label>
               <label class="full">
@@ -128,7 +122,7 @@
                   name="audience"
                   rows="3"
                   maxlength="280"
-                  placeholder="Example: Streaming viewers aged 18-44 comparing Netflix, Hulu, Disney+, and Prime Video"
+                  placeholder="Example: Homeowners in Dallas-Fort Worth searching for emergency plumber or HVAC repair"
                 ></textarea>
               </label>
               <label class="full">
@@ -137,7 +131,7 @@
                   name="differentiators"
                   rows="3"
                   maxlength="900"
-                  placeholder="Original content slate\nAd-supported plan option\nPersonalized recommendations"
+                  placeholder="24/7 emergency dispatch\nLicensed + insured techs\nFinancing and same-day scheduling"
                 ></textarea>
               </label>
               <label>
@@ -146,7 +140,7 @@
                   name="objective"
                   type="text"
                   maxlength="120"
-                  value="Generate booked sales calls"
+                  value="Generate booked service calls"
                 />
               </label>
               <label>
@@ -159,7 +153,7 @@
               </label>
               <label class="full">
                 Landing Page URL (optional)
-                <input name="landingPage" type="url" maxlength="260" placeholder="https://www.netflix.com" />
+                <input name="landingPage" type="url" maxlength="260" placeholder="https://yourcompany.com/service-area" />
               </label>
               <button class="btn btn-primary" type="submit">Continue to Creative Step</button>
             </form>

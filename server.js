@@ -17,11 +17,15 @@ const FOUNDER_BACKEND_URL = String(process.env.FOUNDER_BACKEND_URL || "http://12
 const CAMPAIGN_STATUSES = new Set(["Draft", "Approved", "Queued"]);
 const LEAD_GEN_CHANNEL_DEFINITIONS = {
   "google-ads": { label: "Google Ads", defaultCpl: 180 },
-  "twitter-ads": { label: "Twitter Ads", defaultCpl: 140 },
-  "tiktok-ads": { label: "TikTok Ads", defaultCpl: 110 },
+  "facebook-ads": { label: "Facebook Ads", defaultCpl: 135 },
+  "local-services-ads": { label: "Local Service Ads", defaultCpl: 95 },
   seo: { label: "SEO", defaultCpl: 95 }
 };
 const LEAD_GEN_CHANNEL_KEYS = new Set(Object.keys(LEAD_GEN_CHANNEL_DEFINITIONS));
+const LEAD_GEN_CHANNEL_ALIASES = {
+  "twitter-ads": "facebook-ads",
+  "tiktok-ads": "local-services-ads"
+};
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -274,6 +278,7 @@ function sanitizeLeadGenBrief(raw) {
       : [];
   const channels = rawChannels
     .map((entry) => sanitizeText(entry, "", 40).toLowerCase())
+    .map((entry) => LEAD_GEN_CHANNEL_ALIASES[entry] || entry)
     .filter((entry) => LEAD_GEN_CHANNEL_KEYS.has(entry));
   const uniqueChannels = [...new Set(channels)];
   const effectiveChannels = uniqueChannels.length ? uniqueChannels : ["google-ads"];
@@ -368,8 +373,8 @@ function buildLeadGenAutomationPack(baseOutput, leadGenBrief) {
     : ["Speed to launch", "Clear attribution", "Weekly optimization cadence"];
   const checklistByChannel = {
     "google-ads": "Rotate search headlines/descriptions and shift budget to the lowest CPL intent terms.",
-    "twitter-ads": "Test new hooks/angles weekly and pause underperforming audiences quickly.",
-    "tiktok-ads": "Publish 2-3 short-form creative variants and scale the best watch-time + CTR combo.",
+    "facebook-ads": "Refresh offers/angles weekly and cut ad sets that fall above target cost per booked call.",
+    "local-services-ads": "Review job type bids, response time, and review velocity to improve ranking and call quality.",
     seo: "Update target pages weekly and expand high-performing keyword clusters into supporting posts."
   };
   const weeklyAutomationChecklist = [];
@@ -381,7 +386,6 @@ function buildLeadGenAutomationPack(baseOutput, leadGenBrief) {
   weeklyAutomationChecklist.push("Sync campaign and CRM metrics to one weekly scorecard.");
   const includeVsl = selectedChannels.some((channelKey) => channelKey !== "seo");
   const googlePlan = baseOutput.ads?.google || {};
-  const twitterPlan = baseOutput.ads?.x || {};
   const facebookPlan = baseOutput.ads?.facebook || {};
   const vsl = baseOutput.vsl || {};
   const channelPlans = {};
@@ -390,20 +394,27 @@ function buildLeadGenAutomationPack(baseOutput, leadGenBrief) {
     channelPlans.googleAds = googlePlan;
   }
 
-  if (selectedChannels.includes("twitter-ads")) {
-    channelPlans.twitterAds = twitterPlan;
+  if (selectedChannels.includes("facebook-ads")) {
+    channelPlans.facebookAds = facebookPlan;
   }
 
-  if (selectedChannels.includes("tiktok-ads")) {
-    channelPlans.tiktokAds = {
-      hooks: sanitizeList([vsl.hook, ...(facebookPlan.headlines || []), ...(facebookPlan.creativeAngles || [])], 8, 140),
-      scriptIdeas: sanitizeList(vsl.outline || [], 6, 180),
-      captions: sanitizeList(
-        [...(facebookPlan.primaryText || []), ...(twitterPlan.postVariants || [])],
+  if (selectedChannels.includes("local-services-ads")) {
+    channelPlans.localServicesAds = {
+      adGroups: sanitizeList(
+        [
+          `${leadGenBrief.industry} emergency service`,
+          `${leadGenBrief.industry} installation jobs`,
+          `${leadGenBrief.industry} maintenance and tune-up`
+        ],
         6,
-        220
+        140
       ),
-      cta: sanitizeText(facebookPlan.cta || vsl.cta || "Book Strategy Call", "Book Strategy Call", 80)
+      trustSignals: sanitizeList(
+        [...differentiators, "Licensed and insured", "Fast response time", "Highly rated local team"],
+        6,
+        120
+      ),
+      callToAction: sanitizeText(vsl.cta || "Book Service Call", "Book Service Call", 80)
     };
   }
 
@@ -492,12 +503,12 @@ function buildFallbackAutomationOutput(company, brief) {
   const budget = brief.monthlyBudgetUsd;
   const googleShare = Math.round(budget * 0.45);
   const facebookShare = Math.round(budget * 0.35);
-  const xShare = Math.max(0, budget - googleShare - facebookShare);
+  const lsaShare = Math.max(0, budget - googleShare - facebookShare);
   const audience = brief.audience || `${company.industry} decision makers`;
   const baseHook = `${brief.productName} helps ${audience} get results without wasting ad budget.`;
 
   return {
-    summary: `AI campaign pack for ${company.name}: Creative + Google + Meta + X variants focused on ${brief.objective.toLowerCase()}.`,
+    summary: `Campaign pack for ${company.name}: Creative + Google + Facebook + Local Service Ads focused on ${brief.objective.toLowerCase()}.`,
     strategy: {
       positioning: brief.positioning,
       primaryPain: `${audience} need predictable pipeline, not random lead spikes.`,
@@ -562,10 +573,10 @@ function buildFallbackAutomationOutput(company, brief) {
         keywords: sanitizeList(
           [
             `${company.industry} lead generation agency`,
-            "video sales letter ads",
-            "google and facebook ad automation",
-            "performance marketing system",
-            "paid media optimization service"
+            "emergency service ads",
+            "google local service ads",
+            "home service lead generation",
+            "booked call marketing"
           ],
           12,
           60
@@ -607,8 +618,8 @@ function buildFallbackAutomationOutput(company, brief) {
       x: {
         postVariants: sanitizeList(
           [
-            `Most ad accounts are not underfunded. They are under-systemized. ${brief.productName} fixes that with one weekly growth loop.`,
-            `If your team runs Google + Meta + X separately, your learning cycle is broken. We combine creative testing and optimization in one system.`,
+            `Most home service ad accounts are not underfunded. They are under-systemized. ${brief.productName} fixes that with one weekly growth loop.`,
+            `If your team runs Google + Meta + LSA separately, your learning cycle is broken. We combine creative testing and optimization in one system.`,
             `Want ${brief.objective.toLowerCase()} without channel chaos? Start with a strategy call and we will map your first sprint.`
           ],
           6,
@@ -624,7 +635,7 @@ function buildFallbackAutomationOutput(company, brief) {
         channelMix: [
           { channel: "Google Search", percent: 45, budgetUsd: googleShare },
           { channel: "Facebook/Instagram", percent: 35, budgetUsd: facebookShare },
-          { channel: "X (Twitter)", percent: 20, budgetUsd: xShare }
+          { channel: "Local Service Ads", percent: 20, budgetUsd: lsaShare }
         ]
       },
       kpis: [
@@ -636,7 +647,7 @@ function buildFallbackAutomationOutput(company, brief) {
       workflow: [
         "Monday: Pull prior-week metrics and identify winning creative hooks.",
         "Tuesday: Produce 2-3 creative/ad variants from top hook.",
-        "Wednesday: Launch/refresh Google, Meta, and X campaigns.",
+        "Wednesday: Launch/refresh Google, Meta, and Local Service Ads campaigns.",
         "Thursday: Mid-week budget shift toward highest-converting segments.",
         "Friday: KPI review and next-sprint creative brief."
       ],

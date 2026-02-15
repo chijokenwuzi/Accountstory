@@ -1,73 +1,73 @@
 const SOURCE_META = {
   "google-ads": { label: "Google Ads", color: "#7ea5ff" },
-  "twitter-ads": { label: "Twitter Ads", color: "#72c6ff" },
-  "tiktok-ads": { label: "TikTok Ads", color: "#7fe0c4" },
+  "facebook-ads": { label: "Facebook Ads", color: "#72c6ff" },
+  "local-services-ads": { label: "Local Service Ads", color: "#7fe0c4" },
   seo: { label: "SEO", color: "#9ad87d" }
 };
 
 const TRACKER_DATA = {
   campaigns: [
     {
-      name: "Search - High Intent US",
+      name: "Emergency Service Search - Core",
       source: "google-ads",
-      spend: 12400,
-      leads: 78,
+      spend: 11200,
+      leads: 96,
+      qualified: 44,
+      status: "Active"
+    },
+    {
+      name: "Service + City Search Expansion",
+      source: "google-ads",
+      spend: 6200,
+      leads: 52,
+      qualified: 26,
+      status: "Active"
+    },
+    {
+      name: "Facebook Homeowner Lead Forms",
+      source: "facebook-ads",
+      spend: 7800,
+      leads: 88,
+      qualified: 36,
+      status: "Active"
+    },
+    {
+      name: "Facebook Retargeting 30-Day",
+      source: "facebook-ads",
+      spend: 4200,
+      leads: 37,
+      qualified: 16,
+      status: "Paused"
+    },
+    {
+      name: "Local Service Ads - Main Market",
+      source: "local-services-ads",
+      spend: 6500,
+      leads: 82,
       qualified: 41,
       status: "Active"
     },
     {
-      name: "Brand Terms Expansion",
-      source: "google-ads",
-      spend: 5400,
-      leads: 39,
-      qualified: 23,
+      name: "Local Service Ads - Neighbor Cities",
+      source: "local-services-ads",
+      spend: 3100,
+      leads: 34,
+      qualified: 15,
       status: "Active"
     },
     {
-      name: "Twitter Founder Funnel",
-      source: "twitter-ads",
-      spend: 7200,
-      leads: 56,
-      qualified: 30,
-      status: "Active"
-    },
-    {
-      name: "Twitter Retargeting 30D",
-      source: "twitter-ads",
-      spend: 3600,
-      leads: 24,
-      qualified: 13,
-      status: "Paused"
-    },
-    {
-      name: "TikTok Creative Test Batch 4",
-      source: "tiktok-ads",
-      spend: 8200,
-      leads: 92,
-      qualified: 38,
-      status: "Active"
-    },
-    {
-      name: "TikTok UGC Retargeting",
-      source: "tiktok-ads",
-      spend: 4100,
-      leads: 44,
-      qualified: 19,
-      status: "Active"
-    },
-    {
-      name: "SEO Pillar + Cluster Sprint",
+      name: "SEO Service Page Cluster",
       source: "seo",
-      spend: 6600,
-      leads: 64,
-      qualified: 28,
+      spend: 4900,
+      leads: 43,
+      qualified: 18,
       status: "Active"
     },
     {
-      name: "SEO Comparison Page Refresh",
+      name: "SEO Local Map Pack Content",
       source: "seo",
-      spend: 2200,
-      leads: 19,
+      spend: 2400,
+      leads: 20,
       qualified: 9,
       status: "Active"
     }
@@ -76,55 +76,55 @@ const TRACKER_DATA = {
     {
       label: "Week 1",
       sources: {
-        "google-ads": { spend: 2600, leads: 17 },
-        "twitter-ads": { spend: 1700, leads: 12 },
-        "tiktok-ads": { spend: 1900, leads: 19 },
-        seo: { spend: 1200, leads: 10 }
+        "google-ads": { spend: 2700, leads: 23 },
+        "facebook-ads": { spend: 2000, leads: 20 },
+        "local-services-ads": { spend: 1600, leads: 21 },
+        seo: { spend: 1100, leads: 9 }
       }
     },
     {
       label: "Week 2",
       sources: {
-        "google-ads": { spend: 2800, leads: 19 },
-        "twitter-ads": { spend: 1800, leads: 13 },
-        "tiktok-ads": { spend: 2100, leads: 21 },
-        seo: { spend: 1300, leads: 11 }
+        "google-ads": { spend: 2850, leads: 24 },
+        "facebook-ads": { spend: 2100, leads: 21 },
+        "local-services-ads": { spend: 1650, leads: 20 },
+        seo: { spend: 1150, leads: 10 }
       }
     },
     {
       label: "Week 3",
       sources: {
-        "google-ads": { spend: 3000, leads: 20 },
-        "twitter-ads": { spend: 1900, leads: 14 },
-        "tiktok-ads": { spend: 2300, leads: 24 },
-        seo: { spend: 1400, leads: 12 }
+        "google-ads": { spend: 2950, leads: 25 },
+        "facebook-ads": { spend: 2150, leads: 22 },
+        "local-services-ads": { spend: 1700, leads: 20 },
+        seo: { spend: 1200, leads: 10 }
       }
     },
     {
       label: "Week 4",
       sources: {
-        "google-ads": { spend: 3200, leads: 22 },
-        "twitter-ads": { spend: 2000, leads: 15 },
-        "tiktok-ads": { spend: 2400, leads: 25 },
-        seo: { spend: 1500, leads: 12 }
+        "google-ads": { spend: 3050, leads: 26 },
+        "facebook-ads": { spend: 2200, leads: 23 },
+        "local-services-ads": { spend: 1750, leads: 22 },
+        seo: { spend: 1250, leads: 11 }
       }
     },
     {
       label: "Week 5",
       sources: {
-        "google-ads": { spend: 3100, leads: 21 },
-        "twitter-ads": { spend: 1900, leads: 14 },
-        "tiktok-ads": { spend: 2300, leads: 23 },
-        seo: { spend: 1700, leads: 13 }
+        "google-ads": { spend: 2900, leads: 24 },
+        "facebook-ads": { spend: 2050, leads: 21 },
+        "local-services-ads": { spend: 1600, leads: 18 },
+        seo: { spend: 1300, leads: 10 }
       }
     },
     {
       label: "Week 6",
       sources: {
-        "google-ads": { spend: 3100, leads: 18 },
-        "twitter-ads": { spend: 1500, leads: 12 },
-        "tiktok-ads": { spend: 1300, leads: 24 },
-        seo: { spend: 1700, leads: 12 }
+        "google-ads": { spend: 2900, leads: 26 },
+        "facebook-ads": { spend: 1500, leads: 18 },
+        "local-services-ads": { spend: 1300, leads: 15 },
+        seo: { spend: 1300, leads: 10 }
       }
     }
   ]
@@ -136,7 +136,7 @@ const spendBreakdown = document.getElementById("spendBreakdown");
 const leadsTrendChart = document.getElementById("leadsTrendChart");
 const sourceSections = document.getElementById("sourceSections");
 const campaignRows = document.getElementById("campaignRows");
-const ESTIMATED_PIPELINE_PER_QUALIFIED_LEAD = 8500;
+const ESTIMATED_REVENUE_PER_BOOKED_JOB = 2400;
 
 let activeSource = "all";
 
@@ -207,7 +207,8 @@ function createFilterButtons() {
 
 function renderKpis(campaigns) {
   const totals = getTotals(campaigns);
-  const estimatedPipeline = totals.qualified * ESTIMATED_PIPELINE_PER_QUALIFIED_LEAD;
+  const costPerBookedCall = totals.qualified > 0 ? totals.spend / totals.qualified : 0;
+  const estimatedRevenue = totals.qualified * ESTIMATED_REVENUE_PER_BOOKED_JOB;
   trackerKpis.innerHTML = `
     <article class="tracker-kpi-card">
       <p>Total Spend</p>
@@ -222,15 +223,19 @@ function renderKpis(campaigns) {
       <strong>${money(totals.cpl)}</strong>
     </article>
     <article class="tracker-kpi-card">
-      <p>Qualified Rate</p>
-      <strong>${totals.qualificationRate.toFixed(1)}%</strong>
+      <p>Booked Calls</p>
+      <strong>${fmt(totals.qualified)}</strong>
     </article>
     <article class="tracker-kpi-card">
-      <p>Estimated Pipeline</p>
-      <strong>${money(estimatedPipeline)}</strong>
+      <p>Cost Per Booked Call</p>
+      <strong>${money(costPerBookedCall)}</strong>
+    </article>
+    <article class="tracker-kpi-card">
+      <p>Estimated Revenue</p>
+      <strong>${money(estimatedRevenue)}</strong>
       <p class="tracker-kpi-sub">Assumption: ${money(
-        ESTIMATED_PIPELINE_PER_QUALIFIED_LEAD
-      )} pipeline value per qualified lead</p>
+        ESTIMATED_REVENUE_PER_BOOKED_JOB
+      )} average revenue per closed job</p>
     </article>
   `;
 }
