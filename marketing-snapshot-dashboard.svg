@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="920" viewBox="0 0 1600 920" role="img" aria-labelledby="title desc">
+  <title id="title">Customer Lead Gen Dashboard Snapshot</title>
+  <desc id="desc">A mock snapshot of lead generation dashboard cards and charts.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#111a2b" />
+      <stop offset="100%" stop-color="#0a111d" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#88adff" />
+      <stop offset="100%" stop-color="#5f8fff" />
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="920" fill="url(#bg)" />
+  <rect x="36" y="30" width="1528" height="66" rx="14" fill="#13223a" stroke="#2c4568" />
+  <text x="70" y="72" fill="#d9e8ff" font-size="30" font-family="Arial, Helvetica, sans-serif" font-weight="700">Customer Lead Dashboard</text>
+  <text x="1290" y="72" fill="#8eb2f5" font-size="20" font-family="Arial, Helvetica, sans-serif">Last 30 days</text>
+
+  <rect x="36" y="118" width="370" height="160" rx="14" fill="#13223a" stroke="#2c4568" />
+  <text x="62" y="158" fill="#99b7e3" font-size="22" font-family="Arial, Helvetica, sans-serif">Total Leads</text>
+  <text x="62" y="222" fill="#e6f0ff" font-size="58" font-family="Arial, Helvetica, sans-serif" font-weight="700">1,248</text>
+  <text x="62" y="256" fill="#85d9b4" font-size="20" font-family="Arial, Helvetica, sans-serif">+18% vs previous period</text>
+
+  <rect x="424" y="118" width="370" height="160" rx="14" fill="#13223a" stroke="#2c4568" />
+  <text x="450" y="158" fill="#99b7e3" font-size="22" font-family="Arial, Helvetica, sans-serif">Avg CPL</text>
+  <text x="450" y="222" fill="#e6f0ff" font-size="58" font-family="Arial, Helvetica, sans-serif" font-weight="700">$62</text>
+  <text x="450" y="256" fill="#9ed1ff" font-size="20" font-family="Arial, Helvetica, sans-serif">Target: $70</text>
+
+  <rect x="812" y="118" width="370" height="160" rx="14" fill="#13223a" stroke="#2c4568" />
+  <text x="838" y="158" fill="#99b7e3" font-size="22" font-family="Arial, Helvetica, sans-serif">Booked Calls</text>
+  <text x="838" y="222" fill="#e6f0ff" font-size="58" font-family="Arial, Helvetica, sans-serif" font-weight="700">212</text>
+  <text x="838" y="256" fill="#f8c080" font-size="20" font-family="Arial, Helvetica, sans-serif">17.0% lead-to-call</text>
+
+  <rect x="1200" y="118" width="364" height="160" rx="14" fill="#13223a" stroke="#2c4568" />
+  <text x="1226" y="158" fill="#99b7e3" font-size="22" font-family="Arial, Helvetica, sans-serif">Active Campaigns</text>
+  <text x="1226" y="222" fill="#e6f0ff" font-size="58" font-family="Arial, Helvetica, sans-serif" font-weight="700">14</text>
+  <text x="1226" y="256" fill="#9ed1ff" font-size="20" font-family="Arial, Helvetica, sans-serif">Google + Facebook</text>
+
+  <rect x="36" y="300" width="990" height="584" rx="14" fill="#13223a" stroke="#2c4568" />
+  <text x="62" y="340" fill="#d9e8ff" font-size="26" font-family="Arial, Helvetica, sans-serif" font-weight="700">Lead Volume Trend</text>
+
+  <polyline points="80,760 170,730 260,710 350,680 440,650 530,620 620,635 710,585 800,560 890,520 980,490"
+    fill="none" stroke="url(#accent)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+  <line x1="80" y1="790" x2="980" y2="790" stroke="#35527a" stroke-width="2" />
+  <line x1="80" y1="390" x2="80" y2="790" stroke="#35527a" stroke-width="2" />
+  <g fill="#7b9fda" font-size="18" font-family="Arial, Helvetica, sans-serif">
+    <text x="74" y="812">Week 1</text>
+    <text x="250" y="812">Week 2</text>
+    <text x="425" y="812">Week 3</text>
+    <text x="600" y="812">Week 4</text>
+    <text x="780" y="812">Week 5</text>
+    <text x="945" y="812">Week 6</text>
+  </g>
+
+  <rect x="1044" y="300" width="520" height="584" rx="14" fill="#13223a" stroke="#2c4568" />
+  <text x="1070" y="340" fill="#d9e8ff" font-size="26" font-family="Arial, Helvetica, sans-serif" font-weight="700">Channel Breakdown</text>
+
+  <rect x="1070" y="372" width="468" height="72" rx="10" fill="#0e182a" stroke="#2d4466" />
+  <text x="1100" y="418" fill="#d6e5ff" font-size="22" font-family="Arial, Helvetica, sans-serif">Google Ads</text>
+  <rect x="1270" y="396" width="240" height="20" rx="10" fill="#1d2e4c" />
+  <rect x="1270" y="396" width="184" height="20" rx="10" fill="#6e9bff" />
+
+  <rect x="1070" y="468" width="468" height="72" rx="10" fill="#0e182a" stroke="#2d4466" />
+  <text x="1100" y="514" fill="#d6e5ff" font-size="22" font-family="Arial, Helvetica, sans-serif">Facebook Ads</text>
+  <rect x="1270" y="492" width="240" height="20" rx="10" fill="#1d2e4c" />
+  <rect x="1270" y="492" width="156" height="20" rx="10" fill="#84c9ff" />
+
+  <rect x="1070" y="564" width="468" height="72" rx="10" fill="#0e182a" stroke="#2d4466" />
+  <text x="1100" y="610" fill="#d6e5ff" font-size="22" font-family="Arial, Helvetica, sans-serif">SEO</text>
+  <rect x="1270" y="588" width="240" height="20" rx="10" fill="#1d2e4c" />
+  <rect x="1270" y="588" width="98" height="20" rx="10" fill="#7ce2c2" />
+
+  <rect x="1070" y="660" width="468" height="200" rx="10" fill="#0e182a" stroke="#2d4466" />
+  <text x="1100" y="700" fill="#9cb9e3" font-size="20" font-family="Arial, Helvetica, sans-serif">Top Note</text>
+  <text x="1100" y="738" fill="#dceaff" font-size="22" font-family="Arial, Helvetica, sans-serif">Scale Google Search Winner - CPL at $55.</text>
+  <text x="1100" y="772" fill="#8fb0dc" font-size="18" font-family="Arial, Helvetica, sans-serif">Shift 15% budget from underperforming ad sets.</text>
+</svg>

@@ -853,6 +853,77 @@ button.btn-solid:focus-visible {
   margin-top: 0.3rem;
 }
 
+.marketing-direct-hero h1 {
+  max-width: 980px;
+}
+
+.snapshot-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+}
+
+.snapshot-card {
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(23, 31, 48, 0.95), rgba(13, 20, 33, 0.95));
+  padding: 0.85rem;
+}
+
+.snapshot-card h3 {
+  margin: 0 0 0.6rem;
+}
+
+.snapshot-image {
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  border: 1px solid #2d4165;
+  display: block;
+  background: #0d1524;
+}
+
+.flow-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.flow-step-card {
+  border: 1px solid #334a73;
+  border-radius: 0.9rem;
+  background: #0f192d;
+  padding: 0.8rem;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.flow-step-card:hover,
+.flow-step-card:focus-visible {
+  border-color: #7ea5ff;
+  transform: translateY(-1px);
+}
+
+.flow-step-index {
+  display: inline-block;
+  color: #9fc1ff;
+  border: 1px solid #4d6ea6;
+  border-radius: 999px;
+  padding: 0.14rem 0.5rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.42rem;
+}
+
+.flow-step-card h3 {
+  margin-bottom: 0.3rem;
+}
+
+.flow-step-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
 @media (max-width: 980px) {
   .nav-wrap {
     grid-template-columns: 1fr;
@@ -883,5 +954,10 @@ button.btn-solid:focus-visible {
   .funnel-actions .btn,
   .footer-cta .btn {
     width: 100%;
+  }
+
+  .snapshot-grid,
+  .flow-grid {
+    grid-template-columns: 1fr;
   }
 }
