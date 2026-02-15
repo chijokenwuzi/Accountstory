@@ -10,65 +10,65 @@ const TRACKER_DATA = {
     {
       name: "Emergency Service Search - Core",
       source: "google-ads",
-      spend: 11200,
-      leads: 96,
-      qualified: 44,
+      spend: 900,
+      leads: 20,
+      qualified: 9,
       status: "Active"
     },
     {
       name: "Service + City Search Expansion",
       source: "google-ads",
-      spend: 6200,
-      leads: 52,
-      qualified: 26,
+      spend: 480,
+      leads: 12,
+      qualified: 5,
       status: "Active"
     },
     {
       name: "Facebook Homeowner Lead Forms",
       source: "facebook-ads",
-      spend: 7800,
-      leads: 88,
-      qualified: 36,
+      spend: 620,
+      leads: 15,
+      qualified: 6,
       status: "Active"
     },
     {
       name: "Facebook Retargeting 30-Day",
       source: "facebook-ads",
-      spend: 4200,
-      leads: 37,
-      qualified: 16,
+      spend: 320,
+      leads: 8,
+      qualified: 3,
       status: "Paused"
     },
     {
       name: "Local Service Ads - Main Market",
       source: "local-services-ads",
-      spend: 6500,
-      leads: 82,
-      qualified: 41,
+      spend: 420,
+      leads: 10,
+      qualified: 5,
       status: "Active"
     },
     {
       name: "Local Service Ads - Neighbor Cities",
       source: "local-services-ads",
-      spend: 3100,
-      leads: 34,
-      qualified: 15,
+      spend: 180,
+      leads: 5,
+      qualified: 2,
       status: "Active"
     },
     {
       name: "SEO Service Page Cluster",
       source: "seo",
-      spend: 4900,
-      leads: 43,
-      qualified: 18,
+      spend: 70,
+      leads: 1,
+      qualified: 0,
       status: "Active"
     },
     {
       name: "SEO Local Map Pack Content",
       source: "seo",
-      spend: 2400,
-      leads: 20,
-      qualified: 9,
+      spend: 30,
+      leads: 0,
+      qualified: 0,
       status: "Active"
     }
   ],
@@ -76,55 +76,55 @@ const TRACKER_DATA = {
     {
       label: "Week 1",
       sources: {
-        "google-ads": { spend: 2700, leads: 23 },
-        "facebook-ads": { spend: 2000, leads: 20 },
-        "local-services-ads": { spend: 1600, leads: 21 },
-        seo: { spend: 1100, leads: 9 }
+        "google-ads": { spend: 180, leads: 4 },
+        "facebook-ads": { spend: 130, leads: 3 },
+        "local-services-ads": { spend: 90, leads: 2 },
+        seo: { spend: 20, leads: 1 }
       }
     },
     {
       label: "Week 2",
       sources: {
-        "google-ads": { spend: 2850, leads: 24 },
-        "facebook-ads": { spend: 2100, leads: 21 },
-        "local-services-ads": { spend: 1650, leads: 20 },
-        seo: { spend: 1150, leads: 10 }
+        "google-ads": { spend: 220, leads: 5 },
+        "facebook-ads": { spend: 150, leads: 4 },
+        "local-services-ads": { spend: 100, leads: 3 },
+        seo: { spend: 20, leads: 1 }
       }
     },
     {
       label: "Week 3",
       sources: {
-        "google-ads": { spend: 2950, leads: 25 },
-        "facebook-ads": { spend: 2150, leads: 22 },
-        "local-services-ads": { spend: 1700, leads: 20 },
-        seo: { spend: 1200, leads: 10 }
+        "google-ads": { spend: 250, leads: 5 },
+        "facebook-ads": { spend: 160, leads: 4 },
+        "local-services-ads": { spend: 110, leads: 3 },
+        seo: { spend: 20, leads: 1 }
       }
     },
     {
       label: "Week 4",
       sources: {
-        "google-ads": { spend: 3050, leads: 26 },
-        "facebook-ads": { spend: 2200, leads: 23 },
-        "local-services-ads": { spend: 1750, leads: 22 },
-        seo: { spend: 1250, leads: 11 }
+        "google-ads": { spend: 260, leads: 6 },
+        "facebook-ads": { spend: 180, leads: 4 },
+        "local-services-ads": { spend: 120, leads: 3 },
+        seo: { spend: 10, leads: 0 }
       }
     },
     {
       label: "Week 5",
       sources: {
-        "google-ads": { spend: 2900, leads: 24 },
-        "facebook-ads": { spend: 2050, leads: 21 },
-        "local-services-ads": { spend: 1600, leads: 18 },
-        seo: { spend: 1300, leads: 10 }
+        "google-ads": { spend: 240, leads: 5 },
+        "facebook-ads": { spend: 170, leads: 4 },
+        "local-services-ads": { spend: 100, leads: 2 },
+        seo: { spend: 20, leads: 1 }
       }
     },
     {
       label: "Week 6",
       sources: {
-        "google-ads": { spend: 2900, leads: 26 },
-        "facebook-ads": { spend: 1500, leads: 18 },
-        "local-services-ads": { spend: 1300, leads: 15 },
-        seo: { spend: 1300, leads: 10 }
+        "google-ads": { spend: 230, leads: 5 },
+        "facebook-ads": { spend: 150, leads: 3 },
+        "local-services-ads": { spend: 80, leads: 2 },
+        seo: { spend: 10, leads: 0 }
       }
     }
   ]

@@ -74,6 +74,13 @@ a {
   justify-content: flex-end;
 }
 
+.nav-back {
+  border: 1px solid #35527a;
+  background: #0f1a2f;
+  color: #dbe9ff;
+  border-radius: 999px;
+}
+
 .top-nav a {
   color: var(--muted);
   padding: 0.45rem 0.7rem;
