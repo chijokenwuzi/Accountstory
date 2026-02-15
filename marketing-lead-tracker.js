@@ -58,7 +58,7 @@ const TRACKER_DATA = {
     {
       name: "SEO Service Page Cluster",
       source: "seo",
-      spend: 70,
+      spend: 50,
       leads: 1,
       qualified: 0,
       status: "Active"
@@ -115,7 +115,7 @@ const TRACKER_DATA = {
         "google-ads": { spend: 240, leads: 5 },
         "facebook-ads": { spend: 170, leads: 4 },
         "local-services-ads": { spend: 100, leads: 2 },
-        seo: { spend: 20, leads: 1 }
+        seo: { spend: 10, leads: 1 }
       }
     },
     {
@@ -124,7 +124,7 @@ const TRACKER_DATA = {
         "google-ads": { spend: 230, leads: 5 },
         "facebook-ads": { spend: 150, leads: 3 },
         "local-services-ads": { spend: 80, leads: 2 },
-        seo: { spend: 10, leads: 0 }
+        seo: { spend: 0, leads: 0 }
       }
     }
   ]

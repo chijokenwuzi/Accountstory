@@ -1405,6 +1405,8 @@ async function serveStatic(req, res, url) {
     "/marketing-lead-gen/vsl": "marketing-lead-gen-vsl.html",
     "/marketing-lead-gen/assets": "marketing-lead-gen-assets.html",
     "/marketing-lead-gen/budget": "marketing-lead-gen-budget.html",
+    "/lead-insights-login": "lead-insights-login.html",
+    "/lead-insights-get-started": "lead-insights-get-started.html",
     "/pricing": "pricing.html",
     "/stories": "stories.html",
     "/login": "login.html",
