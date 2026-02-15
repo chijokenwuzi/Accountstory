@@ -510,6 +510,7 @@ select:focus {
 .ad-options {
   margin-top: 0.62rem;
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 0.55rem;
 }
 
@@ -528,6 +529,11 @@ select:focus {
   margin: 0.25rem 0 0;
   color: #bfd3ec;
   font-size: 0.82rem;
+}
+
+.ad-option-context {
+  color: #9cb9da;
+  font-size: 0.76rem;
 }
 
 .publish-actions {
@@ -745,6 +751,44 @@ select:focus {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.3rem;
+}
+
+.field-sections {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field-section {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.field-section-title {
+  margin: 0;
+  color: #9bc4ea;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.advanced-fields {
+  border: 1px dashed #3f5f84;
+  border-radius: 0.62rem;
+  background: #0c1728;
+  padding: 0.4rem;
+}
+
+.advanced-fields summary {
+  cursor: pointer;
+  color: #cde4ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.advanced-fields-note {
+  margin: 0.35rem 0 0.4rem;
+  color: #92aecf;
+  font-size: 0.74rem;
 }
 
 .copy-row {

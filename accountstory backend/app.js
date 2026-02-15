@@ -26,6 +26,7 @@ const metricLive = document.getElementById("metricLive");
 const adInputRuns = document.getElementById("adInputRuns");
 const simulateBtn = document.getElementById("simulateBtn");
 let globalAdCursor = 0;
+const ADS_PER_VIEW = 2;
 const PLATFORM_LABEL = {
   facebook: "Facebook",
   google: "Google"
@@ -265,20 +266,27 @@ function optionPlatforms(option) {
   return platforms;
 }
 
-function selectedGlobalAdIndex(optionCount) {
+function adPageCount(optionCount) {
   if (optionCount <= 0) return 0;
+  return Math.ceil(optionCount / ADS_PER_VIEW);
+}
+
+function selectedGlobalAdPage(optionCount) {
+  const pageCount = adPageCount(optionCount);
+  if (!pageCount) return 0;
   const raw = Number(globalAdCursor || 0);
   const safe = Number.isInteger(raw) ? raw : 0;
-  const next = ((safe % optionCount) + optionCount) % optionCount;
+  const next = ((safe % pageCount) + pageCount) % pageCount;
   globalAdCursor = next;
   return next;
 }
 
-function shiftGlobalAdIndex(optionCount, direction) {
-  if (optionCount <= 0) return;
+function shiftGlobalAdPage(optionCount, direction) {
+  const pageCount = adPageCount(optionCount);
+  if (!pageCount) return;
   const delta = direction === "next" ? 1 : -1;
-  const current = selectedGlobalAdIndex(optionCount);
-  globalAdCursor = (current + delta + optionCount) % optionCount;
+  const current = selectedGlobalAdPage(optionCount);
+  globalAdCursor = (current + delta + pageCount) % pageCount;
 }
 
 function adEntriesForRun(options) {
@@ -762,6 +770,35 @@ const FIELD_HELP = {
   }
 };
 
+const MISSION_CRITICAL_FIELDS = {
+  facebook: new Set([
+    "campaignName",
+    "objective",
+    "dailyBudget",
+    "bidStrategy",
+    "adSetAudience",
+    "primaryText",
+    "headline",
+    "description",
+    "cta",
+    "destinationUrl",
+    "creativeType",
+    "mediaUrl"
+  ]),
+  google: new Set([
+    "campaignName",
+    "campaignType",
+    "biddingStrategyType",
+    "targetCpa",
+    "dailyBudget",
+    "adGroupName",
+    "keywords",
+    "headlines",
+    "descriptions",
+    "finalUrl"
+  ])
+};
+
 function fieldHelpText(platform, field) {
   const platformKey = String(platform || "").toLowerCase();
   if (!platformKey || !field) return "";
@@ -769,8 +806,28 @@ function fieldHelpText(platform, field) {
   return String(entries[field] || "");
 }
 
+function isMissionCriticalField(platform, field) {
+  const platformKey = String(platform || "").toLowerCase();
+  const fields = MISSION_CRITICAL_FIELDS[platformKey];
+  return !!(fields && fields.has(String(field || "")));
+}
+
 function fieldDefinitions(platform) {
   return platform === "Facebook" ? FACEBOOK_FIELD_DEFS : GOOGLE_FIELD_DEFS;
+}
+
+function createFieldGrid(platform, pack, definitions) {
+  const grid = document.createElement("div");
+  grid.className = "copy-grid";
+  definitions.forEach((definition) => {
+    grid.appendChild(
+      createCopyRow(definition.label, fieldValueForDisplay(pack, definition), {
+        ...definition,
+        help: fieldHelpText(platform, definition.field)
+      })
+    );
+  });
+  return grid;
 }
 
 function domainFromUrl(url) {
@@ -982,19 +1039,41 @@ function createPlatformBlock(platform, pack) {
   const previewSlot = document.createElement("div");
   previewSlot.className = "platform-preview";
 
-  const grid = document.createElement("div");
-  grid.className = "copy-grid";
-  fieldDefinitions(platform).forEach((definition) => {
-    grid.appendChild(
-      createCopyRow(definition.label, fieldValueForDisplay(pack, definition), {
-        ...definition,
-        help: fieldHelpText(platform, definition.field)
-      })
-    );
-  });
+  const definitions = fieldDefinitions(platform);
+  const missionCritical = definitions.filter((definition) => isMissionCriticalField(platform, definition.field));
+  const advanced = definitions.filter((definition) => !isMissionCriticalField(platform, definition.field));
+
+  const fieldsWrap = document.createElement("div");
+  fieldsWrap.className = "field-sections";
+
+  const missionSection = document.createElement("section");
+  missionSection.className = "field-section";
+  const missionTitle = document.createElement("p");
+  missionTitle.className = "field-section-title";
+  missionTitle.textContent = "Mission-Critical Fields";
+  missionSection.appendChild(missionTitle);
+  missionSection.appendChild(createFieldGrid(platform, pack, missionCritical.length ? missionCritical : definitions));
+  fieldsWrap.appendChild(missionSection);
+
+  if (advanced.length) {
+    const advancedSection = document.createElement("details");
+    advancedSection.className = "advanced-fields";
+
+    const advancedSummary = document.createElement("summary");
+    advancedSummary.textContent = `Advanced Filter (${advanced.length} fields)`;
+
+    const advancedNote = document.createElement("p");
+    advancedNote.className = "advanced-fields-note";
+    advancedNote.textContent = "Use these controls for deeper platform tuning after mission-critical setup.";
+
+    advancedSection.appendChild(advancedSummary);
+    advancedSection.appendChild(advancedNote);
+    advancedSection.appendChild(createFieldGrid(platform, pack, advanced));
+    fieldsWrap.appendChild(advancedSection);
+  }
 
   const refreshPreview = () => {
-    const updated = buildPackFromInputs(platform, pack, grid);
+    const updated = buildPackFromInputs(platform, pack, fieldsWrap);
     Object.assign(pack, updated);
     previewSlot.innerHTML = "";
     previewSlot.appendChild(platform === "Facebook" ? createFacebookPreview(pack) : createGooglePreview(pack));
@@ -1004,7 +1083,7 @@ function createPlatformBlock(platform, pack) {
 
   block.appendChild(head);
   block.appendChild(previewSlot);
-  block.appendChild(grid);
+  block.appendChild(fieldsWrap);
   return block;
 }
 
@@ -1032,10 +1111,11 @@ function renderAdInputRuns() {
     return;
   }
 
-  const selectedIndex = selectedGlobalAdIndex(adEntries.length);
-  const selectedEntry = adEntries[selectedIndex];
-  const run = selectedEntry.run || {};
-  const option = selectedEntry.option || {};
+  const selectedPage = selectedGlobalAdPage(adEntries.length);
+  const startIndex = selectedPage * ADS_PER_VIEW;
+  const visibleEntries = adEntries.slice(startIndex, startIndex + ADS_PER_VIEW);
+  const endIndex = Math.min(startIndex + visibleEntries.length, adEntries.length);
+  const pageCount = adPageCount(adEntries.length);
 
   const runCard = document.createElement("article");
   runCard.className = "ad-run";
@@ -1045,9 +1125,9 @@ function renderAdInputRuns() {
 
   const headText = document.createElement("div");
   const title = document.createElement("h3");
-  title.textContent = `${run.artifactName || "Artifact"} | ${run.objective || "Leads"}`;
+  title.textContent = "Generated Campaign Ads";
   const meta = document.createElement("p");
-  meta.textContent = `${customerNameById(run.customerId)} | ${formatTime(run.createdAt)} | ${(run.channels || []).join(", ")}`;
+  meta.textContent = "Mission-critical fields shown first. Open Advanced Filter for full platform controls.";
 
   headText.appendChild(title);
   headText.appendChild(meta);
@@ -1064,11 +1144,11 @@ function renderAdInputRuns() {
   prevBtn.ariaLabel = "Previous ad";
   prevBtn.dataset.optionNav = "prev";
   prevBtn.dataset.optionCount = String(adEntries.length);
-  prevBtn.disabled = adEntries.length <= 1;
+  prevBtn.disabled = pageCount <= 1;
 
   const navLabel = document.createElement("span");
   navLabel.className = "option-nav-label";
-  navLabel.textContent = `Ad ${selectedIndex + 1} of ${adEntries.length}`;
+  navLabel.textContent = `Ads ${startIndex + 1}-${endIndex} of ${adEntries.length}`;
 
   const nextBtn = document.createElement("button");
   nextBtn.type = "button";
@@ -1078,7 +1158,7 @@ function renderAdInputRuns() {
   nextBtn.ariaLabel = "Next ad";
   nextBtn.dataset.optionNav = "next";
   nextBtn.dataset.optionCount = String(adEntries.length);
-  nextBtn.disabled = adEntries.length <= 1;
+  nextBtn.disabled = pageCount <= 1;
 
   optionNav.appendChild(prevBtn);
   optionNav.appendChild(navLabel);
@@ -1088,20 +1168,29 @@ function renderAdInputRuns() {
   const optionsWrap = document.createElement("div");
   optionsWrap.className = "ad-options";
 
-  const optionCard = document.createElement("section");
-  optionCard.className = "ad-option";
+  visibleEntries.forEach((entry) => {
+    const run = entry.run || {};
+    const option = entry.option || {};
+    const optionCard = document.createElement("section");
+    optionCard.className = "ad-option";
 
-  const optionTitle = document.createElement("h4");
-  optionTitle.textContent = `${option.label || "Ad Option"} | ${selectedEntry.platform}`;
+    const optionTitle = document.createElement("h4");
+    optionTitle.textContent = `${option.label || "Ad Option"} | ${entry.platform}`;
 
-  const rationale = document.createElement("p");
-  rationale.textContent = option.rationale || "Generated from customer artifact.";
+    const rationale = document.createElement("p");
+    rationale.textContent = option.rationale || "Generated from customer artifact.";
 
-  optionCard.appendChild(optionTitle);
-  optionCard.appendChild(rationale);
-  optionCard.appendChild(createQueueButtons(run.id, option));
-  optionCard.appendChild(createPlatformBlock(selectedEntry.platform, selectedEntry.pack));
-  optionsWrap.appendChild(optionCard);
+    const context = document.createElement("p");
+    context.className = "ad-option-context";
+    context.textContent = `${run.artifactName || "Artifact"} | ${customerNameById(run.customerId)} | ${(run.channels || []).join(", ") || "Channel N/A"}`;
+
+    optionCard.appendChild(optionTitle);
+    optionCard.appendChild(rationale);
+    optionCard.appendChild(context);
+    optionCard.appendChild(createQueueButtons(run.id, option));
+    optionCard.appendChild(createPlatformBlock(entry.platform, entry.pack));
+    optionsWrap.appendChild(optionCard);
+  });
 
   runCard.appendChild(head);
   runCard.appendChild(optionsWrap);
@@ -1337,7 +1426,7 @@ adInputRuns.addEventListener("click", async (event) => {
   if (optionNav) {
     const optionCount = Number(target.dataset.optionCount || 0);
     if (!optionCount) return;
-    shiftGlobalAdIndex(optionCount, optionNav);
+    shiftGlobalAdPage(optionCount, optionNav);
     renderAdInputRuns();
     return;
   }
