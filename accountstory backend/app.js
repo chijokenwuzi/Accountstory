@@ -22,8 +22,6 @@ const publishMessage = document.getElementById("publishMessage");
 
 const metricCustomers = document.getElementById("metricCustomers");
 const metricLive = document.getElementById("metricLive");
-const metricAutopilot = document.getElementById("metricAutopilot");
-const metricRisk = document.getElementById("metricRisk");
 
 const adInputRuns = document.getElementById("adInputRuns");
 const simulateBtn = document.getElementById("simulateBtn");
@@ -183,16 +181,6 @@ function renderMetrics() {
 
   const live = state.campaigns.filter((campaign) => ["Launch", "Optimization", "Scale"].includes(campaign.stage)).length;
   metricLive.textContent = String(live);
-
-  if (!state.campaigns.length) {
-    metricAutopilot.textContent = "0%";
-  } else {
-    const autoCount = state.campaigns.filter((campaign) => campaign.mode === "Autopilot").length;
-    metricAutopilot.textContent = `${Math.round((autoCount / state.campaigns.length) * 100)}%`;
-  }
-
-  const riskCount = state.campaigns.filter((campaign) => campaign.risk === "High" || campaign.stage === "Blocked").length;
-  metricRisk.textContent = String(riskCount);
 }
 
 function renderServiceStatus() {
