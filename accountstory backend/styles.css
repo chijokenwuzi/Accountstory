@@ -754,6 +754,14 @@ select:focus {
   padding: 0.38rem;
   display: grid;
   gap: 0.28rem;
+  position: relative;
+}
+
+.copy-label-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.35rem;
 }
 
 .copy-label {
@@ -761,6 +769,58 @@ select:focus {
   font-size: 0.71rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.copy-help {
+  position: relative;
+  z-index: 4;
+}
+
+.copy-help summary {
+  list-style: none;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  border: 1px solid #6b88ac;
+  background: #102238;
+  color: #cde4ff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.copy-help summary::-webkit-details-marker {
+  display: none;
+}
+
+.copy-help summary:hover {
+  border-color: #84b4ec;
+  color: #e8f2ff;
+}
+
+.copy-help[open] summary {
+  border-color: #73d8be;
+  color: #9ff2dd;
+  background: #123329;
+}
+
+.copy-help-popover {
+  position: absolute;
+  top: 1.2rem;
+  right: 0;
+  width: min(250px, calc(100vw - 2.2rem));
+  border: 1px solid #4a6a8f;
+  border-radius: 0.58rem;
+  background: #0c1828;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.34);
+  padding: 0.5rem 0.55rem;
+  color: #d7e7fb;
+  font-size: 0.74rem;
+  line-height: 1.32;
 }
 
 .pack-field {

@@ -467,9 +467,42 @@ function createCopyRow(label, value, options = {}) {
   const row = document.createElement("div");
   row.className = "copy-row";
 
+  const labelRow = document.createElement("div");
+  labelRow.className = "copy-label-row";
+
   const name = document.createElement("span");
   name.className = "copy-label";
   name.textContent = label;
+  labelRow.appendChild(name);
+
+  if (options.help) {
+    const help = document.createElement("details");
+    help.className = "copy-help";
+
+    const trigger = document.createElement("summary");
+    trigger.textContent = "i";
+    trigger.ariaLabel = `${label} help`;
+
+    const popover = document.createElement("div");
+    popover.className = "copy-help-popover";
+    popover.textContent = String(options.help);
+
+    help.appendChild(trigger);
+    help.appendChild(popover);
+
+    const closeHelp = () => {
+      help.open = false;
+    };
+
+    row.addEventListener("mouseleave", closeHelp);
+    row.addEventListener("focusout", () => {
+      requestAnimationFrame(() => {
+        if (!row.contains(document.activeElement)) closeHelp();
+      });
+    });
+
+    labelRow.appendChild(help);
+  }
 
   const type = String(options.type || "text").toLowerCase();
   let text;
@@ -517,7 +550,7 @@ function createCopyRow(label, value, options = {}) {
     text.dataset.packField = String(options.field);
   }
 
-  row.appendChild(name);
+  row.appendChild(labelRow);
   row.appendChild(text);
   return row;
 }
@@ -699,6 +732,54 @@ const GOOGLE_FIELD_DEFS = [
   { label: "Image URLs (one per line)", field: "imageUrls", type: "textarea", rows: 3, multiline: true },
   { label: "Video URLs (one per line)", field: "videoUrls", type: "textarea", rows: 3, multiline: true }
 ];
+
+const FIELD_HELP = {
+  facebook: {
+    buyingType: "Controls auction model. AUCTION is standard and most common. RESERVED is negotiated inventory.",
+    specialAdCategories: "Required for regulated categories (credit, employment, housing, social issues). Leave empty if not applicable.",
+    campaignBudgetOptimization: "Lets Meta auto-distribute budget across ad sets for best performance.",
+    bidStrategy: "Defines how Meta bids in auctions. Use LOWEST_COST by default unless you have strong cost targets.",
+    bidAmount: "Explicit bid cap value used with BID_CAP strategies.",
+    targetCost: "Average cost goal used with cost control strategies.",
+    targetRoas: "Desired return on ad spend target when optimizing for value.",
+    customAudienceIds: "Existing retargeting or uploaded audience IDs from Meta.",
+    lookalikeAudienceIds: "Lookalike audience IDs created from source lists or events.",
+    publisherPlatforms: "Where to run ads: facebook, instagram, audience_network, messenger.",
+    devicePlatforms: "Limit delivery by device class, typically mobile or desktop.",
+    optimizationGoal: "Event Meta optimizes for (for example LEAD, PURCHASE, LINK_CLICKS).",
+    billingEvent: "How spend is billed (such as impressions). Usually platform-selected.",
+    attributionWindow: "How long after a click/view Meta credits a conversion to this ad.",
+    pixelId: "Meta Pixel ID tied to your conversion tracking.",
+    conversionEvent: "Conversion event to optimize for, such as Lead or Purchase.",
+    instagramActorId: "Instagram account ID used as ad identity for placements on Instagram.",
+    urlParameters: "Tracking params appended to destination URL (for example UTM tags).",
+    thumbnailUrl: "Manual thumbnail image URL when creative is video."
+  },
+  google: {
+    channelSubType: "Optional campaign subtype under the main campaign type.",
+    biddingStrategyType: "How Google bids in auctions. Strategy choice changes optimization behavior.",
+    targetCpa: "Desired cost per acquisition used by TARGET_CPA bidding.",
+    targetRoas: "Desired return on ad spend used by TARGET_ROAS bidding.",
+    networkSettings: "Networks to include, such as Google Search Partners or Display.",
+    audienceSignal: "Audience hints Google can use to accelerate learning.",
+    customerMatchListIds: "Uploaded first-party audience list IDs from Google Ads.",
+    adSchedule: "Day/time delivery rules. One rule per line.",
+    finalUrlSuffix: "Tracking suffix appended to the final URL.",
+    trackingTemplate: "Click tracking template for third-party tracking systems.",
+    conversionActionIds: "Specific conversion actions used for reporting/optimization.",
+    deviceBidModifiers: "Optional device-level bid adjustments by percent.",
+    assetsSitelinks: "Sitelink extension text or identifiers, one per line.",
+    assetsCallouts: "Callout extension text, one per line.",
+    assetsStructuredSnippets: "Structured snippet values, one per line."
+  }
+};
+
+function fieldHelpText(platform, field) {
+  const platformKey = String(platform || "").toLowerCase();
+  if (!platformKey || !field) return "";
+  const entries = FIELD_HELP[platformKey] || {};
+  return String(entries[field] || "");
+}
 
 function fieldDefinitions(platform) {
   return platform === "Facebook" ? FACEBOOK_FIELD_DEFS : GOOGLE_FIELD_DEFS;
@@ -916,7 +997,12 @@ function createPlatformBlock(platform, pack) {
   const grid = document.createElement("div");
   grid.className = "copy-grid";
   fieldDefinitions(platform).forEach((definition) => {
-    grid.appendChild(createCopyRow(definition.label, fieldValueForDisplay(pack, definition), definition));
+    grid.appendChild(
+      createCopyRow(definition.label, fieldValueForDisplay(pack, definition), {
+        ...definition,
+        help: fieldHelpText(platform, definition.field)
+      })
+    );
   });
 
   const refreshPreview = () => {
