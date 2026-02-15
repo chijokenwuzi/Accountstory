@@ -27,7 +27,7 @@ const metricRisk = document.getElementById("metricRisk");
 
 const adInputRuns = document.getElementById("adInputRuns");
 const simulateBtn = document.getElementById("simulateBtn");
-const runOptionCursor = Object.create(null);
+let globalAdCursor = 0;
 const PLATFORM_LABEL = {
   facebook: "Facebook",
   google: "Google"
@@ -277,20 +277,20 @@ function optionPlatforms(option) {
   return platforms;
 }
 
-function selectedOptionIndex(runId, optionCount) {
-  if (!runId || optionCount <= 0) return 0;
-  const raw = Number(runOptionCursor[runId] || 0);
+function selectedGlobalAdIndex(optionCount) {
+  if (optionCount <= 0) return 0;
+  const raw = Number(globalAdCursor || 0);
   const safe = Number.isInteger(raw) ? raw : 0;
   const next = ((safe % optionCount) + optionCount) % optionCount;
-  runOptionCursor[runId] = next;
+  globalAdCursor = next;
   return next;
 }
 
-function shiftOptionIndex(runId, optionCount, direction) {
-  if (!runId || optionCount <= 0) return;
+function shiftGlobalAdIndex(optionCount, direction) {
+  if (optionCount <= 0) return;
   const delta = direction === "next" ? 1 : -1;
-  const current = selectedOptionIndex(runId, optionCount);
-  runOptionCursor[runId] = (current + delta + optionCount) % optionCount;
+  const current = selectedGlobalAdIndex(optionCount);
+  globalAdCursor = (current + delta + optionCount) % optionCount;
 }
 
 function adEntriesForRun(options) {
@@ -317,6 +317,23 @@ function adEntriesForRun(options) {
     }
   });
   return list;
+}
+
+function adEntriesForRuns(runs) {
+  const entries = [];
+  (Array.isArray(runs) ? runs : []).forEach((run, runIndex) => {
+    const runId = String(run && run.id ? run.id : `run-${runIndex}`);
+    const options = Array.isArray(run && run.options) ? run.options : [];
+    adEntriesForRun(options).forEach((entry) => {
+      entries.push({
+        ...entry,
+        run,
+        runId,
+        entryKey: `${runId}:${entry.key}`
+      });
+    });
+  });
+  return entries;
 }
 
 function createQueueButtons(runId, option) {
@@ -932,95 +949,89 @@ function renderAdInputRuns() {
     return;
   }
 
-  runs.slice(0, 12).forEach((run) => {
-    const runCard = document.createElement("article");
-    runCard.className = "ad-run";
-    const runId = String(run.id || "");
-    const options = Array.isArray(run.options) ? run.options : [];
-    const adEntries = adEntriesForRun(options);
+  const adEntries = adEntriesForRuns(runs);
+  if (!adEntries.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-col";
+    empty.textContent = "No generated options for this customer yet.";
+    adInputRuns.appendChild(empty);
+    return;
+  }
 
-    const head = document.createElement("div");
-    head.className = "ad-run-head";
+  const selectedIndex = selectedGlobalAdIndex(adEntries.length);
+  const selectedEntry = adEntries[selectedIndex];
+  const run = selectedEntry.run || {};
+  const option = selectedEntry.option || {};
 
-    const headText = document.createElement("div");
-    const title = document.createElement("h3");
-    title.textContent = `${run.artifactName || "Artifact"} | ${run.objective || "Leads"}`;
-    const meta = document.createElement("p");
-    meta.textContent = `${customerNameById(run.customerId)} | ${formatTime(run.createdAt)} | ${(run.channels || []).join(", ")}`;
+  const runCard = document.createElement("article");
+  runCard.className = "ad-run";
 
-    headText.appendChild(title);
-    headText.appendChild(meta);
-    head.appendChild(headText);
+  const head = document.createElement("div");
+  head.className = "ad-run-head";
 
-    const optionNav = document.createElement("div");
-    optionNav.className = "option-nav";
+  const headText = document.createElement("div");
+  const title = document.createElement("h3");
+  title.textContent = `${run.artifactName || "Artifact"} | ${run.objective || "Leads"}`;
+  const meta = document.createElement("p");
+  meta.textContent = `${customerNameById(run.customerId)} | ${formatTime(run.createdAt)} | ${(run.channels || []).join(", ")}`;
 
-    const prevBtn = document.createElement("button");
-    prevBtn.type = "button";
-    prevBtn.className = "btn btn-secondary btn-small option-nav-btn";
-    prevBtn.textContent = "←";
-    prevBtn.title = "Previous ad";
-    prevBtn.ariaLabel = "Previous ad";
-    prevBtn.dataset.optionNav = "prev";
-    prevBtn.dataset.runId = runId;
-    prevBtn.dataset.optionCount = String(adEntries.length);
-    prevBtn.disabled = adEntries.length <= 1;
+  headText.appendChild(title);
+  headText.appendChild(meta);
+  head.appendChild(headText);
 
-    const navLabel = document.createElement("span");
-    navLabel.className = "option-nav-label";
-    navLabel.textContent = adEntries.length
-      ? `Ad ${selectedOptionIndex(runId, adEntries.length) + 1} of ${adEntries.length}`
-      : "Ad 0 of 0";
+  const optionNav = document.createElement("div");
+  optionNav.className = "option-nav";
 
-    const nextBtn = document.createElement("button");
-    nextBtn.type = "button";
-    nextBtn.className = "btn btn-secondary btn-small option-nav-btn";
-    nextBtn.textContent = "→";
-    nextBtn.title = "Next ad";
-    nextBtn.ariaLabel = "Next ad";
-    nextBtn.dataset.optionNav = "next";
-    nextBtn.dataset.runId = runId;
-    nextBtn.dataset.optionCount = String(adEntries.length);
-    nextBtn.disabled = adEntries.length <= 1;
+  const prevBtn = document.createElement("button");
+  prevBtn.type = "button";
+  prevBtn.className = "btn btn-secondary btn-small option-nav-btn";
+  prevBtn.textContent = "←";
+  prevBtn.title = "Previous ad";
+  prevBtn.ariaLabel = "Previous ad";
+  prevBtn.dataset.optionNav = "prev";
+  prevBtn.dataset.optionCount = String(adEntries.length);
+  prevBtn.disabled = adEntries.length <= 1;
 
-    optionNav.appendChild(prevBtn);
-    optionNav.appendChild(navLabel);
-    optionNav.appendChild(nextBtn);
-    head.appendChild(optionNav);
+  const navLabel = document.createElement("span");
+  navLabel.className = "option-nav-label";
+  navLabel.textContent = `Ad ${selectedIndex + 1} of ${adEntries.length}`;
 
-    const optionsWrap = document.createElement("div");
-    optionsWrap.className = "ad-options";
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.className = "btn btn-secondary btn-small option-nav-btn";
+  nextBtn.textContent = "→";
+  nextBtn.title = "Next ad";
+  nextBtn.ariaLabel = "Next ad";
+  nextBtn.dataset.optionNav = "next";
+  nextBtn.dataset.optionCount = String(adEntries.length);
+  nextBtn.disabled = adEntries.length <= 1;
 
-    if (!adEntries.length) {
-      const empty = document.createElement("p");
-      empty.className = "empty-col";
-      empty.textContent = "No generated options for this campaign yet.";
-      optionsWrap.appendChild(empty);
-    } else {
-      const selectedIndex = selectedOptionIndex(runId, adEntries.length);
-      const selectedEntry = adEntries[selectedIndex];
-      const option = selectedEntry.option;
-      const optionCard = document.createElement("section");
-      optionCard.className = "ad-option";
+  optionNav.appendChild(prevBtn);
+  optionNav.appendChild(navLabel);
+  optionNav.appendChild(nextBtn);
+  head.appendChild(optionNav);
 
-      const optionTitle = document.createElement("h4");
-      optionTitle.textContent = `${option.label || "Ad Option"} | ${selectedEntry.platform}`;
+  const optionsWrap = document.createElement("div");
+  optionsWrap.className = "ad-options";
 
-      const rationale = document.createElement("p");
-      rationale.textContent = option.rationale || "Generated from customer artifact.";
+  const optionCard = document.createElement("section");
+  optionCard.className = "ad-option";
 
-      optionCard.appendChild(optionTitle);
-      optionCard.appendChild(rationale);
-      optionCard.appendChild(createQueueButtons(run.id, option));
-      optionCard.appendChild(createPlatformBlock(selectedEntry.platform, selectedEntry.pack));
+  const optionTitle = document.createElement("h4");
+  optionTitle.textContent = `${option.label || "Ad Option"} | ${selectedEntry.platform}`;
 
-      optionsWrap.appendChild(optionCard);
-    }
+  const rationale = document.createElement("p");
+  rationale.textContent = option.rationale || "Generated from customer artifact.";
 
-    runCard.appendChild(head);
-    runCard.appendChild(optionsWrap);
-    adInputRuns.appendChild(runCard);
-  });
+  optionCard.appendChild(optionTitle);
+  optionCard.appendChild(rationale);
+  optionCard.appendChild(createQueueButtons(run.id, option));
+  optionCard.appendChild(createPlatformBlock(selectedEntry.platform, selectedEntry.pack));
+  optionsWrap.appendChild(optionCard);
+
+  runCard.appendChild(head);
+  runCard.appendChild(optionsWrap);
+  adInputRuns.appendChild(runCard);
 }
 
 function renderAll() {
@@ -1250,10 +1261,9 @@ adInputRuns.addEventListener("click", async (event) => {
 
   const optionNav = String(target.dataset.optionNav || "");
   if (optionNav) {
-    const runId = String(target.dataset.runId || "");
     const optionCount = Number(target.dataset.optionCount || 0);
-    if (!runId || !optionCount) return;
-    shiftOptionIndex(runId, optionCount, optionNav);
+    if (!optionCount) return;
+    shiftGlobalAdIndex(optionCount, optionNav);
     renderAdInputRuns();
     return;
   }
