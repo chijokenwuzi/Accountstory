@@ -28,7 +28,6 @@ const metricRisk = document.getElementById("metricRisk");
 const adInputRuns = document.getElementById("adInputRuns");
 const simulateBtn = document.getElementById("simulateBtn");
 const runOptionCursor = Object.create(null);
-const optionPlatformCursor = Object.create(null);
 const PLATFORM_LABEL = {
   facebook: "Facebook",
   google: "Google"
@@ -294,20 +293,30 @@ function shiftOptionIndex(runId, optionCount, direction) {
   runOptionCursor[runId] = (current + delta + optionCount) % optionCount;
 }
 
-function selectedPlatformIndex(optionKey, platformCount) {
-  if (!optionKey || platformCount <= 0) return 0;
-  const raw = Number(optionPlatformCursor[optionKey] || 0);
-  const safe = Number.isInteger(raw) ? raw : 0;
-  const next = ((safe % platformCount) + platformCount) % platformCount;
-  optionPlatformCursor[optionKey] = next;
-  return next;
-}
-
-function shiftPlatformIndex(optionKey, platformCount, direction) {
-  if (!optionKey || platformCount <= 0) return;
-  const delta = direction === "next" ? 1 : -1;
-  const current = selectedPlatformIndex(optionKey, platformCount);
-  optionPlatformCursor[optionKey] = (current + delta + platformCount) % platformCount;
+function adEntriesForRun(options) {
+  const list = [];
+  (Array.isArray(options) ? options : []).forEach((option, index) => {
+    const optionId = String(option && option.id ? option.id : `option-${index}`);
+    if (option && option.facebook) {
+      list.push({
+        key: `${optionId}:facebook`,
+        option,
+        optionId,
+        platform: "Facebook",
+        pack: option.facebook
+      });
+    }
+    if (option && option.google) {
+      list.push({
+        key: `${optionId}:google`,
+        option,
+        optionId,
+        platform: "Google",
+        pack: option.google
+      });
+    }
+  });
+  return list;
 }
 
 function createQueueButtons(runId, option) {
@@ -928,6 +937,7 @@ function renderAdInputRuns() {
     runCard.className = "ad-run";
     const runId = String(run.id || "");
     const options = Array.isArray(run.options) ? run.options : [];
+    const adEntries = adEntriesForRun(options);
 
     const head = document.createElement("div");
     head.className = "ad-run-head";
@@ -949,27 +959,29 @@ function renderAdInputRuns() {
     prevBtn.type = "button";
     prevBtn.className = "btn btn-secondary btn-small option-nav-btn";
     prevBtn.textContent = "←";
-    prevBtn.title = "Previous campaign option";
-    prevBtn.ariaLabel = "Previous campaign option";
+    prevBtn.title = "Previous ad";
+    prevBtn.ariaLabel = "Previous ad";
     prevBtn.dataset.optionNav = "prev";
     prevBtn.dataset.runId = runId;
-    prevBtn.dataset.optionCount = String(options.length);
-    prevBtn.disabled = options.length <= 1;
+    prevBtn.dataset.optionCount = String(adEntries.length);
+    prevBtn.disabled = adEntries.length <= 1;
 
     const navLabel = document.createElement("span");
     navLabel.className = "option-nav-label";
-    navLabel.textContent = options.length ? `Campaign ${selectedOptionIndex(runId, options.length) + 1} of ${options.length}` : "Campaign 0 of 0";
+    navLabel.textContent = adEntries.length
+      ? `Ad ${selectedOptionIndex(runId, adEntries.length) + 1} of ${adEntries.length}`
+      : "Ad 0 of 0";
 
     const nextBtn = document.createElement("button");
     nextBtn.type = "button";
     nextBtn.className = "btn btn-secondary btn-small option-nav-btn";
     nextBtn.textContent = "→";
-    nextBtn.title = "Next campaign option";
-    nextBtn.ariaLabel = "Next campaign option";
+    nextBtn.title = "Next ad";
+    nextBtn.ariaLabel = "Next ad";
     nextBtn.dataset.optionNav = "next";
     nextBtn.dataset.runId = runId;
-    nextBtn.dataset.optionCount = String(options.length);
-    nextBtn.disabled = options.length <= 1;
+    nextBtn.dataset.optionCount = String(adEntries.length);
+    nextBtn.disabled = adEntries.length <= 1;
 
     optionNav.appendChild(prevBtn);
     optionNav.appendChild(navLabel);
@@ -979,20 +991,20 @@ function renderAdInputRuns() {
     const optionsWrap = document.createElement("div");
     optionsWrap.className = "ad-options";
 
-    if (!options.length) {
+    if (!adEntries.length) {
       const empty = document.createElement("p");
       empty.className = "empty-col";
       empty.textContent = "No generated options for this campaign yet.";
       optionsWrap.appendChild(empty);
     } else {
-      const selectedIndex = selectedOptionIndex(runId, options.length);
-      const option = options[selectedIndex];
+      const selectedIndex = selectedOptionIndex(runId, adEntries.length);
+      const selectedEntry = adEntries[selectedIndex];
+      const option = selectedEntry.option;
       const optionCard = document.createElement("section");
       optionCard.className = "ad-option";
-      const optionKey = `${runId}:${String(option && option.id ? option.id : selectedIndex)}`;
 
       const optionTitle = document.createElement("h4");
-      optionTitle.textContent = option.label || "Ad Option";
+      optionTitle.textContent = `${option.label || "Ad Option"} | ${selectedEntry.platform}`;
 
       const rationale = document.createElement("p");
       rationale.textContent = option.rationale || "Generated from customer artifact.";
@@ -1000,50 +1012,7 @@ function renderAdInputRuns() {
       optionCard.appendChild(optionTitle);
       optionCard.appendChild(rationale);
       optionCard.appendChild(createQueueButtons(run.id, option));
-
-      const platformItems = [];
-      if (option.facebook) platformItems.push({ platform: "Facebook", pack: option.facebook });
-      if (option.google) platformItems.push({ platform: "Google", pack: option.google });
-
-      if (platformItems.length) {
-        const platformNav = document.createElement("div");
-        platformNav.className = "option-nav option-nav-inline";
-
-        const platformPrev = document.createElement("button");
-        platformPrev.type = "button";
-        platformPrev.className = "btn btn-secondary btn-small option-nav-btn";
-        platformPrev.textContent = "←";
-        platformPrev.title = "Previous platform ad";
-        platformPrev.ariaLabel = "Previous platform ad";
-        platformPrev.dataset.platformNav = "prev";
-        platformPrev.dataset.optionKey = optionKey;
-        platformPrev.dataset.platformCount = String(platformItems.length);
-        platformPrev.disabled = platformItems.length <= 1;
-
-        const platformIndex = selectedPlatformIndex(optionKey, platformItems.length);
-        const platformLabelText = document.createElement("span");
-        platformLabelText.className = "option-nav-label";
-        platformLabelText.textContent = `Ad ${platformIndex + 1} of ${platformItems.length} (${platformItems[platformIndex].platform})`;
-
-        const platformNext = document.createElement("button");
-        platformNext.type = "button";
-        platformNext.className = "btn btn-secondary btn-small option-nav-btn";
-        platformNext.textContent = "→";
-        platformNext.title = "Next platform ad";
-        platformNext.ariaLabel = "Next platform ad";
-        platformNext.dataset.platformNav = "next";
-        platformNext.dataset.optionKey = optionKey;
-        platformNext.dataset.platformCount = String(platformItems.length);
-        platformNext.disabled = platformItems.length <= 1;
-
-        platformNav.appendChild(platformPrev);
-        platformNav.appendChild(platformLabelText);
-        platformNav.appendChild(platformNext);
-        optionCard.appendChild(platformNav);
-
-        const selectedPlatform = platformItems[platformIndex];
-        optionCard.appendChild(createPlatformBlock(selectedPlatform.platform, selectedPlatform.pack));
-      }
+      optionCard.appendChild(createPlatformBlock(selectedEntry.platform, selectedEntry.pack));
 
       optionsWrap.appendChild(optionCard);
     }
@@ -1285,16 +1254,6 @@ adInputRuns.addEventListener("click", async (event) => {
     const optionCount = Number(target.dataset.optionCount || 0);
     if (!runId || !optionCount) return;
     shiftOptionIndex(runId, optionCount, optionNav);
-    renderAdInputRuns();
-    return;
-  }
-
-  const platformNav = String(target.dataset.platformNav || "");
-  if (platformNav) {
-    const optionKey = String(target.dataset.optionKey || "");
-    const platformCount = Number(target.dataset.platformCount || 0);
-    if (!optionKey || !platformCount) return;
-    shiftPlatformIndex(optionKey, platformCount, platformNav);
     renderAdInputRuns();
     return;
   }
