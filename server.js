@@ -14,6 +14,26 @@ const STORE_PATH = path.join(DATA_DIR, "store.json");
 const OPENAI_API_KEY = String(process.env.OPENAI_API_KEY || "").trim();
 const OPENAI_MODEL = String(process.env.OPENAI_MODEL || "gpt-4.1-mini").trim();
 const FOUNDER_BACKEND_URL = String(process.env.FOUNDER_BACKEND_URL || "http://127.0.0.1:9091/index.html").trim();
+const GOOGLE_OAUTH_CLIENT_ID = String(process.env.GOOGLE_OAUTH_CLIENT_ID || "").trim();
+const GOOGLE_OAUTH_CLIENT_SECRET = String(process.env.GOOGLE_OAUTH_CLIENT_SECRET || "").trim();
+const GOOGLE_OAUTH_REDIRECT_URI = String(
+  process.env.GOOGLE_OAUTH_REDIRECT_URI || `http://127.0.0.1:${PORT}/api/ads/connections/google/oauth/callback`
+).trim();
+const GOOGLE_ADS_DEVELOPER_TOKEN = String(process.env.GOOGLE_ADS_DEVELOPER_TOKEN || "").trim();
+const GOOGLE_ADS_API_VERSION = String(process.env.GOOGLE_ADS_API_VERSION || "v18").trim();
+const META_APP_ID = String(process.env.META_APP_ID || "").trim();
+const META_APP_SECRET = String(process.env.META_APP_SECRET || "").trim();
+const META_OAUTH_REDIRECT_URI = String(
+  process.env.META_OAUTH_REDIRECT_URI || `http://127.0.0.1:${PORT}/api/ads/connections/meta/oauth/callback`
+).trim();
+const META_GRAPH_API_VERSION = String(process.env.META_GRAPH_API_VERSION || "v19.0").trim();
+const ADS_SYNC_ENABLED = String(process.env.ADS_SYNC_ENABLED || "true").trim().toLowerCase() !== "false";
+const ADS_SYNC_INTERVAL_MINUTES = Math.max(5, Number(process.env.ADS_SYNC_INTERVAL_MINUTES || 30));
+const ADS_SYNC_RUN_ON_START = String(process.env.ADS_SYNC_RUN_ON_START || "false").trim().toLowerCase() === "true";
+const TOKEN_ENCRYPTION_KEY = String(process.env.TOKEN_ENCRYPTION_KEY || "").trim();
+const TOKEN_KEY_BUFFER = TOKEN_ENCRYPTION_KEY
+  ? crypto.createHash("sha256").update(TOKEN_ENCRYPTION_KEY).digest()
+  : null;
 const CAMPAIGN_STATUSES = new Set(["Draft", "Approved", "Queued"]);
 const LEAD_GEN_CHANNEL_DEFINITIONS = {
   "google-ads": { label: "Google Ads", defaultCpl: 180 },
@@ -74,7 +94,12 @@ function withDefaultStore(base) {
         ? base.workspaceCustomizations
         : {},
     automationCampaigns:
-      base.automationCampaigns && typeof base.automationCampaigns === "object" ? base.automationCampaigns : {}
+      base.automationCampaigns && typeof base.automationCampaigns === "object" ? base.automationCampaigns : {},
+    leadSignups: Array.isArray(base.leadSignups) ? base.leadSignups : [],
+    adsConnections: base.adsConnections && typeof base.adsConnections === "object" ? base.adsConnections : {},
+    adsOAuthStates: base.adsOAuthStates && typeof base.adsOAuthStates === "object" ? base.adsOAuthStates : {},
+    adsSyncRuns: Array.isArray(base.adsSyncRuns) ? base.adsSyncRuns : [],
+    adsMetricsDaily: Array.isArray(base.adsMetricsDaily) ? base.adsMetricsDaily : []
   };
 }
 
@@ -239,6 +264,564 @@ function sanitizeList(values, maxItems = 6, maxLength = 180) {
     .map((entry) => sanitizeText(entry, "", maxLength))
     .filter(Boolean)
     .slice(0, maxItems);
+}
+
+function sanitizeSignupPayload(raw) {
+  const payload = raw && typeof raw === "object" ? raw : {};
+  return {
+    type: sanitizeText(payload.type, "general_signup", 40),
+    source: sanitizeText(payload.source, "website", 80),
+    name: sanitizeText(payload.name, "", 120),
+    phone: sanitizeText(payload.phone, "", 60),
+    email: sanitizeText(payload.email, "", 180).toLowerCase(),
+    communicationMethod: sanitizeText(payload.communicationMethod, "", 60),
+    availability: sanitizeText(payload.availability, "", 400),
+    notes: sanitizeText(payload.notes, "", 800),
+    businessName: sanitizeText(payload.businessName, "", 160),
+    industry: sanitizeText(payload.industry, "", 120),
+    monthlyBudgetUsd: sanitizeText(payload.monthlyBudgetUsd, "", 40),
+    channels: sanitizeList(payload.channels, 8, 80)
+  };
+}
+
+function addLeadSignup(store, payload) {
+  const signup = {
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    ...sanitizeSignupPayload(payload)
+  };
+  store.leadSignups.unshift(signup);
+  if (store.leadSignups.length > 500) {
+    store.leadSignups.length = 500;
+  }
+  return signup;
+}
+
+function maskSecret(secret) {
+  const value = String(secret || "");
+  if (!value) return "";
+  if (value.length <= 4) return `••••${value}`;
+  return `••••••••${value.slice(-4)}`;
+}
+
+function encryptSecret(secret) {
+  const value = String(secret || "").trim();
+  if (!value) return null;
+  if (!TOKEN_KEY_BUFFER) {
+    return { mode: "plain", value };
+  }
+
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", TOKEN_KEY_BUFFER, iv);
+  const encrypted = Buffer.concat([cipher.update(value, "utf8"), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  return {
+    mode: "enc",
+    iv: iv.toString("hex"),
+    tag: tag.toString("hex"),
+    value: encrypted.toString("hex")
+  };
+}
+
+function decryptSecret(secretEnvelope) {
+  if (!secretEnvelope) return "";
+  if (typeof secretEnvelope === "string") {
+    return secretEnvelope;
+  }
+  if (secretEnvelope.mode === "plain") {
+    return String(secretEnvelope.value || "");
+  }
+  if (secretEnvelope.mode !== "enc" || !TOKEN_KEY_BUFFER) {
+    return "";
+  }
+  try {
+    const iv = Buffer.from(String(secretEnvelope.iv || ""), "hex");
+    const tag = Buffer.from(String(secretEnvelope.tag || ""), "hex");
+    const encrypted = Buffer.from(String(secretEnvelope.value || ""), "hex");
+    const decipher = crypto.createDecipheriv("aes-256-gcm", TOKEN_KEY_BUFFER, iv);
+    decipher.setAuthTag(tag);
+    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+    return decrypted.toString("utf8");
+  } catch {
+    return "";
+  }
+}
+
+function getAdsConnection(store, channelKey) {
+  if (!store.adsConnections || typeof store.adsConnections !== "object") {
+    store.adsConnections = {};
+  }
+  if (!store.adsConnections[channelKey] || typeof store.adsConnections[channelKey] !== "object") {
+    store.adsConnections[channelKey] = {
+      channel: channelKey,
+      connected: false,
+      accountId: "",
+      customerId: "",
+      loginCustomerId: "",
+      businessId: "",
+      token: null,
+      tokenLast4: "",
+      tokenType: "",
+      syncStatus: "not_connected",
+      lastSyncAt: "",
+      lastError: "",
+      updatedAt: ""
+    };
+  }
+  return store.adsConnections[channelKey];
+}
+
+function sanitizeConnectionForClient(connection) {
+  return {
+    channel: sanitizeText(connection.channel, "", 20),
+    connected: Boolean(connection.connected),
+    accountId: sanitizeText(connection.accountId, "", 80),
+    customerId: sanitizeText(connection.customerId, "", 80),
+    loginCustomerId: sanitizeText(connection.loginCustomerId, "", 80),
+    businessId: sanitizeText(connection.businessId, "", 80),
+    tokenConfigured: Boolean(connection.token),
+    tokenLast4: sanitizeText(connection.tokenLast4 || "", "", 16),
+    tokenMask: maskSecret(connection.tokenLast4 || ""),
+    tokenType: sanitizeText(connection.tokenType, "", 40),
+    syncStatus: sanitizeText(connection.syncStatus, "not_connected", 80),
+    lastSyncAt: sanitizeText(connection.lastSyncAt, "", 80),
+    lastError: sanitizeText(connection.lastError, "", 320),
+    updatedAt: sanitizeText(connection.updatedAt, "", 80)
+  };
+}
+
+function createAdsOauthState(store, channel, metadata = {}) {
+  if (!store.adsOAuthStates || typeof store.adsOAuthStates !== "object") {
+    store.adsOAuthStates = {};
+  }
+  const state = crypto.randomBytes(20).toString("hex");
+  store.adsOAuthStates[state] = {
+    channel,
+    createdAt: new Date().toISOString(),
+    returnTo: sanitizeText(metadata.returnTo, "/founder-integrations", 180),
+    accountId: sanitizeText(metadata.accountId, "", 80),
+    customerId: sanitizeText(metadata.customerId, "", 80),
+    loginCustomerId: sanitizeText(metadata.loginCustomerId, "", 80),
+    businessId: sanitizeText(metadata.businessId, "", 80)
+  };
+  return state;
+}
+
+function consumeAdsOauthState(store, state, expectedChannel) {
+  if (!state || !store.adsOAuthStates || typeof store.adsOAuthStates !== "object") {
+    return null;
+  }
+  const data = store.adsOAuthStates[state];
+  delete store.adsOAuthStates[state];
+  if (!data) return null;
+  if (expectedChannel && data.channel !== expectedChannel) return null;
+  return data;
+}
+
+function buildGoogleOauthUrl(state) {
+  const params = new URLSearchParams({
+    client_id: GOOGLE_OAUTH_CLIENT_ID,
+    redirect_uri: GOOGLE_OAUTH_REDIRECT_URI,
+    response_type: "code",
+    scope: "https://www.googleapis.com/auth/adwords",
+    access_type: "offline",
+    prompt: "consent",
+    state
+  });
+  return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+}
+
+function buildMetaOauthUrl(state) {
+  const params = new URLSearchParams({
+    client_id: META_APP_ID,
+    redirect_uri: META_OAUTH_REDIRECT_URI,
+    response_type: "code",
+    scope: "ads_read,ads_management,business_management",
+    state
+  });
+  return `https://www.facebook.com/${META_GRAPH_API_VERSION}/dialog/oauth?${params.toString()}`;
+}
+
+async function exchangeGoogleCodeForToken(code) {
+  if (!GOOGLE_OAUTH_CLIENT_ID || !GOOGLE_OAUTH_CLIENT_SECRET) {
+    throw new Error("Google OAuth credentials are missing.");
+  }
+
+  const body = new URLSearchParams({
+    client_id: GOOGLE_OAUTH_CLIENT_ID,
+    client_secret: GOOGLE_OAUTH_CLIENT_SECRET,
+    code,
+    grant_type: "authorization_code",
+    redirect_uri: GOOGLE_OAUTH_REDIRECT_URI
+  });
+
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body
+  });
+  const payload = await response.json();
+  if (!response.ok) {
+    throw new Error(payload.error_description || payload.error || "Google OAuth token exchange failed.");
+  }
+  return payload;
+}
+
+async function refreshGoogleAccessToken(refreshToken) {
+  if (!GOOGLE_OAUTH_CLIENT_ID || !GOOGLE_OAUTH_CLIENT_SECRET) {
+    throw new Error("Google OAuth credentials are missing.");
+  }
+
+  const body = new URLSearchParams({
+    client_id: GOOGLE_OAUTH_CLIENT_ID,
+    client_secret: GOOGLE_OAUTH_CLIENT_SECRET,
+    refresh_token: refreshToken,
+    grant_type: "refresh_token"
+  });
+
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body
+  });
+  const payload = await response.json();
+  if (!response.ok) {
+    throw new Error(payload.error_description || payload.error || "Google access token refresh failed.");
+  }
+  return payload;
+}
+
+async function exchangeMetaCodeForToken(code) {
+  if (!META_APP_ID || !META_APP_SECRET) {
+    throw new Error("Meta app credentials are missing.");
+  }
+
+  const params = new URLSearchParams({
+    client_id: META_APP_ID,
+    client_secret: META_APP_SECRET,
+    code,
+    redirect_uri: META_OAUTH_REDIRECT_URI
+  });
+  const response = await fetch(
+    `https://graph.facebook.com/${META_GRAPH_API_VERSION}/oauth/access_token?${params.toString()}`
+  );
+  const payload = await response.json();
+  if (!response.ok) {
+    throw new Error(payload.error?.message || "Meta OAuth token exchange failed.");
+  }
+  return payload;
+}
+
+function normalizeMetricsRow(row, fallbackChannel) {
+  const spendUsd = Number(row.spendUsd || 0);
+  const conversions = Number(row.conversions || 0);
+  return {
+    channel: sanitizeText(row.channel, fallbackChannel, 24),
+    date: sanitizeText(row.date, new Date().toISOString().slice(0, 10), 16),
+    accountId: sanitizeText(row.accountId, "", 80),
+    campaignId: sanitizeText(row.campaignId, "", 80),
+    campaignName: sanitizeText(row.campaignName, "", 180),
+    impressions: Math.max(0, Number(row.impressions || 0)),
+    clicks: Math.max(0, Number(row.clicks || 0)),
+    spendUsd: Number.isFinite(spendUsd) ? Number(spendUsd.toFixed(2)) : 0,
+    conversions: Number.isFinite(conversions) ? Number(conversions.toFixed(2)) : 0,
+    cplUsd: conversions > 0 ? Number((spendUsd / conversions).toFixed(2)) : 0,
+    source: sanitizeText(row.source, "api", 40),
+    syncedAt: new Date().toISOString()
+  };
+}
+
+function mergeMetricsRows(store, rows) {
+  const current = Array.isArray(store.adsMetricsDaily) ? store.adsMetricsDaily : [];
+  const byKey = new Map();
+  current.forEach((entry) => {
+    const key = `${entry.channel}|${entry.date}|${entry.accountId}|${entry.campaignId}`;
+    byKey.set(key, entry);
+  });
+
+  rows.forEach((entry) => {
+    const normalized = normalizeMetricsRow(entry, entry.channel || "unknown");
+    const key = `${normalized.channel}|${normalized.date}|${normalized.accountId}|${normalized.campaignId}`;
+    byKey.set(key, normalized);
+  });
+
+  store.adsMetricsDaily = Array.from(byKey.values())
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+    .slice(0, 8000);
+}
+
+function summarizeAdsMetrics(store, days = 30) {
+  const metrics = Array.isArray(store.adsMetricsDaily) ? store.adsMetricsDaily : [];
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - Math.max(1, Number(days || 30)));
+
+  const channelMap = new Map();
+  metrics.forEach((entry) => {
+    const dateValue = new Date(entry.date);
+    if (Number.isNaN(dateValue.getTime()) || dateValue < cutoff) {
+      return;
+    }
+    const channelKey = sanitizeText(entry.channel, "unknown", 24);
+    const existing = channelMap.get(channelKey) || {
+      channel: channelKey,
+      spendUsd: 0,
+      conversions: 0,
+      clicks: 0,
+      impressions: 0
+    };
+    existing.spendUsd += Number(entry.spendUsd || 0);
+    existing.conversions += Number(entry.conversions || 0);
+    existing.clicks += Number(entry.clicks || 0);
+    existing.impressions += Number(entry.impressions || 0);
+    channelMap.set(channelKey, existing);
+  });
+
+  return Array.from(channelMap.values())
+    .map((entry) => ({
+      ...entry,
+      spendUsd: Number(entry.spendUsd.toFixed(2)),
+      conversions: Number(entry.conversions.toFixed(2)),
+      cplUsd: entry.conversions > 0 ? Number((entry.spendUsd / entry.conversions).toFixed(2)) : 0
+    }))
+    .sort((a, b) => b.spendUsd - a.spendUsd);
+}
+
+function buildRecentDateRange(days = 7) {
+  const end = new Date();
+  const start = new Date(end);
+  start.setDate(start.getDate() - Math.max(1, Number(days || 7)));
+  const format = (value) => value.toISOString().slice(0, 10);
+  return { since: format(start), until: format(end) };
+}
+
+async function fetchGoogleAdsMetrics(connection) {
+  const refreshToken = decryptSecret(connection.token);
+  if (!refreshToken) {
+    throw new Error("Google refresh token is missing.");
+  }
+  if (!connection.customerId) {
+    throw new Error("Google customer ID is missing.");
+  }
+  if (!GOOGLE_ADS_DEVELOPER_TOKEN) {
+    throw new Error("GOOGLE_ADS_DEVELOPER_TOKEN is missing.");
+  }
+
+  const tokenPayload = await refreshGoogleAccessToken(refreshToken);
+  const accessToken = String(tokenPayload.access_token || "");
+  if (!accessToken) {
+    throw new Error("Google access token refresh returned no access token.");
+  }
+
+  const query = `
+    SELECT
+      segments.date,
+      campaign.id,
+      campaign.name,
+      metrics.impressions,
+      metrics.clicks,
+      metrics.cost_micros,
+      metrics.conversions
+    FROM campaign
+    WHERE segments.date DURING LAST_7_DAYS
+  `;
+
+  const endpoint = `https://googleads.googleapis.com/${GOOGLE_ADS_API_VERSION}/customers/${encodeURIComponent(
+    connection.customerId
+  )}/googleAds:searchStream`;
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${accessToken}`,
+    "developer-token": GOOGLE_ADS_DEVELOPER_TOKEN
+  };
+  if (connection.loginCustomerId) {
+    headers["login-customer-id"] = connection.loginCustomerId;
+  }
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ query })
+  });
+  const payload = await response.json();
+  if (!response.ok) {
+    throw new Error(payload.error?.message || "Google Ads metrics query failed.");
+  }
+
+  const streamBatches = Array.isArray(payload) ? payload : [payload];
+  const rows = [];
+  streamBatches.forEach((batch) => {
+    const results = Array.isArray(batch.results) ? batch.results : [];
+    results.forEach((entry) => {
+      rows.push({
+        channel: "google",
+        date: entry.segments?.date,
+        accountId: connection.customerId,
+        campaignId: entry.campaign?.id,
+        campaignName: entry.campaign?.name,
+        impressions: Number(entry.metrics?.impressions || 0),
+        clicks: Number(entry.metrics?.clicks || 0),
+        spendUsd: Number(entry.metrics?.costMicros || entry.metrics?.cost_micros || 0) / 1_000_000,
+        conversions: Number(entry.metrics?.conversions || 0),
+        source: "google_ads_api"
+      });
+    });
+  });
+  return rows;
+}
+
+async function fetchMetaAdsMetrics(connection) {
+  const accessToken = decryptSecret(connection.token);
+  if (!accessToken) {
+    throw new Error("Meta access token is missing.");
+  }
+  if (!connection.accountId) {
+    throw new Error("Meta ad account ID is missing.");
+  }
+
+  const { since, until } = buildRecentDateRange(7);
+  const accountId = String(connection.accountId || "").replace(/^act_/, "");
+  const params = new URLSearchParams({
+    access_token: accessToken,
+    level: "campaign",
+    fields: "date_start,campaign_id,campaign_name,impressions,clicks,spend,actions",
+    time_range: JSON.stringify({ since, until }),
+    limit: "500"
+  });
+  const endpoint = `https://graph.facebook.com/${META_GRAPH_API_VERSION}/act_${accountId}/insights?${params.toString()}`;
+  const response = await fetch(endpoint);
+  const payload = await response.json();
+  if (!response.ok) {
+    throw new Error(payload.error?.message || "Meta Ads insights query failed.");
+  }
+
+  const rows = [];
+  const data = Array.isArray(payload.data) ? payload.data : [];
+  data.forEach((entry) => {
+    const actions = Array.isArray(entry.actions) ? entry.actions : [];
+    const conversions = actions.reduce((acc, action) => {
+      const actionType = String(action.action_type || "").toLowerCase();
+      if (
+        actionType.includes("lead") ||
+        actionType.includes("omni_purchase") ||
+        actionType.includes("offsite_conversion")
+      ) {
+        return acc + Number(action.value || 0);
+      }
+      return acc;
+    }, 0);
+
+    rows.push({
+      channel: "meta",
+      date: entry.date_start,
+      accountId: accountId,
+      campaignId: entry.campaign_id,
+      campaignName: entry.campaign_name,
+      impressions: Number(entry.impressions || 0),
+      clicks: Number(entry.clicks || 0),
+      spendUsd: Number(entry.spend || 0),
+      conversions,
+      source: "meta_graph_api"
+    });
+  });
+  return rows;
+}
+
+let adsSyncInFlight = false;
+let adsSyncTimer = null;
+
+async function runAdsDataSync(reason = "manual") {
+  if (adsSyncInFlight) {
+    return {
+      skipped: true,
+      reason: "sync_in_progress"
+    };
+  }
+
+  adsSyncInFlight = true;
+  const startedAt = new Date().toISOString();
+  const runRecord = {
+    id: crypto.randomUUID(),
+    startedAt,
+    finishedAt: "",
+    reason: sanitizeText(reason, "manual", 40),
+    status: "running",
+    channels: [],
+    rowsSynced: 0,
+    warnings: [],
+    error: ""
+  };
+
+  try {
+    const store = withDefaultStore(await readJson(STORE_PATH, {}));
+    const googleConnection = getAdsConnection(store, "google");
+    const metaConnection = getAdsConnection(store, "meta");
+    const connected = [
+      { key: "google", connection: googleConnection },
+      { key: "meta", connection: metaConnection }
+    ].filter((entry) => entry.connection.connected && entry.connection.token);
+
+    if (!connected.length) {
+      runRecord.status = "skipped";
+      runRecord.warnings.push("No connected Google/Meta accounts to sync.");
+    } else {
+      const mergedRows = [];
+      for (const entry of connected) {
+        const channelKey = entry.key;
+        const channelConnection = entry.connection;
+        try {
+          const rows =
+            channelKey === "google"
+              ? await fetchGoogleAdsMetrics(channelConnection)
+              : await fetchMetaAdsMetrics(channelConnection);
+
+          mergedRows.push(...rows);
+          runRecord.channels.push(channelKey);
+          runRecord.rowsSynced += rows.length;
+          channelConnection.syncStatus = "synced";
+          channelConnection.lastError = "";
+          channelConnection.lastSyncAt = new Date().toISOString();
+          channelConnection.updatedAt = new Date().toISOString();
+        } catch (error) {
+          const message = sanitizeText(error.message || `${channelKey} sync failed`, "Sync failed", 320);
+          runRecord.warnings.push(`${channelKey}: ${message}`);
+          channelConnection.syncStatus = "error";
+          channelConnection.lastError = message;
+          channelConnection.updatedAt = new Date().toISOString();
+        }
+      }
+
+      if (mergedRows.length) {
+        mergeMetricsRows(store, mergedRows);
+      }
+      runRecord.status = runRecord.warnings.length ? "partial_success" : "success";
+    }
+
+    runRecord.finishedAt = new Date().toISOString();
+    store.adsSyncRuns.unshift(runRecord);
+    if (store.adsSyncRuns.length > 250) {
+      store.adsSyncRuns.length = 250;
+    }
+    await writeJson(STORE_PATH, store);
+    return runRecord;
+  } catch (error) {
+    runRecord.status = "failed";
+    runRecord.error = sanitizeText(error.message || "Ads sync failed.", "Ads sync failed.", 320);
+    runRecord.finishedAt = new Date().toISOString();
+
+    try {
+      const store = withDefaultStore(await readJson(STORE_PATH, {}));
+      store.adsSyncRuns.unshift(runRecord);
+      if (store.adsSyncRuns.length > 250) {
+        store.adsSyncRuns.length = 250;
+      }
+      await writeJson(STORE_PATH, store);
+    } catch (persistError) {
+      console.error("Unable to persist failed sync run:", persistError);
+    }
+    return runRecord;
+  } finally {
+    adsSyncInFlight = false;
+  }
 }
 
 function parseBudget(value, fallback = 5000) {
@@ -901,6 +1484,13 @@ async function handleApi(req, res, url) {
     const token = createSessionToken();
     store.users.push(user);
     store.sessions[token] = { userId: user.id, createdAt: new Date().toISOString() };
+    addLeadSignup(store, {
+      type: "account_signup",
+      source: "auth_register",
+      name,
+      email,
+      notes: `Workspace: ${workspaceName}`
+    });
     await writeJson(STORE_PATH, store);
 
     return sendJson(res, 201, { token, user: sanitizeUser(user) });
@@ -966,6 +1556,288 @@ async function handleApi(req, res, url) {
     const baseOutput = await generateAutomationOutput(company, automationBrief);
     const pack = buildLeadGenAutomationPack(baseOutput, leadGenBrief);
     return sendJson(res, 201, { pack });
+  }
+
+  if (method === "POST" && pathname === "/api/signups") {
+    const body = await getBody(req);
+    if (!body) {
+      return sendJson(res, 400, { error: "Invalid JSON payload." });
+    }
+    const signup = addLeadSignup(store, body);
+    await writeJson(STORE_PATH, store);
+    return sendJson(res, 201, { signup });
+  }
+
+  if (method === "GET" && pathname === "/api/signups") {
+    const typeFilter = sanitizeText(url.searchParams.get("type"), "", 40).toLowerCase();
+    const sourceFilter = sanitizeText(url.searchParams.get("source"), "", 80).toLowerCase();
+    const signups = store.leadSignups
+      .filter((entry) => {
+        if (typeFilter && String(entry.type || "").toLowerCase() !== typeFilter) return false;
+        if (sourceFilter && String(entry.source || "").toLowerCase() !== sourceFilter) return false;
+        return true;
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return sendJson(res, 200, { signups });
+  }
+
+  if (method === "GET" && pathname === "/api/ads/system") {
+    return sendJson(res, 200, {
+      schedulerEnabled: ADS_SYNC_ENABLED,
+      schedulerIntervalMinutes: ADS_SYNC_INTERVAL_MINUTES,
+      googleOAuthConfigured: Boolean(GOOGLE_OAUTH_CLIENT_ID && GOOGLE_OAUTH_CLIENT_SECRET),
+      metaOAuthConfigured: Boolean(META_APP_ID && META_APP_SECRET),
+      tokenEncryptionEnabled: Boolean(TOKEN_KEY_BUFFER)
+    });
+  }
+
+  if (method === "GET" && pathname === "/api/ads/connections") {
+    const google = sanitizeConnectionForClient(getAdsConnection(store, "google"));
+    const meta = sanitizeConnectionForClient(getAdsConnection(store, "meta"));
+    return sendJson(res, 200, { connections: { google, meta } });
+  }
+
+  if (method === "POST" && pathname === "/api/ads/connections/google/oauth/start") {
+    const body = await getBody(req);
+    if (!body) {
+      return sendJson(res, 400, { error: "Invalid JSON payload." });
+    }
+    if (!GOOGLE_OAUTH_CLIENT_ID || !GOOGLE_OAUTH_CLIENT_SECRET) {
+      return sendJson(res, 400, {
+        error: "Google OAuth is not configured. Add GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET."
+      });
+    }
+
+    const state = createAdsOauthState(store, "google", {
+      returnTo: body.returnTo || "/founder-integrations",
+      customerId: body.customerId,
+      loginCustomerId: body.loginCustomerId
+    });
+    await writeJson(STORE_PATH, store);
+    const oauthUrl = buildGoogleOauthUrl(state);
+    return sendJson(res, 200, { oauthUrl, state });
+  }
+
+  if (method === "GET" && pathname === "/api/ads/connections/google/oauth/callback") {
+    const code = sanitizeText(url.searchParams.get("code"), "", 4000);
+    const state = sanitizeText(url.searchParams.get("state"), "", 80);
+    const stateData = consumeAdsOauthState(store, state, "google");
+    const redirectTarget = stateData?.returnTo || "/founder-integrations";
+
+    if (!stateData) {
+      await writeJson(STORE_PATH, store);
+      res.writeHead(302, { Location: `${redirectTarget}?sync_error=invalid_oauth_state` });
+      res.end();
+      return;
+    }
+    if (!code) {
+      await writeJson(STORE_PATH, store);
+      res.writeHead(302, { Location: `${redirectTarget}?sync_error=missing_oauth_code` });
+      res.end();
+      return;
+    }
+
+    let refreshToken = "";
+    let tokenType = "refresh_token";
+    let warning = "";
+    try {
+      const payload = await exchangeGoogleCodeForToken(code);
+      refreshToken = String(payload.refresh_token || payload.access_token || "").trim();
+      if (!payload.refresh_token && payload.access_token) {
+        tokenType = "access_token_fallback";
+        warning = "Google did not return a refresh token. Re-consent may be required.";
+      }
+    } catch (error) {
+      refreshToken = `fallback_${code.slice(0, 28)}`;
+      tokenType = "fallback_code_token";
+      warning = sanitizeText(error.message, "OAuth exchange failed. Stored callback fallback token.", 240);
+    }
+
+    const connection = getAdsConnection(store, "google");
+    connection.channel = "google";
+    connection.connected = true;
+    connection.customerId = sanitizeText(stateData.customerId, connection.customerId, 80);
+    connection.loginCustomerId = sanitizeText(stateData.loginCustomerId, connection.loginCustomerId, 80);
+    connection.token = encryptSecret(refreshToken);
+    connection.tokenLast4 = refreshToken.slice(-4);
+    connection.tokenType = tokenType;
+    connection.syncStatus = warning ? "connected_with_warning" : "connected";
+    connection.lastError = warning;
+    connection.updatedAt = new Date().toISOString();
+    await writeJson(STORE_PATH, store);
+
+    const warningQuery = warning ? `&sync_warning=${encodeURIComponent(warning)}` : "";
+    res.writeHead(302, { Location: `${redirectTarget}?connected=google${warningQuery}` });
+    res.end();
+    return;
+  }
+
+  if (method === "POST" && pathname === "/api/ads/connections/google/manual") {
+    const body = await getBody(req);
+    if (!body) {
+      return sendJson(res, 400, { error: "Invalid JSON payload." });
+    }
+    const refreshToken = sanitizeText(body.refreshToken, "", 4000);
+    const customerId = sanitizeText(body.customerId, "", 80);
+    if (!refreshToken || !customerId) {
+      return sendJson(res, 400, { error: "refreshToken and customerId are required." });
+    }
+
+    const connection = getAdsConnection(store, "google");
+    connection.channel = "google";
+    connection.connected = true;
+    connection.customerId = customerId;
+    connection.loginCustomerId = sanitizeText(body.loginCustomerId, "", 80);
+    connection.token = encryptSecret(refreshToken);
+    connection.tokenLast4 = refreshToken.slice(-4);
+    connection.tokenType = "refresh_token";
+    connection.syncStatus = "connected";
+    connection.lastError = "";
+    connection.updatedAt = new Date().toISOString();
+    await writeJson(STORE_PATH, store);
+    return sendJson(res, 200, { connection: sanitizeConnectionForClient(connection) });
+  }
+
+  if (method === "POST" && pathname === "/api/ads/connections/meta/oauth/start") {
+    const body = await getBody(req);
+    if (!body) {
+      return sendJson(res, 400, { error: "Invalid JSON payload." });
+    }
+    if (!META_APP_ID || !META_APP_SECRET) {
+      return sendJson(res, 400, {
+        error: "Meta OAuth is not configured. Add META_APP_ID and META_APP_SECRET."
+      });
+    }
+
+    const state = createAdsOauthState(store, "meta", {
+      returnTo: body.returnTo || "/founder-integrations",
+      accountId: body.accountId,
+      businessId: body.businessId
+    });
+    await writeJson(STORE_PATH, store);
+    const oauthUrl = buildMetaOauthUrl(state);
+    return sendJson(res, 200, { oauthUrl, state });
+  }
+
+  if (method === "GET" && pathname === "/api/ads/connections/meta/oauth/callback") {
+    const code = sanitizeText(url.searchParams.get("code"), "", 4000);
+    const state = sanitizeText(url.searchParams.get("state"), "", 80);
+    const stateData = consumeAdsOauthState(store, state, "meta");
+    const redirectTarget = stateData?.returnTo || "/founder-integrations";
+
+    if (!stateData) {
+      await writeJson(STORE_PATH, store);
+      res.writeHead(302, { Location: `${redirectTarget}?sync_error=invalid_oauth_state` });
+      res.end();
+      return;
+    }
+    if (!code) {
+      await writeJson(STORE_PATH, store);
+      res.writeHead(302, { Location: `${redirectTarget}?sync_error=missing_oauth_code` });
+      res.end();
+      return;
+    }
+
+    let accessToken = "";
+    let warning = "";
+    try {
+      const payload = await exchangeMetaCodeForToken(code);
+      accessToken = String(payload.access_token || "").trim();
+      if (!accessToken) {
+        throw new Error("Meta returned no access token.");
+      }
+    } catch (error) {
+      accessToken = `fallback_${code.slice(0, 28)}`;
+      warning = sanitizeText(error.message, "OAuth exchange failed. Stored callback fallback token.", 240);
+    }
+
+    const connection = getAdsConnection(store, "meta");
+    connection.channel = "meta";
+    connection.connected = true;
+    connection.accountId = sanitizeText(stateData.accountId, connection.accountId, 80);
+    connection.businessId = sanitizeText(stateData.businessId, connection.businessId, 80);
+    connection.token = encryptSecret(accessToken);
+    connection.tokenLast4 = accessToken.slice(-4);
+    connection.tokenType = "access_token";
+    connection.syncStatus = warning ? "connected_with_warning" : "connected";
+    connection.lastError = warning;
+    connection.updatedAt = new Date().toISOString();
+    await writeJson(STORE_PATH, store);
+
+    const warningQuery = warning ? `&sync_warning=${encodeURIComponent(warning)}` : "";
+    res.writeHead(302, { Location: `${redirectTarget}?connected=meta${warningQuery}` });
+    res.end();
+    return;
+  }
+
+  if (method === "POST" && pathname === "/api/ads/connections/meta/manual") {
+    const body = await getBody(req);
+    if (!body) {
+      return sendJson(res, 400, { error: "Invalid JSON payload." });
+    }
+    const accessToken = sanitizeText(body.accessToken, "", 4000);
+    const accountId = sanitizeText(body.accountId, "", 80);
+    if (!accessToken || !accountId) {
+      return sendJson(res, 400, { error: "accessToken and accountId are required." });
+    }
+
+    const connection = getAdsConnection(store, "meta");
+    connection.channel = "meta";
+    connection.connected = true;
+    connection.accountId = accountId;
+    connection.businessId = sanitizeText(body.businessId, "", 80);
+    connection.token = encryptSecret(accessToken);
+    connection.tokenLast4 = accessToken.slice(-4);
+    connection.tokenType = "access_token";
+    connection.syncStatus = "connected";
+    connection.lastError = "";
+    connection.updatedAt = new Date().toISOString();
+    await writeJson(STORE_PATH, store);
+    return sendJson(res, 200, { connection: sanitizeConnectionForClient(connection) });
+  }
+
+  const adsDisconnectMatch = pathname.match(/^\/api\/ads\/connections\/([^/]+)\/disconnect$/);
+  if (adsDisconnectMatch && method === "POST") {
+    const channel = sanitizeText(adsDisconnectMatch[1], "", 20).toLowerCase();
+    if (!["google", "meta"].includes(channel)) {
+      return sendJson(res, 400, { error: "Unsupported channel. Use google or meta." });
+    }
+
+    const connection = getAdsConnection(store, channel);
+    connection.connected = false;
+    connection.token = null;
+    connection.tokenLast4 = "";
+    connection.syncStatus = "not_connected";
+    connection.lastError = "";
+    connection.updatedAt = new Date().toISOString();
+    await writeJson(STORE_PATH, store);
+    return sendJson(res, 200, { connection: sanitizeConnectionForClient(connection) });
+  }
+
+  if (method === "POST" && pathname === "/api/ads/sync/run") {
+    const run = await runAdsDataSync("manual");
+    return sendJson(res, 200, { run });
+  }
+
+  if (method === "GET" && pathname === "/api/ads/sync/runs") {
+    const limit = Math.max(1, Math.min(200, Number(url.searchParams.get("limit") || 30)));
+    const runs = (Array.isArray(store.adsSyncRuns) ? store.adsSyncRuns : []).slice(0, limit);
+    return sendJson(res, 200, { runs });
+  }
+
+  if (method === "GET" && pathname === "/api/ads/metrics/daily") {
+    const limit = Math.max(1, Math.min(5000, Number(url.searchParams.get("limit") || 500)));
+    const channel = sanitizeText(url.searchParams.get("channel"), "", 20).toLowerCase();
+    const metrics = (Array.isArray(store.adsMetricsDaily) ? store.adsMetricsDaily : [])
+      .filter((entry) => !channel || String(entry.channel || "").toLowerCase() === channel)
+      .slice(0, limit);
+    return sendJson(res, 200, { metrics });
+  }
+
+  if (method === "GET" && pathname === "/api/ads/metrics/summary") {
+    const days = Math.max(1, Math.min(365, Number(url.searchParams.get("days") || 30)));
+    const summary = summarizeAdsMetrics(store, days);
+    return sendJson(res, 200, { days, summary });
   }
 
   const companyStoryByIdMatch = pathname.match(/^\/api\/companies\/([^/]+)\/stories\/([^/]+)$/);
@@ -1389,6 +2261,12 @@ async function serveStatic(req, res, url) {
   const pathname =
     rawPathname.length > 1 && rawPathname.endsWith("/") ? rawPathname.slice(0, -1) : rawPathname;
 
+  if (pathname === "/") {
+    res.writeHead(301, { Location: "/marketing" });
+    res.end();
+    return;
+  }
+
   if (pathname === "/founder-backend") {
     res.writeHead(302, { Location: FOUNDER_BACKEND_URL });
     res.end();
@@ -1396,8 +2274,10 @@ async function serveStatic(req, res, url) {
   }
 
   const pageRoutes = {
-    "/": "index.html",
     "/marketing": "marketing.html",
+    "/free-call": "free-call.html",
+    "/founder-signups": "founder-signups.html",
+    "/founder-integrations": "founder-integrations.html",
     "/features": "features.html",
     "/marketing-lead-gen": "marketing-lead-gen.html",
     "/marketing-lead-tracker": "marketing-lead-tracker.html",
@@ -1452,6 +2332,19 @@ async function serveStatic(req, res, url) {
 async function start() {
   await ensureStorage();
 
+  if (ADS_SYNC_ENABLED) {
+    adsSyncTimer = setInterval(() => {
+      runAdsDataSync("scheduler").catch((error) => {
+        console.error("Scheduled ads sync failed:", error);
+      });
+    }, ADS_SYNC_INTERVAL_MINUTES * 60 * 1000);
+  }
+  if (ADS_SYNC_ENABLED && ADS_SYNC_RUN_ON_START) {
+    runAdsDataSync("startup").catch((error) => {
+      console.error("Startup ads sync failed:", error);
+    });
+  }
+
   const server = http.createServer(async (req, res) => {
     try {
       const url = new URL(req.url || "/", `http://${req.headers.host || `localhost:${PORT}`}`);
@@ -1470,6 +2363,18 @@ async function start() {
 
   server.listen(PORT, HOST, () => {
     console.log(`Accountstory running at http://localhost:${PORT}`);
+    if (ADS_SYNC_ENABLED) {
+      console.log(`Ads sync scheduler enabled: every ${ADS_SYNC_INTERVAL_MINUTES} minutes`);
+    } else {
+      console.log("Ads sync scheduler disabled");
+    }
+  });
+
+  server.on("close", () => {
+    if (adsSyncTimer) {
+      clearInterval(adsSyncTimer);
+      adsSyncTimer = null;
+    }
   });
 }
 
