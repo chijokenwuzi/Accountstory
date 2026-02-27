@@ -48,7 +48,7 @@ export function TopNav() {
     <nav className="flex items-center gap-4 text-sm text-slate-300">
       {signedOut && <Link href="/login">Login</Link>}
       {signedOut && <Link href="/signup">Get Started</Link>}
-      <Link href="/dashboard">{signedIn ? "Dashboard" : "Example Dashboard"}</Link>
+      {signedIn && <Link href="/dashboard">Dashboard</Link>}
       {canAccessPortal && <Link href="/ad-production-portal">Ad Production Portal</Link>}
       {signedIn && (
         <>

@@ -45,9 +45,6 @@ export default function HomePage() {
           <Link href="/dashboard" className="btn-secondary">
             Example Dashboard
           </Link>
-          <Link href="/login" className="btn-secondary">
-            Login
-          </Link>
         </div>
       </section>
 
@@ -155,14 +152,11 @@ export default function HomePage() {
       <section className="rounded-2xl border border-slate-700 bg-panel p-8 text-center space-y-4">
         <h2 className="text-3xl font-bold">Ready to Start?</h2>
         <p className="mx-auto max-w-3xl text-slate-300">
-          Sign in first, then continue through the full lead generation flow. You can still request a call if preferred.
+          Sign in first, then continue through the full lead generation flow.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link href={startPath} className="btn-primary">
             Get Started Right Away
-          </Link>
-          <Link href="/free-call" className="btn-secondary">
-            Request a Call
           </Link>
         </div>
       </section>
