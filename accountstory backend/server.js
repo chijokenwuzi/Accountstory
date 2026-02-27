@@ -26,6 +26,7 @@ function loadEnvFile(filePath) {
 }
 
 loadEnvFile(path.join(__dirname, ".env"));
+loadEnvFile(path.join(__dirname, "..", "account-lead-insights-saas", ".env"));
 
 const HOST = String(process.env.HOST || "127.0.0.1").trim();
 const PORT = Number(process.env.PORT || 9091);
@@ -34,6 +35,15 @@ const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5-mini";
 const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
 const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 30000);
 const OPENAI_ALLOW_FALLBACK = process.env.OPENAI_ALLOW_FALLBACK === "true";
+const ALI_API_URL = String(process.env.ALI_API_URL || "http://127.0.0.1:4000")
+  .trim()
+  .replace(/\/+$/, "");
+const TEAM_OPS_INTERNAL_TOKEN = String(
+  process.env.TEAM_OPS_INTERNAL_TOKEN || process.env.ALI_INTERNAL_TOKEN || ""
+).trim();
+const SIGNUP_SYNC_ENABLED = process.env.SIGNUP_SYNC_ENABLED !== "false";
+const SIGNUP_SYNC_TIMEOUT_MS = Math.max(1000, Number(process.env.SIGNUP_SYNC_TIMEOUT_MS || 5000));
+const SIGNUP_SYNC_MIN_INTERVAL_MS = Math.max(0, Number(process.env.SIGNUP_SYNC_MIN_INTERVAL_MS || 15000));
 const LANDING_URL = normalizeLandingUrl(process.env.LANDING_URL);
 const ROOT = __dirname;
 const DATA_DIR = path.join(ROOT, "data");
@@ -41,6 +51,9 @@ const STORE_PATH = path.join(DATA_DIR, "store.json");
 const STAGES = ["Intake", "Creative QA", "Launch", "Optimization", "Scale", "Blocked"];
 const ACTIVE_STAGES = new Set(["Launch", "Optimization", "Scale"]);
 const PUBLISH_PLATFORMS = ["facebook", "google"];
+let signupSyncInFlight = null;
+let signupSyncLastAttemptAt = 0;
+let signupSyncLastError = "";
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -294,8 +307,225 @@ function normalizeCustomer(entry, fallbackId) {
     defaultOffer: normalizeText(source.defaultOffer),
     defaultAudience: normalizeText(source.defaultAudience),
     defaultLandingUrl: normalizeText(source.defaultLandingUrl),
-    customerNotes: normalizeText(source.customerNotes)
+    customerNotes: normalizeText(source.customerNotes),
+    sourceSignupId: normalizeText(source.sourceSignupId),
+    isSignupLead: Boolean(source.isSignupLead),
+    contactName: normalizeText(source.contactName),
+    contactEmail: normalizeText(source.contactEmail),
+    contactPhone: normalizeText(source.contactPhone),
+    preferredContactMethod: normalizeText(source.preferredContactMethod),
+    intakeAvailability: normalizeText(source.intakeAvailability),
+    intakeCreatedAt: normalizeText(source.intakeCreatedAt)
   };
+}
+
+function normalizeTextArray(input) {
+  if (Array.isArray(input)) {
+    return input
+      .map((entry) => normalizeText(entry))
+      .filter((entry) => Boolean(entry));
+  }
+  const text = normalizeText(input);
+  if (!text) return [];
+  return text
+    .split(/[,\n|]+/)
+    .map((entry) => normalizeText(entry))
+    .filter((entry) => Boolean(entry));
+}
+
+function inferSignupLocation(signup, payload) {
+  const direct = normalizeText(signup.location);
+  if (direct) return direct;
+
+  const areas = normalizeTextArray(payload.serviceAreas);
+  if (areas.length) return areas.join(", ");
+
+  const zips = normalizeTextArray(payload.targetZips || payload.serviceAreaZips);
+  if (zips.length) return zips.join(", ");
+
+  return "";
+}
+
+function inferSignupAudience(payload) {
+  const neighborhoods = normalizeTextArray(payload.targetNeighborhoods);
+  const zips = normalizeTextArray(payload.targetZips || payload.serviceAreaZips);
+  if (neighborhoods.length || zips.length) {
+    return [neighborhoods.join(", "), zips.length ? `ZIPs: ${zips.join(", ")}` : ""]
+      .filter((entry) => Boolean(entry))
+      .join(" | ");
+  }
+  return "";
+}
+
+function inferSignupNotes(signup, payload) {
+  const parts = [];
+  const goal = normalizeText(payload.goal);
+  const offer = normalizeText(payload.offer);
+  const source = normalizeText(signup.source || payload.source);
+  const campaign = normalizeText(signup.campaign);
+
+  if (goal) parts.push(`Goal: ${goal}`);
+  if (offer) parts.push(`Offer: ${offer}`);
+  if (campaign) parts.push(`Campaign: ${campaign}`);
+  if (source) parts.push(`Source: ${source}`);
+
+  return parts.join(" | ");
+}
+
+function mapSignupToCustomer(signup, index) {
+  const source = signup && typeof signup === "object" ? signup : {};
+  const payload = source.formPayload && typeof source.formPayload === "object" ? source.formPayload : {};
+  const sourceSignupId = normalizeText(source.id);
+  const orgName = normalizeText(source.orgName || payload.orgName);
+  const fallbackName = normalizeText(source.name);
+  const customerName = orgName || (fallbackName ? `${fallbackName} Account` : `Signup ${index + 1}`);
+
+  return normalizeCustomer({
+    id: sourceSignupId ? `cust-signup-${sourceSignupId}` : uid("cust"),
+    sourceSignupId,
+    isSignupLead: true,
+    name: customerName,
+    industry: normalizeText(payload.tradeType) || "Home Services",
+    tier: "Core",
+    website: normalizeText(payload.website || payload.landingPageUrl || payload.landingUrl),
+    location: inferSignupLocation(source, payload),
+    defaultOffer: normalizeText(payload.offer),
+    defaultAudience: inferSignupAudience(payload),
+    defaultLandingUrl: normalizeText(payload.landingPageUrl || payload.landingUrl),
+    customerNotes: inferSignupNotes(source, payload),
+    contactName: normalizeText(source.name),
+    contactEmail: normalizeText(source.email),
+    contactPhone: normalizeText(source.phone),
+    preferredContactMethod: normalizeText(source.bestMethod || payload.bestMethod),
+    intakeAvailability: normalizeText(source.availability || payload.availability),
+    intakeCreatedAt: normalizeText(source.createdAt)
+  });
+}
+
+function mergeSignupCustomers(existingCustomers, signupCustomers) {
+  const current = Array.isArray(existingCustomers) ? existingCustomers : [];
+  const currentBySignupId = new Map();
+  const manualCustomers = [];
+
+  current.forEach((entry) => {
+    const normalized = normalizeCustomer(entry);
+    if (normalized.sourceSignupId) {
+      currentBySignupId.set(normalized.sourceSignupId, normalized);
+    } else {
+      manualCustomers.push(normalized);
+    }
+  });
+
+  const mergedSignupCustomers = signupCustomers.map((entry, index) => {
+    const normalized = normalizeCustomer(entry, `cust-signup-${index + 1}`);
+    const existing = currentBySignupId.get(normalized.sourceSignupId);
+    if (existing && existing.id) {
+      return normalizeCustomer({
+        ...normalized,
+        id: existing.id
+      });
+    }
+    return normalized;
+  });
+
+  return [...mergedSignupCustomers, ...manualCustomers];
+}
+
+function setSignupSyncError(message) {
+  const text = normalizeText(message);
+  if (!text || text === signupSyncLastError) return;
+  signupSyncLastError = text;
+  console.warn(`[signup-sync] ${text}`);
+}
+
+function clearSignupSyncError() {
+  signupSyncLastError = "";
+}
+
+async function fetchSignupCustomersFromAli() {
+  if (!SIGNUP_SYNC_ENABLED) return null;
+  if (!ALI_API_URL || !TEAM_OPS_INTERNAL_TOKEN) return null;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), SIGNUP_SYNC_TIMEOUT_MS);
+  const url = `${ALI_API_URL}/api/v1/admin/internal/signups`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-internal-token": TEAM_OPS_INTERNAL_TOKEN
+      },
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      const detail = await response.text().catch(() => "");
+      setSignupSyncError(`Signup source request failed (${response.status}). ${truncate(detail, 120)}`);
+      return null;
+    }
+
+    const payload = await response.json().catch(() => ({}));
+    const signups = Array.isArray(payload.signups) ? payload.signups : [];
+    clearSignupSyncError();
+    return signups
+      .map((entry, index) => mapSignupToCustomer(entry, index))
+      .filter((entry) => Boolean(entry.sourceSignupId));
+  } catch (error) {
+    setSignupSyncError(String(error && error.message ? error.message : error));
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function syncSignupCustomers(store) {
+  if (!SIGNUP_SYNC_ENABLED) return store;
+  if (!ALI_API_URL || !TEAM_OPS_INTERNAL_TOKEN) return store;
+
+  const now = Date.now();
+  if (!signupSyncInFlight && now - signupSyncLastAttemptAt < SIGNUP_SYNC_MIN_INTERVAL_MS) {
+    return store;
+  }
+
+  if (!signupSyncInFlight) {
+    signupSyncLastAttemptAt = now;
+    signupSyncInFlight = (async () => {
+      const signupCustomers = await fetchSignupCustomersFromAli();
+      if (!Array.isArray(signupCustomers)) return store;
+
+      const mergedCustomers = mergeSignupCustomers(store.customers, signupCustomers);
+      const customersChanged =
+        JSON.stringify(store.customers || []) !== JSON.stringify(mergedCustomers || []);
+      const selectedCustomerId = mergedCustomers.some((entry) => entry.id === store.selectedCustomerId)
+        ? store.selectedCustomerId
+        : mergedCustomers[0]
+          ? mergedCustomers[0].id
+          : "";
+
+      if (!customersChanged && selectedCustomerId === store.selectedCustomerId) {
+        return store;
+      }
+
+      const nextStore = normalizeStore({
+        ...store,
+        customers: mergedCustomers,
+        selectedCustomerId
+      });
+      await writeStore(nextStore);
+      return nextStore;
+    })()
+      .catch((error) => {
+        setSignupSyncError(String(error && error.message ? error.message : error));
+        return store;
+      })
+      .finally(() => {
+        signupSyncInFlight = null;
+      });
+  }
+
+  return signupSyncInFlight;
 }
 
 function normalizeIntegration(entry) {
@@ -1081,7 +1311,8 @@ async function handleApi(req, res, pathname) {
   }
 
   if (method === "GET" && pathname === "/api/state") {
-    return sendJson(res, 200, { state: store });
+    const nextStore = await syncSignupCustomers(store);
+    return sendJson(res, 200, { state: normalizeStore(nextStore) });
   }
 
   if (method === "PATCH" && pathname === "/api/selection") {

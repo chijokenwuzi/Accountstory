@@ -31,6 +31,31 @@ const PLATFORM_LABEL = {
   facebook: "Facebook",
   google: "Google"
 };
+const landingOverride = resolveLandingOverride();
+
+function resolveLandingOverride() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const candidate = String(params.get("returnTo") || params.get("return_to") || "").trim();
+    if (!candidate) {
+      const ref = String(document.referrer || "").trim();
+      if (!ref) return "";
+      const parsedRef = new URL(ref);
+      const marker = "/ad-production-portal";
+      const idx = parsedRef.pathname.indexOf(marker);
+      if (idx < 0) return "";
+      return `${parsedRef.origin}${marker}`;
+    }
+    if (candidate.startsWith("/")) return candidate;
+    const parsed = new URL(candidate);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.toString();
+    }
+    return "";
+  } catch {
+    return "";
+  }
+}
 
 function setMessage(node, type, text) {
   if (!node) return;
@@ -112,7 +137,7 @@ function renderCustomerList() {
     li.dataset.customerId = customer.id;
 
     const name = document.createElement("strong");
-    name.textContent = customer.name;
+    name.textContent = customer.isSignupLead ? `${customer.name} (Signup)` : customer.name;
 
     const meta = document.createElement("p");
     const geo = customer.location ? ` | ${customer.location}` : "";
@@ -120,6 +145,18 @@ function renderCustomerList() {
 
     li.appendChild(name);
     li.appendChild(meta);
+
+    if (customer.isSignupLead) {
+      const contact = document.createElement("p");
+      const pieces = [
+        customer.contactName ? `Contact: ${customer.contactName}` : "",
+        customer.contactEmail || "",
+        customer.contactPhone || ""
+      ].filter((entry) => Boolean(entry));
+      contact.textContent = pieces.join(" | ");
+      li.appendChild(contact);
+    }
+
     customerList.appendChild(li);
   });
 }
@@ -185,8 +222,9 @@ function renderMetrics() {
 }
 
 function renderServiceStatus() {
-  if (backToLandingBtn && serviceHealth && serviceHealth.landingUrl) {
-    backToLandingBtn.href = String(serviceHealth.landingUrl);
+  if (backToLandingBtn) {
+    const fallback = serviceHealth && serviceHealth.landingUrl ? String(serviceHealth.landingUrl) : "/";
+    backToLandingBtn.href = landingOverride || fallback;
   }
 
   if (!openAiStatus) return;
@@ -1376,7 +1414,7 @@ if (backToLandingBtn) {
   backToLandingBtn.addEventListener("click", (event) => {
     event.preventDefault();
     const fallback = serviceHealth && serviceHealth.landingUrl ? String(serviceHealth.landingUrl) : "/";
-    window.location.href = fallback;
+    window.location.href = landingOverride || fallback;
   });
 }
 
