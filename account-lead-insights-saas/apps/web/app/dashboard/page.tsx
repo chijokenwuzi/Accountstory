@@ -178,11 +178,13 @@ export default function DashboardPage() {
       })
       .catch((e) => {
         const message = String(e?.message || "");
+        const token = getToken();
+        const isOfflineSession = token === "offline-session";
         const isAuthError =
           message.toLowerCase().includes("invalid token") ||
           message.toLowerCase().includes("unauthorized") ||
           message.includes("(401)");
-        if (isAuthError) {
+        if (isAuthError && !isOfflineSession) {
           clearSession();
           setIsDemo(false);
           setSessionNotice("Session expired. Please log in again.");
@@ -192,7 +194,11 @@ export default function DashboardPage() {
           setLastUpdated(new Date().toLocaleString());
           return;
         }
-        const isApiOffline = message.includes("Cannot reach API");
+        const isApiOffline =
+          isOfflineSession ||
+          message.includes("Cannot reach API") ||
+          message.toLowerCase().includes("unable to log in right now") ||
+          message.toLowerCase().includes("unable to create account right now");
         if (isApiOffline) {
           setIsDemo(false);
           setSessionNotice("API is offline. Showing your dashboard in zero-state until data is available.");
