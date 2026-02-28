@@ -12,6 +12,11 @@ export default function Step1Page() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", email: "", preferredCommMethod: "PHONE", availability: "Weekdays 9-5" });
 
+  function isApiOfflineError(err: unknown) {
+    const message = String((err as Error)?.message || "");
+    return message.includes("Cannot reach API") || message.includes("Failed to fetch");
+  }
+
   useEffect(() => {
     syncSessionCookieFromStorage();
     if (!isSignedIn()) {
@@ -30,7 +35,7 @@ export default function Step1Page() {
         router.replace("/onboarding/step-2");
       })
       .catch(() => {
-        setError("Could not load saved progress. You can still complete Step 1 now.");
+        setMessage("Could not load saved progress. You can still complete Step 1 now.");
       });
   }, [router]);
 
@@ -56,6 +61,18 @@ export default function Step1Page() {
       setMessage("Saved. Continuing setup.");
       router.push("/onboarding/step-2");
     } catch (err) {
+      if (isApiOfflineError(err)) {
+        const pending = { ...form, nextAction };
+        localStorage.setItem("ali_pending_intake", JSON.stringify(pending));
+        if (nextAction === "WAIT_FOR_CALL") {
+          setMessage("API is offline. Saved locally for now; we will sync when API is back.");
+          router.push("/dashboard");
+          return;
+        }
+        setMessage("API is offline. Saved locally and continuing setup.");
+        router.push("/onboarding/step-2");
+        return;
+      }
       setError((err as Error).message || "Unable to save intake.");
     } finally {
       setLoading(false);
