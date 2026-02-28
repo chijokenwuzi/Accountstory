@@ -1,10 +1,18 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api, getToken, setTokens, setUserEmail } from "../../lib/client";
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-lg card">Loading...</div>}>
+      <SignupContent />
+    </Suspense>
+  );
+}
+
+function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirected = useRef(false);

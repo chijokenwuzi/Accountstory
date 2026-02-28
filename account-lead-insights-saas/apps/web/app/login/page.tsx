@@ -1,11 +1,19 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { api, setTokens, setUserEmail } from "../../lib/client";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-md card">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("owner@acme.com");
