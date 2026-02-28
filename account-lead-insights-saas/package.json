@@ -1,0 +1,27 @@
+{
+  "name": "account-lead-insights-saas",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -k \"npm run dev:web\" \"npm run dev -w @ali/api\" \"npm run dev -w @ali/worker\" \"npm run dev:legacy\"",
+    "dev:clean": "bash -lc 'PIDS=$( { lsof -nP -iTCP:3001 -sTCP:LISTEN -t; lsof -nP -iTCP:4000 -sTCP:LISTEN -t; lsof -nP -iTCP:9091 -sTCP:LISTEN -t; } | sort -u ); [ -n \"$PIDS\" ] && kill -9 $PIDS || true; npm run dev'",
+    "dev:web": "WEB_PORT=${WEB_PORT:-3001} npm run dev -w @ali/web",
+    "dev:legacy": "bash -lc 'cd \"../accountstory backend\" && npm start'",
+    "build": "npm run build -ws",
+    "lint": "npm run lint -ws",
+    "typecheck": "npm run typecheck -ws",
+    "test": "npm run test -w @ali/api",
+    "db:ensure": "bash -lc 'set -a; [ -f .env ] && source .env; set +a; DB_NAME=$(node -e \"const u=new URL(process.env.DATABASE_URL||\\\"postgresql://postgres:postgres@localhost:5432/ali\\\");console.log((u.pathname||\\\"/ali\\\").replace(/^\\\\//,\\\"\\\"))\"); createdb \"$DB_NAME\" 2>/dev/null || true'",
+    "setup:local": "npm run db:ensure && npm run prisma:generate && npm run prisma:migrate && npm run prisma:seed",
+    "prisma:generate": "bash -lc 'set -a; [ -f .env ] && source .env; set +a; npm run prisma:generate -w @ali/api'",
+    "prisma:migrate": "bash -lc 'set -a; [ -f .env ] && source .env; set +a; npm run prisma:migrate -w @ali/api'",
+    "prisma:seed": "bash -lc 'set -a; [ -f .env ] && source .env; set +a; npm run prisma:seed -w @ali/api'"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}

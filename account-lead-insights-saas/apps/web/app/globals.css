@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-base text-slate-100;
+}
+
+.card {
+  @apply rounded-xl border border-slate-700 bg-panel p-4;
+}
+
+.btn {
+  @apply rounded-lg px-4 py-2 font-semibold;
+}
+
+.btn-primary {
+  @apply btn bg-accent text-slate-900;
+}
+
+.btn-secondary {
+  @apply btn border border-slate-500 text-slate-200;
+}

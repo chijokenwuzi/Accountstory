@@ -1,0 +1,3 @@
+-- Initial baseline migration for Account Lead Insights SaaS.
+-- Use Prisma migrate in real environments:
+-- npm run prisma:migrate

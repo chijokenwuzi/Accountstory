@@ -1,0 +1,272 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  OPERATOR
+}
+
+enum StepStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETE
+}
+
+enum AssetPackStatus {
+  DRAFT
+  APPROVED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  BOOKED
+  LOST
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELED
+  NO_SHOW
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+model Organization {
+  id                 String            @id @default(cuid())
+  name               String
+  createdAt          DateTime          @default(now())
+  users              User[]
+  onboardingSteps    OnboardingStep[]
+  assetPacks         AssetPack[]
+  budgetPlans        BudgetPlan[]
+  leads              Lead[]
+  appointments       Appointment[]
+  spendSnapshots     SpendSnapshot[]
+  auditLogs          AuditLog[]
+  webhookEvents      WebhookEvent[]
+  notes              OperatorNote[]
+  tasks              OperatorTask[]
+  invites            Invite[]
+  subscriptions      Subscription[]
+  aiUsage            AiUsage[]
+}
+
+model User {
+  id              String      @id @default(cuid())
+  orgId           String
+  org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  email           String
+  name            String
+  role            Role
+  passwordHash    String
+  mfaEnabled      Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  refreshTokens   RefreshToken[]
+  sentInvites     Invite[]    @relation("InviteSender")
+  auditLogs       AuditLog[]
+
+  @@unique([orgId, email])
+  @@index([orgId])
+}
+
+model RefreshToken {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash    String
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Invite {
+  id            String   @id @default(cuid())
+  orgId         String
+  org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  email         String
+  role          Role
+  tokenHash     String
+  expiresAt     DateTime
+  acceptedAt    DateTime?
+  sentByUserId  String?
+  sentByUser    User?    @relation("InviteSender", fields: [sentByUserId], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@index([orgId])
+}
+
+model OnboardingStep {
+  id         String     @id @default(cuid())
+  orgId      String
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  stepName   String
+  dataJson   Json
+  status     StepStatus @default(IN_PROGRESS)
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([orgId, stepName])
+  @@index([orgId])
+}
+
+model AssetPack {
+  id           String          @id @default(cuid())
+  orgId         String
+  org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  version       Int
+  status        AssetPackStatus @default(DRAFT)
+  promptVersion String
+  contentJson   Json
+  createdAt     DateTime        @default(now())
+
+  @@index([orgId])
+}
+
+model BudgetPlan {
+  id             String   @id @default(cuid())
+  orgId          String
+  org            Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  month          String
+  channel        String
+  budget         Decimal  @db.Decimal(12, 2)
+  targetCpl      Decimal  @db.Decimal(12, 2)
+  forecastLeads  Int
+  createdAt      DateTime @default(now())
+
+  @@index([orgId, month])
+}
+
+model Lead {
+  id            String     @id @default(cuid())
+  orgId         String
+  org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  source        String
+  channel       String
+  campaign      String?
+  location      String?
+  contactName   String?
+  phoneEnc      String?
+  emailEnc      String?
+  status        LeadStatus @default(NEW)
+  createdAt     DateTime   @default(now())
+  appointments  Appointment[]
+
+  @@index([orgId, createdAt])
+}
+
+model Appointment {
+  id           String            @id @default(cuid())
+  orgId        String
+  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  leadId       String
+  lead         Lead              @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  scheduledAt  DateTime
+  status       AppointmentStatus @default(SCHEDULED)
+  createdAt    DateTime          @default(now())
+
+  @@index([orgId, scheduledAt])
+}
+
+model SpendSnapshot {
+  id         String   @id @default(cuid())
+  orgId      String
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  channel    String
+  campaign   String?
+  date       DateTime
+  spend      Decimal  @db.Decimal(12, 2)
+  createdAt  DateTime @default(now())
+
+  @@index([orgId, date])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  actorUserId String?
+  actor       User?    @relation(fields: [actorUserId], references: [id])
+  action      String
+  beforeJson  Json?
+  afterJson   Json?
+  createdAt   DateTime @default(now())
+
+  @@index([orgId, createdAt])
+}
+
+model WebhookEvent {
+  id          String   @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  type        String
+  payloadJson Json
+  status      String
+  createdAt   DateTime @default(now())
+
+  @@index([orgId, createdAt])
+}
+
+model OperatorNote {
+  id         String   @id @default(cuid())
+  orgId      String
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  authorId   String
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([orgId, createdAt])
+}
+
+model OperatorTask {
+  id          String   @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  title       String
+  status      String   @default("OPEN")
+  assignedTo  String?
+  createdAt   DateTime @default(now())
+
+  @@index([orgId, status])
+}
+
+model Subscription {
+  id                  String             @id @default(cuid())
+  orgId               String
+  org                 Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  stripeCustomerId    String?
+  stripeSubscriptionId String?
+  status              SubscriptionStatus @default(TRIAL)
+  plan                String             @default("starter")
+  currentPeriodEnd    DateTime?
+  createdAt           DateTime           @default(now())
+
+  @@unique([orgId])
+}
+
+model AiUsage {
+  id            String   @id @default(cuid())
+  orgId          String
+  org            Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  feature        String
+  model          String
+  promptTokens   Int
+  completionTokens Int
+  estimatedCostUsd Decimal @db.Decimal(10, 5)
+  createdAt      DateTime @default(now())
+
+  @@index([orgId, createdAt])
+}
