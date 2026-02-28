@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   api,
   clearSession,
+  getApiCandidates,
   getToken,
   getUserEmail,
   isSignedIn,
@@ -119,18 +120,6 @@ const EMPTY_DASHBOARD: DashboardData = {
 
 function formatMoney(value: number) {
   return `$${Number(value || 0).toFixed(2)}`;
-}
-
-function exportApiCandidates() {
-  const envBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-  if (typeof window === "undefined") return [envBase];
-  const out = [envBase];
-  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-  if (isLocal) {
-    out.push("http://localhost:4000");
-    out.push("http://127.0.0.1:4000");
-  }
-  return Array.from(new Set(out));
 }
 
 export default function DashboardPage() {
@@ -264,7 +253,7 @@ export default function DashboardPage() {
       }
 
       let networkError: Error | null = null;
-      for (const base of exportApiCandidates()) {
+      for (const base of getApiCandidates()) {
         try {
           const response = await fetch(`${base}/api/v1/dashboard/export.csv`, {
             headers: { Authorization: `Bearer ${token}` }

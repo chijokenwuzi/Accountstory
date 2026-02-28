@@ -9,13 +9,23 @@ function emitSessionChanged() {
   window.dispatchEvent(new Event(SESSION_CHANGE_EVENT));
 }
 
-function apiCandidates() {
+export function getApiCandidates() {
   if (typeof window === "undefined") return [API_URL];
 
   const list: string[] = [API_URL];
   const host = window.location.hostname;
   const isLocal = host === "localhost" || host === "127.0.0.1";
-  if (!isLocal) return list;
+  if (!isLocal) {
+    // Production fallbacks in case NEXT_PUBLIC_API_URL was misconfigured at build time.
+    list.push("https://account-lead-insights-api.onrender.com");
+    if (host.endsWith(".onrender.com")) {
+      const derived = host.replace("-web.onrender.com", "-api.onrender.com");
+      if (derived !== host) {
+        list.push(`https://${derived}`);
+      }
+    }
+    return Array.from(new Set(list));
+  }
 
   const localPort = "4000";
   list.push(`http://localhost:${localPort}`);
@@ -130,7 +140,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
-  const urls = apiCandidates();
+  const urls = getApiCandidates();
   let lastNetworkError: unknown = null;
 
   for (const base of urls) {
