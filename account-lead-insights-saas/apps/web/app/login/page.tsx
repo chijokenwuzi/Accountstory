@@ -24,7 +24,11 @@ function LoginContent() {
 
   function isApiOfflineError(err: unknown) {
     const message = String((err as Error)?.message || "");
-    return message.includes("Cannot reach API") || message.includes("Failed to fetch");
+    return (
+      message.includes("Cannot reach API") ||
+      message.includes("Failed to fetch") ||
+      message.includes("Unable to log in right now")
+    );
   }
 
   function navigate(path: string) {
