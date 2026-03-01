@@ -168,12 +168,11 @@ export default function DashboardPage() {
       .catch((e) => {
         const message = String(e?.message || "");
         const token = getToken();
-        const isOfflineSession = token === "offline-session";
         const isAuthError =
           message.toLowerCase().includes("invalid token") ||
           message.toLowerCase().includes("unauthorized") ||
           message.includes("(401)");
-        if (isAuthError && !isOfflineSession) {
+        if (isAuthError) {
           clearSession();
           setIsDemo(false);
           setSessionNotice("Session expired. Please log in again.");
@@ -184,7 +183,6 @@ export default function DashboardPage() {
           return;
         }
         const isApiOffline =
-          isOfflineSession ||
           message.includes("Cannot reach API") ||
           message.toLowerCase().includes("unable to log in right now") ||
           message.toLowerCase().includes("unable to create account right now");

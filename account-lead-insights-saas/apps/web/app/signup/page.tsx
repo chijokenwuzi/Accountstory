@@ -2,7 +2,7 @@
 
 import { FormEvent, Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { api, getToken, setTokens, setUserEmail } from "../../lib/client";
+import { api, canUseOfflineFallback, getToken, setTokens, setUserEmail } from "../../lib/client";
 
 export default function SignupPage() {
   return (
@@ -79,7 +79,7 @@ function SignupContent() {
       }
       navigate(nextPath);
     } catch (err) {
-      if (isApiOfflineError(err)) {
+      if (isApiOfflineError(err) && canUseOfflineFallback()) {
         // Fallback mode keeps onboarding accessible while API deployment is being finalized.
         setTokens("offline-session");
         setUserEmail(form.email);

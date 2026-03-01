@@ -4,6 +4,15 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 const SESSION_COOKIE_NAME = "ali_session";
 const SESSION_CHANGE_EVENT = "ali-session-change";
 
+function isLocalHostname(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
+export function canUseOfflineFallback() {
+  if (typeof window === "undefined") return false;
+  return isLocalHostname(window.location.hostname);
+}
+
 function emitSessionChanged() {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new Event(SESSION_CHANGE_EVENT));
@@ -14,9 +23,11 @@ export function getApiCandidates() {
 
   const list: string[] = [API_URL];
   const host = window.location.hostname;
-  const isLocal = host === "localhost" || host === "127.0.0.1";
+  const isLocal = isLocalHostname(host);
   if (!isLocal) {
-    // Production fallbacks in case NEXT_PUBLIC_API_URL was misconfigured at build time.
+    // Prefer same-origin proxy in production to avoid CORS and stale client env issues.
+    list.unshift("");
+    // Cross-origin fallbacks in case proxy is not configured yet.
     list.push("https://account-lead-insights-api.onrender.com");
     if (host.endsWith(".onrender.com")) {
       const derived = host.replace("-web.onrender.com", "-api.onrender.com");

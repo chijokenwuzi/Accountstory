@@ -3,7 +3,7 @@
 import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { api, setTokens, setUserEmail } from "../../lib/client";
+import { api, canUseOfflineFallback, setTokens, setUserEmail } from "../../lib/client";
 
 export default function LoginPage() {
   return (
@@ -67,7 +67,7 @@ function LoginContent() {
       }
       navigate(nextPath);
     } catch (err) {
-      if (isApiOfflineError(err)) {
+      if (isApiOfflineError(err) && canUseOfflineFallback()) {
         // Fallback mode keeps the product usable while API deployment is being finalized.
         setTokens("offline-session");
         setUserEmail(email);
