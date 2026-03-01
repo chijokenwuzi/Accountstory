@@ -25,10 +25,10 @@ export function getApiCandidates() {
   const host = window.location.hostname;
   const isLocal = isLocalHostname(host);
   if (!isLocal) {
-    // Prefer same-origin proxy in production to avoid CORS and stale client env issues.
-    list.unshift("");
-    // Cross-origin fallbacks in case proxy is not configured yet.
+    // Prefer direct API URL first; keep same-origin proxy as fallback.
+    // This avoids login outages when proxy rewrites are stale/misconfigured.
     list.push("https://account-lead-insights-api.onrender.com");
+    list.push("");
     if (host.endsWith(".onrender.com")) {
       const derived = host.replace("-web.onrender.com", "-api.onrender.com");
       if (derived !== host) {
@@ -167,7 +167,20 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
       }
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body?.error || `Request failed (${res.status})`);
+        const errorMessage = String(body?.error || `Request failed (${res.status})`);
+
+        // If a proxy target is misconfigured (common on Render), keep trying the next API candidate.
+        const shouldTryNextBase =
+          res.status === 404 ||
+          res.status === 502 ||
+          res.status === 503 ||
+          errorMessage.toLowerCase().includes("api route not found");
+        if (shouldTryNextBase) {
+          lastNetworkError = new Error(errorMessage);
+          continue;
+        }
+
+        throw new Error(errorMessage);
       }
       return res.json();
     } catch (error) {

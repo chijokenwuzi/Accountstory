@@ -41,7 +41,8 @@ async function buildSignupRows() {
     eventsByOrg.set(event.orgId, list);
   }
 
-  return rows.map((row) => {
+  return rows
+    .map((row) => {
     const byLeadIdEvent = eventByLeadId.get(row.id);
     const fallbackEvent = (eventsByOrg.get(row.orgId) || []).find((event) => {
       const payload = (event.payloadJson || {}) as Record<string, unknown>;
@@ -50,6 +51,7 @@ async function buildSignupRows() {
       return Boolean(payloadName) && payloadName === rowName;
     });
     const event = byLeadIdEvent || fallbackEvent;
+    if (!event) return null;
     const payload = ((event?.payloadJson as Record<string, unknown>) || {}) as Record<string, unknown>;
 
     const bestMethod = typeof payload.bestMethod === "string" ? payload.bestMethod : "";
@@ -74,7 +76,8 @@ async function buildSignupRows() {
       createdAt: row.createdAt,
       formPayload: payload
     };
-  });
+  })
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
 }
 
 adminRouter.get("/internal/signups", async (req, res) => {
