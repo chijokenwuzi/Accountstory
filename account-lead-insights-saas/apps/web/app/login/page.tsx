@@ -87,6 +87,9 @@ function LoginContent() {
         <button className="btn-primary w-full" type="submit">Login</button>
       </form>
       <p className="mt-3 text-sm text-slate-300">
+        Forgot password? <Link href="/forgot-password" className="underline">Reset with email code</Link>
+      </p>
+      <p className="mt-3 text-sm text-slate-300">
         Need an account? <Link href={`/signup?next=${encodeURIComponent(nextPath)}`} className="underline">Get Started Right Away</Link>
       </p>
       {error && <p className="mt-3 text-red-300">{error}</p>}

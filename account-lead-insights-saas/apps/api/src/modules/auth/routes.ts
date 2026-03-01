@@ -19,9 +19,51 @@ const registerSchema = z.object({
 const loginSchema = z.object({ email: z.string().email(), password: z.string().min(8) });
 const inviteSchema = z.object({ email: z.string().email(), role: roleSchema });
 const resetRequestSchema = z.object({ email: z.string().email() });
-const resetConfirmSchema = z.object({ token: z.string().min(8), newPassword: z.string().min(8) });
+const resetConfirmSchema = z.object({
+  email: z.string().email(),
+  code: z.string().regex(/^\d{6}$/),
+  newPassword: z.string().min(8)
+});
 
 export const authRouter = Router();
+
+function buildResetCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+async function sendPasswordResetEmail(email: string, code: string) {
+  if (!process.env.RESEND_API_KEY) {
+    logger.warn({ email }, "RESEND_API_KEY missing, password reset code email not sent");
+    return;
+  }
+
+  const from = process.env.RESEND_FROM || "noreply@accountleadinsights.com";
+  const html = `
+    <p>Your Account Lead Insights password reset code is:</p>
+    <p style="font-size:24px;font-weight:700;letter-spacing:2px;">${code}</p>
+    <p>This code expires in 15 minutes.</p>
+    <p>If you did not request this, you can ignore this email.</p>
+  `;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      from,
+      to: [email],
+      subject: "Your password reset code",
+      html
+    })
+  });
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => "");
+    throw new Error(`Resend failed (${response.status}): ${body}`);
+  }
+}
 
 authRouter.post("/register", async (req, res) => {
   try {
@@ -134,15 +176,80 @@ authRouter.post("/invite", requireAuth, requireRole(["OWNER", "ADMIN"]), async (
 });
 
 authRouter.post("/password-reset/request", async (req, res) => {
-  const { email } = resetRequestSchema.parse(req.body);
-  // In production send secure reset email token via Resend.
-  const token = crypto.randomUUID();
-  res.json({ requested: true, email, token });
+  try {
+    const { email } = resetRequestSchema.parse(req.body);
+    const normalizedEmail = email.toLowerCase();
+    const user = await prisma.user.findFirst({ where: { email: normalizedEmail } });
+
+    if (user) {
+      const code = buildResetCode();
+      const codeHash = hashToken(code);
+      const expiresAt = new Date(Date.now() + 1000 * 60 * 15);
+
+      await prisma.passwordResetCode.create({
+        data: {
+          userId: user.id,
+          codeHash,
+          expiresAt
+        }
+      });
+
+      try {
+        await sendPasswordResetEmail(normalizedEmail, code);
+      } catch (emailError) {
+        logger.error({ err: emailError, email: normalizedEmail }, "Failed to send password reset code");
+      }
+    }
+
+    // Always return success to avoid email enumeration.
+    res.json({ requested: true });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.issues[0]?.message || "Invalid request" });
+    }
+    logger.error({ err: error }, "Password reset request failed");
+    return res.status(500).json({ error: "Unable to process reset request right now" });
+  }
 });
 
 authRouter.post("/password-reset/confirm", async (req, res) => {
-  const { token, newPassword } = resetConfirmSchema.parse(req.body);
-  if (!token) return res.status(400).json({ error: "Invalid token" });
-  // Baseline: placeholder flow. Production should resolve token -> user.
-  res.json({ reset: true, passwordHashPreview: await hashPassword(newPassword) });
+  try {
+    const { email, code, newPassword } = resetConfirmSchema.parse(req.body);
+    const normalizedEmail = email.toLowerCase();
+    const user = await prisma.user.findFirst({ where: { email: normalizedEmail } });
+    if (!user) return res.status(400).json({ error: "Invalid or expired code" });
+
+    const latest = await prisma.passwordResetCode.findFirst({
+      where: { userId: user.id, usedAt: null },
+      orderBy: { createdAt: "desc" }
+    });
+
+    if (!latest) return res.status(400).json({ error: "Invalid or expired code" });
+    if (latest.expiresAt.getTime() < Date.now()) return res.status(400).json({ error: "Invalid or expired code" });
+    if (latest.attempts >= 5) return res.status(400).json({ error: "Too many attempts. Request a new code." });
+
+    const providedHash = hashToken(code);
+    if (providedHash !== latest.codeHash) {
+      await prisma.passwordResetCode.update({
+        where: { id: latest.id },
+        data: { attempts: { increment: 1 } }
+      });
+      return res.status(400).json({ error: "Invalid or expired code" });
+    }
+
+    const newPasswordHash = await hashPassword(newPassword);
+    await prisma.$transaction([
+      prisma.user.update({ where: { id: user.id }, data: { passwordHash: newPasswordHash } }),
+      prisma.passwordResetCode.update({ where: { id: latest.id }, data: { usedAt: new Date() } }),
+      prisma.refreshToken.deleteMany({ where: { userId: user.id } })
+    ]);
+
+    return res.json({ reset: true });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.issues[0]?.message || "Invalid request" });
+    }
+    logger.error({ err: error }, "Password reset confirm failed");
+    return res.status(500).json({ error: "Unable to reset password right now" });
+  }
 });

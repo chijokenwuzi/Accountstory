@@ -76,6 +76,7 @@ model User {
   mfaEnabled      Boolean     @default(false)
   createdAt       DateTime    @default(now())
   refreshTokens   RefreshToken[]
+  passwordResetCodes PasswordResetCode[]
   sentInvites     Invite[]    @relation("InviteSender")
   auditLogs       AuditLog[]
 
@@ -92,6 +93,20 @@ model RefreshToken {
   createdAt    DateTime @default(now())
 
   @@index([userId])
+}
+
+model PasswordResetCode {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash   String
+  expiresAt  DateTime
+  usedAt     DateTime?
+  attempts   Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId, codeHash])
 }
 
 model Invite {
