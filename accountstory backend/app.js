@@ -1354,6 +1354,17 @@ customerForm.addEventListener("submit", async (event) => {
   }
 });
 
+if (customerForm instanceof HTMLElement) {
+  customerForm.style.display = "none";
+}
+if (customerMessage) {
+  setMessage(
+    customerMessage,
+    "success",
+    "Customer roster is signup-only. New entries sync automatically from the Sign Up List."
+  );
+}
+
 if (facebookConnectForm) {
   facebookConnectForm.addEventListener("submit", async (event) => {
     event.preventDefault();

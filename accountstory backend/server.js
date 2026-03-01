@@ -104,45 +104,8 @@ const STOP_WORDS = new Set([
 ]);
 
 const DEFAULT_STORE = {
-  selectedCustomerId: "cust-1",
-  customers: [
-    {
-      id: "cust-1",
-      name: "Cobalt Care",
-      industry: "Healthcare",
-      tier: "Enterprise",
-      website: "https://cobaltcare.example",
-      location: "Florida",
-      defaultOffer: "Free smile consultation",
-      defaultAudience: "Adults 28-55 interested in cosmetic dentistry",
-      defaultLandingUrl: "https://cobaltcare.example/consult",
-      customerNotes: "Avoid absolute medical claims. Keep tone confident and premium."
-    },
-    {
-      id: "cust-2",
-      name: "Astera Retail",
-      industry: "Ecommerce",
-      tier: "Growth",
-      website: "https://asteraretail.example",
-      location: "United States",
-      defaultOffer: "",
-      defaultAudience: "",
-      defaultLandingUrl: "",
-      customerNotes: ""
-    },
-    {
-      id: "cust-3",
-      name: "Beacon Freight",
-      industry: "Logistics",
-      tier: "Core",
-      website: "https://beaconfreight.example",
-      location: "Texas",
-      defaultOffer: "",
-      defaultAudience: "",
-      defaultLandingUrl: "",
-      customerNotes: ""
-    }
-  ],
+  selectedCustomerId: "",
+  customers: [],
   guardrails: {
     budgetCap: 2500,
     cpaCap: 120,
@@ -150,41 +113,8 @@ const DEFAULT_STORE = {
     creativeGate: true,
     killSwitch: true
   },
-  campaigns: [
-    {
-      id: "cmp-1",
-      customerId: "cust-1",
-      name: "Patient Enrollment Sprint",
-      goal: "Lead Volume",
-      channels: ["Facebook", "Google"],
-      dailyBudget: 900,
-      targetCpa: 88,
-      mode: "Hybrid",
-      stage: "Optimization",
-      risk: "Low"
-    },
-    {
-      id: "cmp-2",
-      customerId: "cust-2",
-      name: "Founder VSL Offer Push",
-      goal: "Booked Calls",
-      channels: ["Facebook"],
-      dailyBudget: 3000,
-      targetCpa: 130,
-      mode: "Autopilot",
-      stage: "Blocked",
-      risk: "High"
-    }
-  ],
-  assets: [
-    {
-      id: "asset-1",
-      customerId: "cust-1",
-      type: "VSL",
-      url: "",
-      notes: "90 second founder VSL with compliance-safe claims"
-    }
-  ],
+  campaigns: [],
+  assets: [],
   adInputRuns: [],
   integrations: {
     facebook: {
@@ -405,18 +335,14 @@ function mapSignupToCustomer(signup, index) {
 function mergeSignupCustomers(existingCustomers, signupCustomers) {
   const current = Array.isArray(existingCustomers) ? existingCustomers : [];
   const currentBySignupId = new Map();
-  const manualCustomers = [];
-
   current.forEach((entry) => {
     const normalized = normalizeCustomer(entry);
     if (normalized.sourceSignupId) {
       currentBySignupId.set(normalized.sourceSignupId, normalized);
-    } else {
-      manualCustomers.push(normalized);
     }
   });
 
-  const mergedSignupCustomers = signupCustomers.map((entry, index) => {
+  return signupCustomers.map((entry, index) => {
     const normalized = normalizeCustomer(entry, `cust-signup-${index + 1}`);
     const existing = currentBySignupId.get(normalized.sourceSignupId);
     if (existing && existing.id) {
@@ -427,8 +353,6 @@ function mergeSignupCustomers(existingCustomers, signupCustomers) {
     }
     return normalized;
   });
-
-  return [...mergedSignupCustomers, ...manualCustomers];
 }
 
 function setSignupSyncError(message) {
@@ -1126,18 +1050,24 @@ function normalizeStore(raw) {
     ...(raw && typeof raw === "object" ? raw : {})
   };
 
-  if (!Array.isArray(next.customers) || !next.customers.length) {
-    next.customers = base.customers;
-  }
-  next.customers = next.customers.map((entry, index) => normalizeCustomer(entry, `cust-${index + 1}`));
+  if (!Array.isArray(next.customers)) next.customers = [];
+  next.customers = next.customers
+    .map((entry, index) => normalizeCustomer(entry, `cust-${index + 1}`))
+    .filter((entry) => Boolean(entry.sourceSignupId) || entry.isSignupLead);
 
   if (!Array.isArray(next.campaigns)) next.campaigns = [];
   if (!Array.isArray(next.assets)) next.assets = [];
   if (!Array.isArray(next.adInputRuns)) next.adInputRuns = [];
   if (!Array.isArray(next.publishJobs)) next.publishJobs = [];
 
+  const customerIds = new Set(next.customers.map((entry) => entry.id));
+  next.campaigns = next.campaigns.filter((entry) => customerIds.has(normalizeText(entry.customerId)));
+  next.assets = next.assets.filter((entry) => customerIds.has(normalizeText(entry.customerId)));
+  next.adInputRuns = next.adInputRuns.filter((entry) => customerIds.has(normalizeText(entry.customerId)));
+  next.publishJobs = next.publishJobs.filter((entry) => customerIds.has(normalizeText(entry.customerId)));
+
   if (!next.selectedCustomerId || !next.customers.some((entry) => entry.id === next.selectedCustomerId)) {
-    next.selectedCustomerId = next.customers[0].id;
+    next.selectedCustomerId = next.customers[0] ? next.customers[0].id : "";
   }
 
   next.guardrails = {
@@ -1401,43 +1331,9 @@ async function handleApi(req, res, pathname) {
   }
 
   if (method === "POST" && pathname === "/api/customers") {
-    const body = await parseBody(req);
-    const name = normalizeText(body.name);
-    const industry = normalizeText(body.industry);
-    const tier = normalizeText(body.tier) || "Core";
-    const website = normalizeText(body.website);
-    const location = normalizeText(body.location);
-    const defaultOffer = normalizeText(body.defaultOffer);
-    const defaultAudience = normalizeText(body.defaultAudience);
-    const defaultLandingUrl = normalizeText(body.defaultLandingUrl);
-    const customerNotes = normalizeText(body.customerNotes);
-
-    if (!name || !industry) {
-      return sendJson(res, 400, { error: "name and industry are required." });
-    }
-
-    const exists = store.customers.some((entry) => entry.name.toLowerCase() === name.toLowerCase());
-    if (exists) {
-      return sendJson(res, 409, { error: "Customer already exists." });
-    }
-
-    const customer = normalizeCustomer({
-      id: uid("cust"),
-      name,
-      industry,
-      tier,
-      website,
-      location,
-      defaultOffer,
-      defaultAudience,
-      defaultLandingUrl,
-      customerNotes
+    return sendJson(res, 403, {
+      error: "Manual customer creation is disabled. Customers are synced from signup list."
     });
-    store.customers.push(customer);
-    store.selectedCustomerId = customer.id;
-
-    await writeStore(store);
-    return sendJson(res, 201, { state: normalizeStore(store), message: `${name} added.` });
   }
 
   if (method === "POST" && pathname === "/api/campaigns") {
