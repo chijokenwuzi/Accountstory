@@ -1,11 +1,13 @@
 import crypto from "crypto";
 import { Router } from "express";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { roleSchema } from "@ali/shared";
 import { prisma } from "../../lib/prisma";
 import { hashPassword, signAccessToken, signRefreshToken, verifyPassword, verifyRefreshToken } from "../../lib/auth";
 import { hashToken } from "../../lib/crypto";
 import { requireAuth, requireRole } from "../../middleware/auth";
+import { logger } from "../../lib/logger";
 
 const registerSchema = z.object({
   orgName: z.string().min(2),
@@ -24,19 +26,22 @@ export const authRouter = Router();
 authRouter.post("/register", async (req, res) => {
   try {
     const input = registerSchema.parse(req.body);
-    const org = await prisma.organization.create({ data: { name: input.orgName } });
-    const user = await prisma.user.create({
-      data: {
-        orgId: org.id,
-        name: input.name,
-        email: input.email.toLowerCase(),
-        role: "OWNER",
-        passwordHash: await hashPassword(input.password)
-      }
+    const orgAndUser = await prisma.$transaction(async (tx) => {
+      const org = await tx.organization.create({ data: { name: input.orgName } });
+      const user = await tx.user.create({
+        data: {
+          orgId: org.id,
+          name: input.name,
+          email: input.email.toLowerCase(),
+          role: "OWNER",
+          passwordHash: await hashPassword(input.password)
+        }
+      });
+      await tx.subscription.create({ data: { orgId: org.id, status: "TRIAL", plan: "starter" } });
+      return { org, user };
     });
 
-    await prisma.subscription.create({ data: { orgId: org.id, status: "TRIAL", plan: "starter" } });
-
+    const { org, user } = orgAndUser;
     const payload = { userId: user.id, orgId: org.id, role: user.role, email: user.email } as const;
     const accessToken = signAccessToken(payload);
     const refreshToken = signRefreshToken(payload);
@@ -53,6 +58,10 @@ authRouter.post("/register", async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.issues[0]?.message || "Invalid registration input" });
     }
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return res.status(409).json({ error: "An account with this email already exists. Please log in." });
+    }
+    logger.error({ err: error }, "Failed to register user");
     return res.status(500).json({ error: "Unable to create account right now" });
   }
 });
