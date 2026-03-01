@@ -32,6 +32,19 @@ const PLATFORM_LABEL = {
   google: "Google"
 };
 const landingOverride = resolveLandingOverride();
+const backendBasePath = resolveBackendBasePath();
+
+function resolveBackendBasePath() {
+  try {
+    const pathname = String(window.location.pathname || "/");
+    if (pathname.startsWith("/founderbackend")) {
+      return "/founderbackend";
+    }
+    return "";
+  } catch {
+    return "";
+  }
+}
 
 function resolveLandingOverride() {
   try {
@@ -99,7 +112,12 @@ function customerById(customerId) {
 }
 
 async function request(path, options = {}) {
-  const response = await fetch(path, {
+  const normalizedPath = String(path || "/");
+  const targetPath = normalizedPath.startsWith("/")
+    ? `${backendBasePath}${normalizedPath}`
+    : `${backendBasePath}/${normalizedPath}`;
+
+  const response = await fetch(targetPath, {
     method: options.method || "GET",
     headers: {
       "Content-Type": "application/json",

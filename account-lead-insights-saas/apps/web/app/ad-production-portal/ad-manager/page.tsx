@@ -6,7 +6,7 @@ import { api, getUserEmail, isSignedIn, syncSessionCookieFromStorage } from "../
 import { canAccessFounderPortal, founderEmail } from "../../../lib/founder-access";
 
 const LEGACY_BACKEND_URL =
-  process.env.NEXT_PUBLIC_LEGACY_BACKEND_URL || "http://127.0.0.1:9091/index.html";
+  "/founderbackend/index.html";
 const PORTAL_BASE_URL = process.env.NEXT_PUBLIC_PORTAL_BASE_URL || "";
 
 export default function PortalAdManagerPage() {
@@ -35,9 +35,9 @@ export default function PortalAdManagerPage() {
       try {
         await api("/api/v1/admin/access");
         setAllowed(true);
-        await fetch(LEGACY_BACKEND_URL, { mode: "no-cors", cache: "no-store" });
+        await fetch("/founderbackend/api/health", { cache: "no-store" });
         const baseUrl = PORTAL_BASE_URL.trim() || window.location.origin;
-        const target = new URL(LEGACY_BACKEND_URL);
+        const target = new URL(LEGACY_BACKEND_URL, window.location.origin);
         target.searchParams.set("returnTo", `${baseUrl}/ad-production-portal`);
         window.location.assign(target.toString());
       } catch {
