@@ -1924,13 +1924,27 @@ async function handleApi(req, res, pathname) {
   return sendJson(res, 404, { error: "API route not found." });
 }
 
+function normalizeRequestPath(pathname) {
+  const path = normalizeText(pathname) || "/";
+  const prefixes = ["/founderbackend", "/founderbackend/"];
+  for (const prefix of prefixes) {
+    if (path === prefix.replace(/\/$/, "")) return "/";
+    if (path.startsWith(prefix)) {
+      const stripped = path.slice(prefix.length - (prefix.endsWith("/") ? 1 : 0));
+      return stripped.startsWith("/") ? stripped : `/${stripped}`;
+    }
+  }
+  return path;
+}
+
 async function start() {
   await ensureStore();
 
   const server = http.createServer(async (req, res) => {
     try {
       const url = new URL(req.url || "/", `http://${req.headers.host || `${HOST}:${PORT}`}`);
-      const pathname = decodeURIComponent(url.pathname);
+      const rawPathname = decodeURIComponent(url.pathname);
+      const pathname = normalizeRequestPath(rawPathname);
 
       if (pathname.startsWith("/api/")) {
         await handleApi(req, res, pathname);
