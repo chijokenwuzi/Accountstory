@@ -62,6 +62,16 @@ function SignupContent() {
       );
       setTokens(data.accessToken, data.refreshToken);
       setUserEmail(data.user.email);
+      await api("/api/v1/leads/signup-intake", {
+        method: "POST",
+        body: JSON.stringify({
+          orgName: form.orgName,
+          name: form.name,
+          email: form.email,
+          bestMethod: "EMAIL",
+          availability: "Captured at sign-up"
+        })
+      });
       const pendingRaw = localStorage.getItem("ali_pending_intake");
       if (pendingRaw) {
         try {

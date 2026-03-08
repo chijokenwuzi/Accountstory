@@ -7,6 +7,7 @@ import { publicRateLimit } from "../../middleware/rate-limit";
 import { notificationsQueue } from "../../jobs/queues";
 import { z } from "zod";
 import { writeAuditLog } from "../../lib/audit";
+import { Prisma } from "@prisma/client";
 
 async function verifyCaptcha(token: string) {
   if (!process.env.HCAPTCHA_SECRET) return token.length > 3;
@@ -27,10 +28,26 @@ const publicSignupSchema = z.object({
 const onboardingSignupSchema = z.object({
   orgName: z.string().min(2).optional(),
   name: z.string().min(2),
-  phone: z.string().min(7),
+  phone: z.string().min(7).optional(),
   email: z.string().email(),
   bestMethod: z.enum(["PHONE", "SMS", "EMAIL"]).default("PHONE"),
   availability: z.string().min(2).default("Weekdays 9am-5pm")
+});
+
+const adManagerHandoffSchema = z.object({
+  orgName: z.string().min(2).optional(),
+  contact: z
+    .object({
+      name: z.string().optional(),
+      email: z.string().email().optional(),
+      phone: z.string().optional(),
+      preferredCommMethod: z.enum(["PHONE", "SMS", "EMAIL"]).optional(),
+      availability: z.string().optional()
+    })
+    .optional(),
+  businessProfile: z.record(z.string(), z.unknown()).optional(),
+  assetPack: z.record(z.string(), z.unknown()).optional(),
+  budgetPlan: z.record(z.string(), z.unknown()).optional()
 });
 
 const leadListQuerySchema = dashboardFilterSchema.extend({
@@ -131,13 +148,47 @@ leadsRouter.post("/signup-intake", requireRole(["OWNER", "ADMIN", "OPERATOR"]), 
     where: {
       orgId: req.auth!.orgId,
       source: "signup-form",
-      contactName: body.name,
-      createdAt: { gte: new Date(Date.now() - 1000 * 60 * 60 * 24) }
+      OR: [{ contactName: body.name }, { emailEnc: encryptPII(body.email) }],
+      createdAt: { gte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30) }
     },
     orderBy: { createdAt: "desc" }
   });
   if (existing) {
-    return res.json({ ok: true, id: existing.id, reused: true });
+    const nextName = body.name || existing.contactName || "";
+    const nextPhone = body.phone ? encryptPII(body.phone) : existing.phoneEnc;
+    const nextEmail = body.email ? encryptPII(body.email) : existing.emailEnc;
+    const nextLocation = body.orgName || existing.location || "";
+
+    const updated = await prisma.lead.update({
+      where: { id: existing.id },
+      data: {
+        contactName: nextName,
+        phoneEnc: nextPhone,
+        emailEnc: nextEmail,
+        location: nextLocation
+      }
+    });
+
+    await prisma.webhookEvent.create({
+      data: {
+        orgId: req.auth!.orgId,
+        type: "signup_intake",
+        payloadJson: {
+          leadId: updated.id,
+          orgName: body.orgName || "",
+          name: body.name,
+          phone: body.phone || "",
+          email: body.email,
+          bestMethod: body.bestMethod,
+          availability: body.availability,
+          source: "onboarding_flow"
+        },
+        status: "RECEIVED"
+      }
+    });
+
+    await notificationsQueue.add("lead-created", { orgId: req.auth!.orgId, leadId: updated.id });
+    return res.json({ ok: true, id: updated.id, reused: true, updated: true });
   }
 
   const lead = await prisma.lead.create({
@@ -147,7 +198,7 @@ leadsRouter.post("/signup-intake", requireRole(["OWNER", "ADMIN", "OPERATOR"]), 
       channel: "Website",
       campaign: "Onboarding Flow",
       contactName: body.name,
-      phoneEnc: encryptPII(body.phone),
+      phoneEnc: body.phone ? encryptPII(body.phone) : null,
       emailEnc: encryptPII(body.email),
       location: body.orgName || ""
     }
@@ -173,6 +224,31 @@ leadsRouter.post("/signup-intake", requireRole(["OWNER", "ADMIN", "OPERATOR"]), 
 
   await notificationsQueue.add("lead-created", { orgId: req.auth!.orgId, leadId: lead.id });
   return res.status(201).json({ ok: true, id: lead.id });
+});
+
+leadsRouter.post("/ad-manager-handoff", requireRole(["OWNER", "ADMIN", "OPERATOR"]), async (req, res) => {
+  const body = adManagerHandoffSchema.parse(req.body);
+  const payload: Prisma.InputJsonValue = {
+    orgId: req.auth!.orgId,
+    orgName: body.orgName || "",
+    source: "onboarding_complete",
+    completedAt: new Date().toISOString(),
+    contact: (body.contact || {}) as Prisma.InputJsonValue,
+    businessProfile: (body.businessProfile || {}) as Prisma.InputJsonValue,
+    assetPack: (body.assetPack || {}) as Prisma.InputJsonValue,
+    budgetPlan: (body.budgetPlan || {}) as Prisma.InputJsonValue
+  };
+
+  const event = await prisma.webhookEvent.create({
+    data: {
+      orgId: req.auth!.orgId,
+      type: "ad_manager_handoff",
+      payloadJson: payload,
+      status: "RECEIVED"
+    }
+  });
+
+  return res.status(201).json({ ok: true, eventId: event.id });
 });
 
 leadsRouter.get("", async (req, res) => {

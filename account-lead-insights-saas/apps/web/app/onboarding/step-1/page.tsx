@@ -23,20 +23,7 @@ export default function Step1Page() {
       router.replace("/signup");
       return;
     }
-    api<{ steps: Array<{ stepName: string; status: string; dataJson?: Record<string, unknown> }> }>("/api/v1/onboarding/steps")
-      .then((d) => {
-        const step = d.steps.find((s) => s.stepName === "quick-intake" && s.status === "COMPLETE");
-        if (!step) return;
-        const nextAction = typeof step.dataJson?.nextAction === "string" ? step.dataJson.nextAction : "";
-        if (nextAction === "WAIT_FOR_CALL") {
-          router.replace("/dashboard");
-          return;
-        }
-        router.replace("/onboarding/step-2");
-      })
-      .catch(() => {
-        setMessage("Could not load saved progress. You can still complete Step 1 now.");
-      });
+    // Step 1 intentionally starts blank so new users never see preloaded intake data.
   }, [router]);
 
   async function submit(nextAction: "START_NOW" | "WAIT_FOR_CALL") {

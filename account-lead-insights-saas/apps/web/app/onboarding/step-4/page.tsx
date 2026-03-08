@@ -95,6 +95,8 @@ export default function Step4Page() {
     preferredCommMethod: "PHONE" | "SMS" | "EMAIL";
     availability: string;
   } | null>(null);
+  const [businessProfileData, setBusinessProfileData] = useState<Record<string, unknown>>({});
+  const [assetPackData, setAssetPackData] = useState<Record<string, unknown>>({});
 
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
   const [monthlyBudgetUsd, setMonthlyBudgetUsd] = useState(3000);
@@ -177,6 +179,7 @@ export default function Step4Page() {
         });
 
         const businessData = step2.dataJson || {};
+        setBusinessProfileData(businessData);
         const channels = Array.isArray(businessData.channels)
           ? (businessData.channels as string[]).filter(
               (entry): entry is ChannelKey => entry in CHANNEL_CONFIG
@@ -235,6 +238,7 @@ export default function Step4Page() {
             if (typeof assets.contentLinks === "string") setContentLinks(assets.contentLinks);
           }
         }
+        setAssetPackData(step3.dataJson || {});
       })
       .catch(() => {
         setError("Could not load saved progress. You can still complete this final step now.");
@@ -343,6 +347,31 @@ export default function Step4Page() {
           })
         });
       }
+
+      await api("/api/v1/leads/ad-manager-handoff", {
+        method: "POST",
+        body: JSON.stringify({
+          orgName: businessName,
+          contact: quickIntake || {},
+          businessProfile: businessProfileData,
+          assetPack: {
+            ...assetPackData,
+            imageFiles,
+            testimonialFiles,
+            blogFiles,
+            testimonialText,
+            contentLinks
+          },
+          budgetPlan: {
+            month,
+            monthlyBudgetUsd,
+            targetCpl,
+            phoneMix,
+            channelAllocations,
+            forecast
+          }
+        })
+      });
 
       router.push("/dashboard");
     } catch (err) {
