@@ -1,59 +1,119 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { api, getUserEmail, isSignedIn, syncSessionCookieFromStorage } from "../../../lib/client";
+import { useEffect, useMemo, useState } from "react";
+import {
+  api,
+  clearSession,
+  getUserEmail,
+  isSignedIn,
+  syncSessionCookieFromStorage
+} from "../../../lib/client";
 import { canAccessFounderPortal, founderEmail } from "../../../lib/founder-access";
 
-const LEGACY_BACKEND_URL =
-  "/founderbackend/index.html";
-const PORTAL_BASE_URL = process.env.NEXT_PUBLIC_PORTAL_BASE_URL || "";
+type AccessResponse = { email: string; allowed?: boolean };
+
+type ClientRow = {
+  id: string;
+  name: string;
+  onboardingComplete: number;
+  leadVolume: number;
+  spend: number;
+};
 
 export default function PortalAdManagerPage() {
-  const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [signedIn, setSignedIn] = useState(false);
   const [allowed, setAllowed] = useState(false);
-  const [offline, setOffline] = useState(false);
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [rows, setRows] = useState<ClientRow[]>([]);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
-    const run = async () => {
-      syncSessionCookieFromStorage();
-      const ok = isSignedIn();
-      setSignedIn(ok);
-      if (!ok) {
-        setChecked(true);
-        return;
-      }
+    syncSessionCookieFromStorage();
+    const active = isSignedIn();
+    if (!active) {
+      setSignedIn(false);
+      setAllowed(false);
+      setLoading(false);
+      return;
+    }
 
-      const localEmail = getUserEmail();
-      if (!canAccessFounderPortal(localEmail)) {
-        setAllowed(false);
-        setChecked(true);
-        return;
-      }
+    const localEmail = getUserEmail();
+    setSignedIn(true);
+    setEmail(localEmail);
 
-      try {
-        await api("/api/v1/admin/access");
+    if (!canAccessFounderPortal(localEmail)) {
+      setAllowed(false);
+      setLoading(false);
+      return;
+    }
+
+    Promise.all([
+      api<AccessResponse>("/api/v1/admin/access"),
+      api<{ organizations: ClientRow[] }>("/api/v1/admin/organizations")
+    ])
+      .then(([access, orgData]) => {
+        setEmail(access.email || localEmail);
         setAllowed(true);
-        const legacyHealth = await fetch("/founderbackend/api/health", { cache: "no-store" });
-        if (!legacyHealth.ok) {
-          throw new Error(`Legacy backend health check failed (${legacyHealth.status})`);
+        setRows(orgData.organizations || []);
+        setError("");
+      })
+      .catch((err) => {
+        const message = String((err as Error)?.message || "");
+        const isAuthError =
+          message.toLowerCase().includes("invalid token") ||
+          message.toLowerCase().includes("unauthorized") ||
+          message.includes("(401)");
+        const isForbidden = message.toLowerCase().includes("forbidden") || message.includes("(403)");
+
+        if (isAuthError) {
+          clearSession();
+          setSignedIn(false);
+          setAllowed(false);
+          setError("");
+          return;
         }
-        const baseUrl = PORTAL_BASE_URL.trim() || window.location.origin;
-        const target = new URL(LEGACY_BACKEND_URL, window.location.origin);
-        target.searchParams.set("returnTo", `${baseUrl}/ad-production-portal`);
-        window.location.assign(target.toString());
-      } catch {
+
+        if (isForbidden) {
+          setAllowed(false);
+          setError("");
+          return;
+        }
+
         setAllowed(true);
-        setOffline(true);
-        setChecked(true);
-      }
-    };
-    run();
+        setError(message || "Unable to load clients.");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  if (!checked && !offline) return <p className="text-slate-300">Opening Ad Manager...</p>;
+  const sortedRows = useMemo(
+    () => [...rows].sort((a, b) => (b.spend || 0) - (a.spend || 0)),
+    [rows]
+  );
+
+  async function deleteClient(row: ClientRow) {
+    const confirmed = window.confirm(
+      `Delete client "${row.name}"? This removes the organization and all related onboarding, leads, spend, notes, tasks, and users.`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(row.id);
+    setError("");
+    try {
+      await api<{ ok: boolean }>(`/api/v1/admin/org/${row.id}`, { method: "DELETE" });
+      setRows((current) => current.filter((entry) => entry.id !== row.id));
+    } catch (err) {
+      setError(String((err as Error)?.message || "Unable to delete client."));
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  if (loading) return <p className="text-slate-300">Loading Ad Manager...</p>;
   if (!signedIn) return <p className="text-slate-300">Please sign in first.</p>;
+
   if (!allowed) {
     return (
       <div className="card space-y-3">
@@ -61,47 +121,49 @@ export default function PortalAdManagerPage() {
         <p className="text-slate-300">
           Access is restricted. Only <strong>{founderEmail()}</strong> can open Ad Manager.
         </p>
-        <Link href="/dashboard" className="btn-secondary inline-block">
-          Back to Dashboard
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Ad Manager</h1>
+          <p className="text-sm text-slate-300">Manage current clients and remove old accounts.</p>
+          <p className="text-xs text-slate-400">Logged in as {email || "your account"}</p>
+        </div>
+        <Link href="/ad-production-portal" className="btn-secondary">
+          Back to Portal
         </Link>
       </div>
-    );
-  }
 
-  if (offline) {
-    const isLocal =
-      typeof window !== "undefined" &&
-      (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-    return (
       <div className="card space-y-3">
-        <h1 className="text-3xl font-bold">Ad Manager Unavailable</h1>
-        <p className="text-slate-300">
-          The Ad Manager backend is not reachable right now.
-        </p>
-        {isLocal ? (
-          <p className="text-slate-300">
-            Start dev with <code>npm run dev</code> from <code>account-lead-insights-saas</code>, then try again.
-          </p>
-        ) : (
-          <p className="text-slate-300">
-            The main portal is still available. Retry later after the legacy backend is deployed.
-          </p>
-        )}
-        <div className="flex gap-2">
-          <Link href="/ad-production-portal" className="btn-secondary">
-            Back to Portal
-          </Link>
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => window.location.reload()}
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
+        {error && <p className="text-sm text-amber-300">{error}</p>}
+        {sortedRows.length === 0 && <p className="text-slate-400">No clients found.</p>}
 
-  return <p className="text-slate-300">Redirecting to Ad Manager...</p>;
+        {sortedRows.map((row) => (
+          <div key={row.id} className="rounded border border-slate-700 p-3 text-sm">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="space-y-1">
+                <p className="text-lg font-semibold">{row.name || "Unnamed client"}</p>
+                <p className="text-slate-300">Client ID: {row.id}</p>
+                <p className="text-slate-300">Completed onboarding steps: {row.onboardingComplete}</p>
+                <p className="text-slate-300">Lead volume: {row.leadVolume}</p>
+                <p className="text-slate-300">Spend: ${Number(row.spend || 0).toFixed(2)}</p>
+              </div>
+              <button
+                type="button"
+                className="btn-secondary"
+                disabled={deletingId === row.id}
+                onClick={() => void deleteClient(row)}
+              >
+                {deletingId === row.id ? "Deleting..." : "Delete Client"}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

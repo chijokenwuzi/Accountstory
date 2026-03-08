@@ -126,6 +126,49 @@ adminRouter.get("/signups", async (_req, res) => {
   res.json({ signups });
 });
 
+adminRouter.delete("/signups/:leadId", async (req, res) => {
+  const leadId = String(req.params.leadId || "").trim();
+  if (!leadId) return res.status(400).json({ error: "Lead id is required." });
+
+  const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+  if (!lead || lead.source !== "signup-form") {
+    return res.status(404).json({ error: "Signup not found." });
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const signupEvents = await tx.webhookEvent.findMany({
+      where: { orgId: lead.orgId, type: "signup_intake" }
+    });
+
+    const matchingEventIds = signupEvents
+      .filter((event) => {
+        const payload = (event.payloadJson || {}) as Record<string, unknown>;
+        const payloadLeadId = typeof payload.leadId === "string" ? payload.leadId : "";
+        if (payloadLeadId) return payloadLeadId === lead.id;
+
+        const payloadName = typeof payload.name === "string" ? payload.name.trim().toLowerCase() : "";
+        const leadName = String(lead.contactName || "").trim().toLowerCase();
+        return Boolean(payloadName) && Boolean(leadName) && payloadName === leadName;
+      })
+      .map((event) => event.id);
+
+    if (matchingEventIds.length > 0) {
+      await tx.webhookEvent.deleteMany({ where: { id: { in: matchingEventIds } } });
+    }
+
+    await tx.lead.delete({ where: { id: lead.id } });
+  });
+
+  await writeAuditLog({
+    orgId: lead.orgId,
+    actorUserId: req.auth!.userId,
+    action: "SIGNUP_DELETED",
+    beforeJson: { leadId: lead.id, orgId: lead.orgId, source: lead.source }
+  });
+
+  res.json({ ok: true });
+});
+
 adminRouter.get("/organizations", async (_req, res) => {
   const orgs = await prisma.organization.findMany({
     include: {

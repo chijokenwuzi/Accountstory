@@ -36,6 +36,7 @@ export default function PortalSignupListPage() {
   const [rows, setRows] = useState<SignupRow[]>([]);
   const [error, setError] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     syncSessionCookieFromStorage();
@@ -97,6 +98,23 @@ export default function PortalSignupListPage() {
     [rows]
   );
 
+  async function deleteSignup(row: SignupRow) {
+    const confirmed = window.confirm(`Delete signup for ${row.name || row.email || row.orgName}?`);
+    if (!confirmed) return;
+
+    setDeletingId(row.id);
+    setError("");
+    try {
+      await api<{ ok: boolean }>(`/api/v1/admin/signups/${row.id}`, { method: "DELETE" });
+      setRows((current) => current.filter((entry) => entry.id !== row.id));
+      if (expandedId === row.id) setExpandedId(null);
+    } catch (err) {
+      setError(String((err as Error)?.message || "Unable to delete signup."));
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   if (loading) return <p>Loading sign up list...</p>;
   if (!signedIn) return <p className="text-slate-300">Please sign in first.</p>;
 
@@ -139,13 +157,23 @@ export default function PortalSignupListPage() {
                   <p>{row.phone}</p>
                   <p className="text-xs text-slate-400">{new Date(row.createdAt).toLocaleString()}</p>
                 </div>
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => setExpandedId(open ? null : row.id)}
-                >
-                  {open ? "Hide Full Form" : "View Full Form"}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => setExpandedId(open ? null : row.id)}
+                  >
+                    {open ? "Hide Full Form" : "View Full Form"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    disabled={deletingId === row.id}
+                    onClick={() => void deleteSignup(row)}
+                  >
+                    {deletingId === row.id ? "Deleting..." : "Delete Signup"}
+                  </button>
+                </div>
               </div>
 
               {open && (
