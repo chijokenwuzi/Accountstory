@@ -4,11 +4,19 @@ import path from "path";
 const rootEnvPath = path.resolve(__dirname, "../../../../.env");
 dotenv.config({ path: rootEnvPath });
 
+function parsePort() {
+  const raw = process.env.PORT || process.env.API_PORT || "4000";
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value <= 0) return 4000;
+  return value;
+}
+
 export const env = {
   nodeEnv: process.env.NODE_ENV || "development",
-  port: Number(process.env.API_PORT || 4000),
+  port: parsePort(),
   databaseUrl: process.env.DATABASE_URL || "",
   redisUrl: process.env.REDIS_URL || "redis://localhost:6379",
+  redisRequireNoeviction: process.env.REDIS_REQUIRE_NOEVICTION !== "false",
   jwtAccessSecret: process.env.JWT_ACCESS_SECRET || "dev_access",
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "dev_refresh",
   jwtAccessTtl: process.env.JWT_ACCESS_TTL || "15m",

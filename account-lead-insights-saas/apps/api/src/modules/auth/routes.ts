@@ -98,12 +98,26 @@ authRouter.post("/register", async (req, res) => {
     res.status(201).json({ accessToken, refreshToken, user: { id: user.id, orgId: org.id, role: user.role, email: user.email } });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.issues[0]?.message || "Invalid registration input" });
+      return res.status(422).json({ error: error.issues[0]?.message || "Invalid registration input" });
     }
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return res.status(409).json({ error: "An account with this email already exists. Please log in." });
     }
-    logger.error({ err: error }, "Failed to register user");
+    if (
+      error instanceof Prisma.PrismaClientInitializationError ||
+      error instanceof Prisma.PrismaClientRustPanicError ||
+      error instanceof Prisma.PrismaClientUnknownRequestError
+    ) {
+      logger.error({ err: error }, "Register failed due to database unavailability");
+      return res.status(503).json({ error: "Service temporarily unavailable. Please try again." });
+    }
+    logger.error(
+      {
+        err: error,
+        email: String(req.body?.email || "").toLowerCase()
+      },
+      "Failed to register user"
+    );
     return res.status(500).json({ error: "Unable to create account right now" });
   }
 });
@@ -131,8 +145,17 @@ authRouter.post("/login", async (req, res) => {
     res.json({ accessToken, refreshToken, user: { id: user.id, orgId: user.orgId, role: user.role, email: user.email } });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.issues[0]?.message || "Invalid login input" });
+      return res.status(422).json({ error: error.issues[0]?.message || "Invalid login input" });
     }
+    if (
+      error instanceof Prisma.PrismaClientInitializationError ||
+      error instanceof Prisma.PrismaClientRustPanicError ||
+      error instanceof Prisma.PrismaClientUnknownRequestError
+    ) {
+      logger.error({ err: error }, "Login failed due to database unavailability");
+      return res.status(503).json({ error: "Service temporarily unavailable. Please try again." });
+    }
+    logger.error({ err: error }, "Login failed unexpectedly");
     return res.status(500).json({ error: "Unable to log in right now" });
   }
 });
