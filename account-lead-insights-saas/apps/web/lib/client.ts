@@ -194,8 +194,11 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     }
   }
 
+  const shouldShowLocalDevHint =
+    typeof window !== "undefined" && isLocalHostname(window.location.hostname);
+
   throw new Error(
-    lastNetworkError
+    lastNetworkError && shouldShowLocalDevHint
       ? "Cannot reach API. Start all services with `npm run dev`, then refresh."
       : "Cannot reach API."
   );
