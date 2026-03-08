@@ -35,7 +35,10 @@ export default function PortalAdManagerPage() {
       try {
         await api("/api/v1/admin/access");
         setAllowed(true);
-        await fetch("/founderbackend/api/health", { cache: "no-store" });
+        const legacyHealth = await fetch("/founderbackend/api/health", { cache: "no-store" });
+        if (!legacyHealth.ok) {
+          throw new Error(`Legacy backend health check failed (${legacyHealth.status})`);
+        }
         const baseUrl = PORTAL_BASE_URL.trim() || window.location.origin;
         const target = new URL(LEGACY_BACKEND_URL, window.location.origin);
         target.searchParams.set("returnTo", `${baseUrl}/ad-production-portal`);
@@ -66,15 +69,24 @@ export default function PortalAdManagerPage() {
   }
 
   if (offline) {
+    const isLocal =
+      typeof window !== "undefined" &&
+      (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
     return (
       <div className="card space-y-3">
-        <h1 className="text-3xl font-bold">Ad Manager Offline</h1>
+        <h1 className="text-3xl font-bold">Ad Manager Unavailable</h1>
         <p className="text-slate-300">
-          Legacy backend at <code>{LEGACY_BACKEND_URL}</code> is not reachable yet.
+          The Ad Manager backend is not reachable right now.
         </p>
-        <p className="text-slate-300">
-          Start dev with <code>npm run dev</code> from <code>account-lead-insights-saas</code>, then try again.
-        </p>
+        {isLocal ? (
+          <p className="text-slate-300">
+            Start dev with <code>npm run dev</code> from <code>account-lead-insights-saas</code>, then try again.
+          </p>
+        ) : (
+          <p className="text-slate-300">
+            The main portal is still available. Retry later after the legacy backend is deployed.
+          </p>
+        )}
         <div className="flex gap-2">
           <Link href="/ad-production-portal" className="btn-secondary">
             Back to Portal
