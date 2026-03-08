@@ -18,7 +18,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <footer className="mt-10 border-t border-slate-700 bg-[#2d356b]">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:flex-row md:items-center md:justify-between">
             <h2 className="text-4xl font-extrabold tracking-tight text-slate-100">Account Lead Insights</h2>
-            <div className="space-y-1 text-right">
+            <div className="space-y-2 text-right">
+              <div className="space-x-4">
+                <a className="text-sm font-semibold text-slate-100 hover:text-blue-200" href="/privacy-policy">
+                  Privacy Policy
+                </a>
+              </div>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-200/80">Contact</p>
               <a className="text-xl font-semibold text-blue-300 hover:text-blue-200" href="mailto:help@accountleadgen.com">
                 help@accountleadgen.com
